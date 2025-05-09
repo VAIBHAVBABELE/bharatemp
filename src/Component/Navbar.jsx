@@ -59,11 +59,10 @@ const Navbar = () => {
   return (
     <>
       {/* Top Blue Bar */}
-      <div className="bg-[#1E3473] text-white text-sm px-4 py-2 flex justify-between items-center font-[Outfit]">
-        <div className="space-x-4 hidden md:flex">
+      <div className="bg-[#1E3473] text-white text-sm px-4 md:px-12 lg:px-16 py-2 flex justify-between items-center font-[Outfit]">
+        <div className="space-x-8 text-[15px] hidden md:flex">
           <Link to="/store-location" className="hover:text-[#F7941D]">Store Location</Link>
           <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
-          <Link to="/subscribe" className="hover:text-[#F7941D]">Subscribe</Link>
           <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link>
         </div>
         <div className="hidden lg:flex items-center text-[15px]">
@@ -84,9 +83,9 @@ const Navbar = () => {
 
       {/* Main Navbar */}
       <div className="font-inter bg-white border-b shadow-sm">
-        <div className="mx-auto px-4 py-3 flex items-center justify-between lg:px-16 md:px-12">
+        <div className="px-4 py-3 flex items-center justify-between lg:px-16 md:px-12">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 w-36 md:w-40">
+          <Link to="/" className="flex items-center gap-3 w-38 md:w-40">
             <img src={logo} alt="Logo" className="w-full" />
           </Link>
 
@@ -106,7 +105,7 @@ const Navbar = () => {
                     </span>
                     <FaChevronDown className="text-blue-900 text-xs" />
                   </div>
-                  <span className="text-sm text-[#1E3473]">
+                  <span className="text-[12px] leading-0 text-[#1E3473]">
                     Delivery in 60 Min
                   </span>
                 </div>
@@ -128,14 +127,14 @@ const Navbar = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="flex items-center w-[550px] bg-gray-100 rounded-full px-4 py-2">
+            <div className="flex items-center w-[550px] justify-between bg-gray-100 rounded-full px-4 py-2">
               <input
                 type="text"
                 placeholder="Search for items..."
                 className="flex-1 bg-transparent text-sm outline-none"
               />
-              <span className="bg-[#F7941D] w-10 h-10 rounded-full flex items-center justify-center">
-                <FaSearch size={17} className="text-white" />
+              <span className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center">
+                <FaSearch size={15} className="text-white" />
               </span>
             </div>
           </div>
@@ -162,7 +161,7 @@ const Navbar = () => {
               {/* User Icon */}
               <div 
                 className="bg-gray-100 p-3 rounded-full cursor-pointer"
-                onClick={() => navigate('/account')}
+                onClick={() => navigate('/profile')}
               >
                 <img src={icon2} className="w-5 h-5" alt="User" />
               </div>
@@ -177,7 +176,7 @@ const Navbar = () => {
 
         {/* Bottom Nav */}
         <div className="bg-white  hidden  md:block  ">
-          <div className="    md:mx-auto px-4 py-2 flex items-center space-x-4 text-sm font-medium  whitespace-nowrap lg:px-16 md:px-12  ">
+          <div className="px-4 py-1 flex items-center space-x-4 text-sm font-medium  whitespace-nowrap lg:px-16 md:px-12  ">
             <Link to="/" className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               HOME
             </Link>

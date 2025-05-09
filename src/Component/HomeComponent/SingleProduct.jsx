@@ -16,6 +16,7 @@ export default function ProductCard() {
     const fetchProduct = () => {
       // First try to get the product from localStorage
       const selectedProduct = localStorage.getItem('selectedProduct');
+      window.scrollTo(0, 0);
       
       if (selectedProduct) {
         const parsedProduct = JSON.parse(selectedProduct);
@@ -74,6 +75,8 @@ export default function ProductCard() {
       </div>
     );
   }
+
+  
 
   return (
     <div className="bg-white font-[outfit]">

@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import thanku from '../../assets/thanku.png'
 const OrderSuccess = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="flex items-center justify-center h-[510px] bg-white px-4">
       <div className="text-center">
