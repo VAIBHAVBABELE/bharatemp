@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoBagOutline } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
-
-// Free placeholder images
 import image1 from "../../assets/homepage1.png";
 import image2 from "../../assets/homepage2.png";
 import image3 from "../../assets/homepage3.png";
@@ -19,7 +17,7 @@ const products = [
         price: 4029.50,
         oldPrice: 8029.50,
         tag: "NEW",
-        tags: "BEST SELLER",
+        tags: "AAd to cart",
         image: image1,
     },
     {
@@ -29,7 +27,7 @@ const products = [
         price: 4029.50,
         oldPrice: 9099.50,
         tag: "NEW",
-        tags: "BEST SELLER",
+        tags: "AAd to cart",
         image: image2,
     },
     {
@@ -39,7 +37,7 @@ const products = [
         price: 3529.50,
         oldPrice: 6029.50,
         tag: "NEW",
-        tags: "BEST SELLER",
+        tags: "AAd to cart",
         image: image3,
     },
     {
@@ -49,7 +47,17 @@ const products = [
         price: 4029.50,
         oldPrice: 8029.50,
         tag: "NEW",
-        tags: "BEST SELLER",
+        tags: "AAd to cart",
+        image: image4,
+    },
+    {
+        title: "Mi Air3s",
+        brand: "Airpod",
+        category: "Propellers",
+        price: 4029.50,
+        oldPrice: 8029.50,
+        tag: "NEW",
+        tags: "AAd to cart",
         image: image4,
     },
 ];
@@ -70,7 +78,7 @@ export default function DronePartsCarousel() {
                 setItemsToShow(2);
             } else {
                 // Desktop
-                setItemsToShow(3);
+                setItemsToShow(4);
             }
         };
 
@@ -180,11 +188,11 @@ export default function DronePartsCarousel() {
                     )}
 
                     {/* Carousel Cards */}
-                    <div className={`grid gap-4 ${itemsToShow === 1 ? 'grid-cols-1' : itemsToShow === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                    <div className={`grid gap-4 ${itemsToShow === 1 ? 'grid-cols-1' : itemsToShow === 2 ? 'grid-cols-2' : 'grid-cols-4'}`}>
                         {getVisibleProducts().map((product, index) => (
                             <div
                                 key={index}
-                                className="group border border-[#c2c2c2] rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 h-[300px]  hover:h-[315px] cursor-pointer"
+                                className="group border border-[#c2c2c2] rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 h-[300px]  hover:h-[300px] cursor-pointer"
                             >
                                 <div className="p-4 flex flex-col items-start relative h-full">
                                     <p className="text-[10px] font-semibold text-[#D9D3D3] mb-1">
@@ -202,7 +210,7 @@ export default function DronePartsCarousel() {
                                         <span className="bg-[#f7941d] text-white md:text-[14px] text-[10px] font-semibold px-3 py-1 rounded-full">
                                             {product.tag}
                                         </span>
-                                        <span className="bg-gray-200 px-3 py-1 text-[12px] rounded-full">
+                                        <span className="bg-gray-200 px-3 py-1 text-[12px] text-[#f7941d] rounded-full">
                                             {product.tags}
                                         </span>
                                     </div>
@@ -226,14 +234,14 @@ export default function DronePartsCarousel() {
                                         </div>
                                     </div>
                                     <hr />
-                                    <div className="absolute bottom-4 gap-1 left-0 w-full border-t border-gray-200 bg-white text-[#5D5D5D] px-4 py-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
-                                        <button className="flex items-center text-sm hover:text-black">
+                                    {/* <div className="absolute bottom-2 gap-1 left-0  w-full border-t border-gray-200 bg-white text-[#5D5D5D] px-4 py-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
+                                        <button className="flex items-center text-[12px] hover:text-black">
                                             <span className="mr-1"><CiHeart size={16} /></span> Add to Wishlist
                                         </button>
-                                        <button className="flex items-center text-sm hover:text-black">
+                                        <button className="flex items-center text-[12px] hover:text-black">
                                             <span className="mr-1">🛒</span> Buy Now
                                         </button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         ))}
