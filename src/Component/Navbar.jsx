@@ -15,7 +15,7 @@ import shipping from "../assets/shipping.png";
 import icon1 from "../assets/Icon1.png";
 import icon2 from "../assets/icon2.png";
 import { useCart } from "../context/CartContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate,Link} from "react-router-dom";
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -58,6 +58,30 @@ const Navbar = () => {
 
   return (
     <>
+      {/* Top Blue Bar */}
+      <div className="bg-[#1E3473] text-white text-sm px-4 py-2 flex justify-between items-center font-[Outfit]">
+        <div className="space-x-4 hidden md:flex">
+          <Link to="/store-location" className="hover:text-[#F7941D]">Store Location</Link>
+          <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
+          <Link to="/subscribe" className="hover:text-[#F7941D]">Subscribe</Link>
+          <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link>
+        </div>
+        <div className="hidden lg:flex items-center text-[15px]">
+          <img src={shipping} alt="Shipping" className="w-5 h-5 mr-2" />
+          <span>24 hour delivery across India</span>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1">
+            <FaGlobeAmericas />
+            <FaChevronDown />
+          </div>
+          <div className="flex items-center gap-1">
+            <span>USD</span>
+            <FaChevronDown />
+          </div>
+        </div>
+      </div>
+
       {/* Main Navbar */}
       <div className="font-inter bg-white border-b shadow-sm">
         <div className="mx-auto px-4 py-3 flex items-center justify-between lg:px-16 md:px-12">
@@ -120,7 +144,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4 text-gray-600">
             <div className="flex items-center space-x-4">
               {/* Shopping Bag Icon */}
-              <div
+              <div 
                 className="bg-gray-100 p-3 rounded-full relative cursor-pointer"
                 onClick={() => navigate('/cart')}
               >
@@ -136,7 +160,7 @@ const Navbar = () => {
               <div className="w-px h-6 bg-gray-300"></div>
 
               {/* User Icon */}
-              <div
+              <div 
                 className="bg-gray-100 p-3 rounded-full cursor-pointer"
                 onClick={() => navigate('/account')}
               >
