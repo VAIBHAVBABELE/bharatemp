@@ -16,8 +16,8 @@ const products = [
     brand: "Battery",
     price: 4029.5,
     oldPrice: 8029.5,
-    tag: "NEW",
-    tags: "BEST SELLER",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image1,
   },
   {
@@ -25,8 +25,8 @@ const products = [
     brand: "Spark Fun",
     price: 73529.5,
     oldPrice: 8029.5,
-    tag: "NEW",
-    tags: "BEST SELLER",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image2,
   },
   {
@@ -34,8 +34,8 @@ const products = [
     brand: "Ultrasonic",
     price: 3529.5,
     oldPrice: 6029.5,
-    tag: "New",
-    tags: "BEST SELLER",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image3,
   },
   {
@@ -43,8 +43,8 @@ const products = [
     brand: "APM 2.8",
     price: 3529.5,
     oldPrice: 6029.5,
-    tag: "NEW",
-    tags: "2024 Edition",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image4,
   },
   {
@@ -52,8 +52,8 @@ const products = [
     brand: "1800 KV",
     price: 32529.5,
     oldPrice: 6029.5,
-    tag: "NEW",
-    tags: "2024 Edition",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image5,
   },
   {
@@ -61,8 +61,8 @@ const products = [
     brand: "APM 3.1",
     price: 52529.5,
     oldPrice: 8029.5,
-    tag: "NEW",
-    tags: "BESTAirPods",
+    tag: "BUY NOW",
+    tags: "Add to cart",
     image: image6,
   },
 ];
@@ -80,7 +80,7 @@ const ProductSlider = () => {
   const filteredProducts = getFilteredProducts();
 
   return (
-    <div className="h-auto ">
+    <div className="h-auto lg:h-[500px] py-10 ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
         <div className="flex   space-x-6">
@@ -111,7 +111,7 @@ const ProductSlider = () => {
         {filteredProducts.map((product, index) => (
           <div
             key={index}
-            className="group border border-[#c2c2c2] rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 lg:h-[300px] hover:h-[320px] h-[330px] cursor-pointer">
+            className="group border  rounded-2xl shadow-sm hover:shadow-lg transition-all  scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[300px] hover:h-[350px] h-[330px] cursor-pointer">
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1">{product.brand}</p>
               <h2 className="text-[18px] font-bold text-[#1E3473] mb-2">
@@ -148,13 +148,14 @@ const ProductSlider = () => {
                 </div>
               </div>
               <hr />
-              <div className=" absolute -bottom-5 gap-1 left-0 w-full border-t border-gray-200 bg-white text-[#5D5D5D] px-2 py-2 flex justify-between items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
-                <button className="flex items-center text-sm hover:text-black">
-                  <span className="mr-1"><CiHeart size={16} /></span> Add to Wishlist
-                </button>
-                <button className="flex items-center text-sm hover:text-black">
-                  <span className="mr-1">🛒</span> Buy Now
-                </button>
+              <div className=" absolute -bottom-8 gap-1 left-0 w-full border-t border-gray-200 bg-white text-[#5D5D5D] px-2 py-2 flex justify-between items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
+                <div className="  text-[14px] text-[#ABA1A1] font-[outfit]">
+                Get it <span className='text-black'> Friday,</span> Jan 18<br/>
+                <span className="mr-1">   FREE Delivery</span> 
+              
+                </div>
+              
+                
               </div>
 
             </div>

@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import raspberry from '../../assets/rasperrybi.png';
 import filtericon from '../../assets/filtericon.png';
 import { IoFilter } from "react-icons/io5";
+import { MdClose } from "react-icons/md";
+import { useCart } from '../../context/CartContext';
+
 const Product = () => {
   const [activeTab, setActiveTab] = useState('Featured');
   const [price, setPrice] = useState(9999);

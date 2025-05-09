@@ -31,32 +31,32 @@ const PromoSection = () => {
             <div className='md:w-1/2 w-full'>
                 <div className=" grid sm:grid-cols-2 gap-4 ">
                     {/* Card 1 */}
-                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  justify-between  relative">
-                        <div>
-                            <p className="text-blue-900 font-bold md:text-[34.83px] text-2xl">3d Printer</p>
-                           <p className="text-sm text-orange-500 mb-2">Parts</p>
-                            <button className="bg-orange-400 text-white px-3 py-1 text-sm rounded-full">
+                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  justify-between relative">
+                        <div >
+                            <p className="text-blue-900 font-bold lg:text-[34.83px] lg:py-2 pt-6 md:px-0 text-2xl">3d Printer</p>
+                           <p className="text-sm text-[#f7941d] mb-2 py-2">Parts</p>
+                            <button className="bg-[#f7941d] text-white px-3  py-2 text-sm rounded-full">
                                 Discover Now
                             </button>
                        </div>
                         <img
                             src={ image8}
-                            className="md:w-40 w-28 h-auto object-contain absolute right-0 bottom-0" />
+                            className="lg:w-56 w-32 h-auto object-contain absolute -right-2 bottom-0" />
                     </div>
 
                     {/* Card 2 */}
                     <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex items-center justify-between relative">
                         <div>
-                            <button className="bg-blue-900 text-white px-3 py-1 text-sm rounded-full mb-1">
+                            <button className="bg-[#1E3473] text-white px-3 text-center text-[16px] py-2 rounded-full mb-1">
                                 Discover Now
                             </button>
-                            <p className="text-sm text-orange-500">Parts</p>
-                            <p className="text-blue-900 font-bold lg:text-[34.83px] text-2xl">Drone BB-3</p>
+                            <p className="text-sm text-[#f7941d] ">Parts</p>
+                            <p className="text-[#1E3473] font-bold md:text-[34.83px] text-2xl">Drone BB-3</p>
                         </div>
                         <img
                             src={image9}
                             alt="Drone"
-                            className="md:w-40 w-28 h-auto object-contain absolute -top-7 -right-2"
+                            className="md:w-56 w-32 h-auto object-contain absolute -right-4 md:-top-16 -top-8  "
                         />
                     </div>
 
