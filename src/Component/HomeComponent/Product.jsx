@@ -332,10 +332,6 @@ const Product = () => {
     { label: 'Over ₹5000', min: 5000, max: Infinity, count: getCountForPriceRange(5000, Infinity) }
   ];
 
-  // Log to check which products are over 5000
-  console.log("Products over 5000:", allProducts.filter(p => p.price >= 5000).map(p => p.name));
-
-  // Extract unique categories, colors, and brands
   const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
   const uniqueBrands = [...new Set(allProducts.map(p => p.brand))];
 
@@ -500,12 +496,15 @@ const Product = () => {
     addToCart(product);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="relative bg-white font-[outfit]">
       {/* Mobile Filter Button */}
       <div className="lg:hidden fixed bottom-4 right-4 z-50">
         <button
-          className="bg-[#f7941d] text-white p-3 rounded-full shadow-lg flex items-center justify-center"
+          className="bg-[#1e3473] text-white p-3 rounded-full shadow-lg flex items-center justify-center"
           onClick={() => setShowSidebar(true)}
         >
           <IoFilter size={24} />
@@ -515,12 +514,12 @@ const Product = () => {
       {/* Overlay */}
       {showSidebar && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-40"
+          className="fixed inset-0 bg-transparent bg-opacity-40 z-40"
           onClick={() => setShowSidebar(false)}
         />
       )}
 
-      <div className="w-full px-4 md:px-6 py-6">
+      <div className="w-full px-4 md:px-6 py-6 relative z-40">
         <div className="w-full flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filter */}
           <div
@@ -548,7 +547,7 @@ const Product = () => {
                 <div className="h-1 flex-grow bg-gray-200 rounded-full relative">
                   {/* Temp slider range - orange overlay */}
                   <div 
-                    className="absolute h-1 bg-[#f7941d] rounded-full"
+                    className="absolute h-1 bg-[#1e3473] rounded-full"
                     style={{ width: `${percentage}%` }}
                   ></div>
                   <input
@@ -561,7 +560,7 @@ const Product = () => {
                   />
                   {/* Slider thumb */}
                   <div 
-                    className="absolute w-4 h-4 bg-[#f7941d] rounded-full -mt-1.5"
+                    className="absolute w-4 h-4 bg-[#1e3473] rounded-full -mt-1.5"
                     style={{ left: `${percentage}%`, transform: 'translateX(-50%)' }}
                   ></div>
                   
@@ -571,7 +570,7 @@ const Product = () => {
                 <p className="text-sm font-medium">
                   Price: ₹{min} - ₹{sliderValue}
                   {priceRangeFilter.max !== sliderValue && (
-                    <span className="ml-1 text-xs text-[#f7941d]"> (not applied)</span>
+                    <span className="ml-1 text-xs text-[#1e3473]"> (not applied)</span>
                   )}
                 </p>
                 <button
@@ -589,7 +588,7 @@ const Product = () => {
 
             {/* Filter by Price Options */}
             <div className="mb-6">
-              <h3 className="bg-[#f7941d] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
+              <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
                 Filter by Price
               </h3>
               <ul className="space-y-2">
@@ -598,13 +597,13 @@ const Product = () => {
                     <label className="flex items-center text-sm cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="mr-2 h-4 w-4 accent-[#f7941d]"
+                        className="mr-2 h-4 w-4 accent-[#1e3473]"
                         checked={priceCheckboxFilters.includes(range.label)}
                         onChange={() => handlePriceCheckboxChange(range.label)}
                       />
                       {range.label}
                     </label>
-                    <span className="text-[#f7941d] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
+                    <span className="text-[#1e3473] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
                       {range.count}
                     </span>
                   </li>
@@ -614,7 +613,7 @@ const Product = () => {
 
             {/* Filter by Categories */}
             <div className="mb-6">
-              <h3 className="bg-[#f7941d] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
+              <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
                 Filter by Categories
               </h3>
               <ul className="space-y-2">
@@ -623,13 +622,13 @@ const Product = () => {
                     <label className="flex items-center text-sm cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="mr-2 h-4 w-4 accent-[#f7941d]"
+                        className="mr-2 h-4 w-4 accent-[#1e3473]"
                         checked={categoryFilters.includes(category.label)}
                         onChange={() => handleCategoryChange(category.label)}
                       />
                       {category.label}
                     </label>
-                    <span className="text-[#f7941d] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
+                    <span className="text-[#1e3473] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
                       {category.count}
                     </span>
                   </li>
@@ -639,7 +638,7 @@ const Product = () => {
 
             {/* Filter by Brand */}
             <div className="mb-6">
-              <h3 className="bg-[#f7941d] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
+              <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
                 Filter by Brand
               </h3>
               <div className="grid grid-cols-2 gap-2">
@@ -647,7 +646,7 @@ const Product = () => {
                   <div key={index} className="flex items-center bg-gray-100 text-xs font-medium px-2 py-1.5 rounded-full">
                     <input 
                       type="checkbox" 
-                      className="mr-1.5 h-3 w-3 accent-[#f7941d]" 
+                      className="mr-1.5 h-3 w-3 accent-[#1e3473]" 
                       id={`brand-${index}`} 
                       checked={brandFilters.includes(brand.label)}
                       onChange={() => handleBrandChange(brand.label)}
@@ -661,13 +660,13 @@ const Product = () => {
 
           {/* Product Grid Section */}
           <div className=" w-full">
-            <div className="border-b border-gray-300 flex items-center justify-between mb-6">
-              <div className="flex space-x-8">
+            <div className="border-b text-sm md:text-base lg:text-lg border-gray-300 flex items-center justify-between mb-6">
+              <div className="flex space-x-4 lg:space-x-8">
                 {tabs.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`pb-2 font-medium relative ${
+                    className={`font-medium relative ${
                       activeTab === tab ? 'text-gray-900 font-semibold' : 'text-gray-500'
                     }`}
                   >

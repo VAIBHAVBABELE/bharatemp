@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { FaPlus, FaMinus, FaTrash, FaArrowLeft } from 'react-icons/fa';
@@ -53,6 +53,10 @@ const Cart = () => {
       </div>
     );
   }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="bg-white py-6 min-h-screen font-[outfit]">
@@ -168,7 +172,7 @@ const Cart = () => {
             </div>
             <button 
               onClick={() => navigate('/checkout')}
-              className="w-full bg-[#f7941d] hover:bg-orange-600 text-white py-3 rounded-md font-medium mt-4 flex items-center justify-center"
+              className="w-full bg-[#f7941d] cursor-pointer  text-white py-3 rounded-md font-medium mt-4 flex items-center justify-center"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
                 <path d="M9 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H8C3.73 8 3.03 9.99 3.3 12.43L4.05 18.43C4.26 20.39 4.98 22 9 22Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>

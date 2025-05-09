@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
 import Section3 from "./../Component/HomeComponent/Section3";
@@ -13,12 +14,16 @@ import image8 from "../assets/homepage8.png";
 import image9 from "../assets/homepage9.png";
 import icon4 from "../assets/icon4.png";
 import image10 from "../assets/homepage10.png";
+import blue from "../assets/bluelight.svg";
 const ProductSlider = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="px-4 md:px-10 py-10">
-      <div className="bg-[#32333B] lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row   gap-10 relative overflow-hidden ">
+      <div className="bg-[#32333B] w-full lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
         {/* Left: Text Section */}
-        <div className="flex-1 md:w-2/4 w-full lg:text-left">
+        <div className="flex-1 md:w-1/2 w-full lg:text-left">
           <h2 className="md:text-[33.12px] text-[20px] text-[#FFFFFF] font-semibold">
             Rasberry Pie
           </h2>
@@ -31,7 +36,7 @@ const ProductSlider = () => {
           <p className="text-[23px] text-[#FFFFFF] mt-2">From </p>
           <div className="flex  gap-10 items-center leading-3  ">
             <span className="  text-[39.75px] text-[#FFFFFF] ">₹399</span>
-            <button className="mt-4 bg-[#F7941D] hover:bg-orange-600 text-[#000000] py-4 px-6 rounded-full text-[19.54px] font-medium">
+            <button className="mt-4 bg-[#F7941D] hover:bg-orange-600 text-[#000000] py-4 px-6 rounded-full text-[12px] lg:text-[19.54px] font-medium">
               Discover Now
             </button>
           </div>
@@ -63,18 +68,24 @@ const ProductSlider = () => {
         </div>
 
         {/* Right: Image Section */}
-        <div className="md:w-1/2  w-full">
-          <img
-            src={image7}
-            className="rotate-180 tranform scale-x-[-1] right-4 object-contain absolute lg:-bottom-12 -bottom-4    lg:w-[450px] md:w-[350px]  w-[150px] rounded-2xl"
-          />
+        <div className="absolute right-10 -bottom-12 hidden lg:block">
+          <div className="relative lg:w-[450px] md:w-[350px] w-[150px]">
+            <img
+              src={image7}
+              className="rotate-180 transform scale-x-[-1] object-contain rounded-2xl"
+            />
+            <img 
+              src={blue} 
+              className="absolute -top-20 -left-44 w-full h-[450px]" 
+            />
+          </div>
         </div>
       </div>
 
       {/* Bottom Categories */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-between items-center ">
         <div className="flex-1 bg-[#E0E0E0] shadow-md rounded-xl p-4 flex items-center  gap-6 justify-between w-full relative">
-          <div className="text-sm h-[60px] ">
+          <div className="text-sm h-[76px] ">
             <span className="text-[#555555]">
               CATCH BIG <span className="text-[#1E3473]">DEALS</span>ON
             </span>
@@ -84,7 +95,7 @@ const ProductSlider = () => {
 
           <img
             src={image9}
-            className="w-[210px] md:h-[160px] h-[120px] object-contain absolute md:right-6 -right-3 md:-top-16 -top-8"
+            className="w-[220px] md:h-[160px] lg:h-[190px] h-[120px] object-contain absolute md:right-6 -right-3 md:-top-14 -top-8"
           />
           <img src={icon4} className=" right w-8 h-5" />
         </div>
@@ -100,7 +111,7 @@ const ProductSlider = () => {
 
           <img
             src={image8}
-            className="w-[210px] lg:h-[150px] h-[120px] object-contain absolute md:right-6 right-6 lg:-top-10 -top-4"
+            className="w-[210px] lg:h-[180px] h-[120px] object-contain absolute md:right-6 right-4 lg:-top-12 -top-4"
           />
           <img src={icon4} className=" right w-8 h-5" />
         </div>
@@ -116,7 +127,7 @@ const ProductSlider = () => {
 
           <img
             src={image10}
-                className="w-[210px] lg:h-[150px] h-[120px] object-contain absolute md:right-6 right-10 lg:-top-10 -top-4"
+                className="w-[210px] lg:h-[150px] h-[120px] object-contain absolute md:right-6 right-4 lg:-top-10 -top-4"
           />
           <img src={icon4} className=" right w-8 h-5" />
         </div>

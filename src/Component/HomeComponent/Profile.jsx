@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const ProfilePage = () => {
@@ -12,11 +12,15 @@ const ProfilePage = () => {
     console.log("Form submitted:", data);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className=" bg-gray-100 p-4 flex flex-col lg:flex-row gap-6 py-10 px-4 md:px-10">
       {/* Sidebar */}
-      <div className="bg-[#1e3473] text-white w-full h-auto lg:w-1/4 p-6 rounded-xl shadow-md">
-        <h2 className="text-2xl md:text-[49.5px] font-bold mb-6">My Profile</h2>
+      <div className="bg-[#1e3473] text-white w-full h-auto lg:w-[30%] p-10 rounded-3xl shadow-md">
+        <h2 className="text-2xl md:text-[49.5px] font-semibold mb-6">My Profile</h2>
         <ul className="space-y-2 text-[24px] font-medium">
           <li className="text-[#F7941D] text-[26px]">Account Details</li>
           <li>Orders</li>
@@ -30,13 +34,13 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile Details */}
-      <div className="bg-[#F8F8FA] flex-1 p-8 rounded-xl shadow-md">
-        <h3 className="text-xl md:text-[32px] font-semibold mb-4 text-[#383838]">Profile Details</h3>
+      <div className="bg-[#F8F8FA] flex-1 p-4 lg:p-8 rounded-3xl shadow-md">
+        <h3 className="text-xl md:text-[32px] text-center lg:text-left font-semibold mb-4 text-[#383838]">Profile Details</h3>
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Profile Image & Edit Button */}
-          <div className=" w-[20%] flex flex-col items-center justify-center gap-4">
+          <div className=" w-full lg:w-[20%] flex flex-col items-center justify-center gap-4">
             <div className="w-40 h-40 bg-[#EAECF0] rounded-full"></div>
-            <button className="bg-[#F7941D] text-white text-[24px] px-7 py-1  mt-4 rounded-full">
+            <button className="bg-[#F7941D] text-white text-[18px] px-10 py-1  mt-4 rounded-full">
               Edit
             </button>
           </div>
