@@ -15,6 +15,7 @@ import image9 from "../assets/homepage9.png";
 import icon4 from "../assets/icon4.png";
 import image10 from "../assets/homepage10.png";
 import blue from "../assets/bluelight.svg";
+import InstagramCarousel from "../Component/HomeComponent/Instagram";
 const ProductSlider = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -138,6 +139,7 @@ const ProductSlider = () => {
       <Section3 />
       <Section1 />
       <Section5 />
+      <InstagramCarousel/>
     </div>
   );
 };

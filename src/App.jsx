@@ -12,7 +12,12 @@ import Profile from "./Component/HomeComponent/Profile";
 import { CartProvider } from "./context/CartContext.jsx";
 import Login from "./Component/Login";
 import Signup from "./Component/Signup";
-
+import AdminLogin from './Component/AdminDashboardComponent/AdminLogin.jsx'
+import AdminDashboard from './Component/AdminDashboardComponent/AdminLogin.jsx'
+import Admin from './Admin.jsx'
+import AddProduct from './Component/AdminDashboardComponent/ProductsRelatedComponents/AddProduct.jsx'
+import AllProducts from './Component/AdminDashboardComponent/ProductsRelatedComponents/AllProducts.jsx'
+import AllOrders from './Component/AdminDashboardComponent/OrdersRelatedComponents/AllOrders.jsx'
 
 
 const App = () => { 
@@ -31,10 +36,21 @@ const App = () => {
           <Route path="/profile" element={<Profile/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/signup" element={<Signup/>} />
+{/* dashboard */}
+ <Route path='/admin-login' element={<AdminLogin />} />
+    
+    
+    <Route path='/admin-dashboard' element={<Admin />}>
+     <Route path='/admin-dashboard' element={<AdminDashboard />} />
+          <Route path='/admin-dashboard/addproduct' element={<AddProduct />} />
+          <Route path='/admin-dashboard/allproduct' element={<AllProducts />} />
+          <Route path='/admin-dashboard/orders' element={<AllOrders />} />
+          </Route>
           </Routes>
     <Footer/>
     </Router>
     </CartProvider>
+    
   );
 };
 
