@@ -15,17 +15,20 @@ import shipping from "../assets/shipping.png";
 import icon1 from "../assets/Icon1.png";
 import icon2 from "../assets/icon2.png";
 import { useCart } from "../context/CartContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [location, setLocation] = useState("Delhi, India");
   const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
+  const currentLocation = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,6 +43,15 @@ const Navbar = () => {
       }
     }
   }, []);
+
+  // Extract search query from URL when page loads or changes
+  useEffect(() => {
+    const params = new URLSearchParams(currentLocation.search);
+    const query = params.get('search');
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [currentLocation]);
 
   const navItems = [
     {
@@ -71,6 +83,26 @@ const Navbar = () => {
   const handleLocationSelect = (loc) => {
     setLocation(loc);
     setShowLocationDropdown(false);
+  };
+
+  // Handle search form submission
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/product?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Handle keypress in search input
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
   };
 
   return (
@@ -144,16 +176,22 @@ const Navbar = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="flex items-center w-[550px] justify-between bg-gray-100 rounded-full px-4 py-2">
+            <form onSubmit={handleSearch} className="flex items-center w-[550px] justify-between bg-gray-100 rounded-full px-4 py-2">
               <input
                 type="text"
-                placeholder="Search for items..."
+                placeholder="Search by name, category, brand..."
                 className="flex-1 bg-transparent text-sm outline-none"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
               />
-              <span className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center">
+              <button 
+                type="submit" 
+                className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
+              >
                 <FaSearch size={15} className="text-white" />
-              </span>
-            </div>
+              </button>
+            </form>
           </div>
 
           {/* Right Icons */}
@@ -177,11 +215,37 @@ const Navbar = () => {
 
               {/* User Icon or Auth Buttons */}
               {user ? (
-                <div 
-                  className="bg-gray-100 p-3 rounded-full cursor-pointer"
-                  onClick={() => navigate('/profile')}
-                >
-                  <img src={icon2} className="w-5 h-5" alt="User" />
+                <div className="relative">
+                  <div 
+                    className="bg-gray-100 p-3 rounded-full cursor-pointer"
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                  >
+                    <img src={icon2} className="w-5 h-5" alt="User" />
+                  </div>
+                  {showProfileDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                      <button
+                        onClick={() => {
+                          navigate('/profile');
+                          setShowProfileDropdown(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            setUser(null);
+                            window.location.href = '/';
+                          setShowProfileDropdown(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -248,11 +312,22 @@ const Navbar = () => {
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden px-4 py-4 space-y-3 text-sm bg-white shadow-md">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full border border-gray-300 px-3 py-2 rounded-md"
-            />
+            <form onSubmit={handleSearch} className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search by name, category, brand..."
+                className="w-full border border-gray-300 px-3 py-2 rounded-l-md"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
+              />
+              <button 
+                type="submit"
+                className="bg-[#F7941D] px-3 py-2 rounded-r-md text-white"
+              >
+                <FaSearch size={15} />
+              </button>
+            </form>
             <Link to="/" className="block py-2 hover:text-[#F7941D]">
               HOME
             </Link>

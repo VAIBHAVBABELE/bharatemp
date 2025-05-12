@@ -1,50 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { FaArrowLeft, FaStar, FaStarHalfAlt, FaRegStar, FaSpinner } from "react-icons/fa";
 import shop from "../../assets/shop.png";
 // import { servicesData } from "./data";
 import { useCart } from "../../context/CartContext";
+import axios from "axios";
+
+const backend = import.meta.env.VITE_BACKEND;
 
 export default function ProductCard() {
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
 
-  // Get product data from localStorage when component mounts
+  // Fetch product data from API
   useEffect(() => {
-    const fetchProduct = () => {
-      // First try to get the product from localStorage
-      const selectedProduct = localStorage.getItem('selectedProduct');
-      window.scrollTo(0, 0);
-      
-      if (selectedProduct) {
-        const parsedProduct = JSON.parse(selectedProduct);
-        // If ID in URL matches the stored product, use that
-        if (id && parsedProduct.id.toString() === id) {
+    const fetchProductData = async () => {
+      setLoading(true);
+      try {
+        // Fetch from API
+        const response = await axios.get(`${backend}/product/${id}`);
+        
+        if (response.data.status === "Success" && response.data.data.product) {
+          setProduct(response.data.data.product);
+        } else {
+          // If API doesn't return a product, try getting from localStorage as fallback
+          const selectedProduct = localStorage.getItem('selectedProduct');
+          if (selectedProduct) {
+            const parsedProduct = JSON.parse(selectedProduct);
+            setProduct(parsedProduct);
+          } else {
+            setError("Product not found");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        
+        // Try to get from localStorage as fallback
+        const selectedProduct = localStorage.getItem('selectedProduct');
+        if (selectedProduct) {
+          const parsedProduct = JSON.parse(selectedProduct);
           setProduct(parsedProduct);
-          return;
+        } else {
+          setError("Failed to load product data");
         }
-      }
-      
-      // If ID is available, try to find the product in allProducts array
-      if (id) {
-        // Import or load your products data here
-        // For now, we'll use the servicesData as fallback
-        const foundProduct = servicesData.find(p => p.id.toString() === id);
-        if (foundProduct) {
-          setProduct(foundProduct);
-          return;
-        }
-      }
-      
-      // Fallback to first product if nothing matches
-      if (servicesData && servicesData.length > 0) {
-        setProduct(servicesData[0]);
+      } finally {
+        setLoading(false);
       }
     };
     
-    fetchProduct();
+    if (id) {
+      fetchProductData();
+      window.scrollTo(0, 0);
+    }
   }, [id]);
 
   // Navigate back to products page
@@ -63,23 +74,44 @@ export default function ProductCard() {
   const handleBuyNow = () => {
     if (product) {
       addToCart(product);
-      // Navigate to checkout page (create this page later)
+      // Navigate to checkout page
       navigate('/cart');
     }
   };
 
-  if (!product) {
+  if (loading) {
     return (
-      <div className="p-10 flex justify-center items-center h-screen">
+      <div className="p-10 flex flex-col justify-center items-center h-screen">
+        <FaSpinner className="text-[#1e3473] text-4xl animate-spin mb-4" />
         <div className="text-gray-700 font-semibold">Loading product details...</div>
       </div>
     );
   }
 
-  
+  if (error) {
+    return (
+      <div className="p-10 flex flex-col justify-center items-center h-screen">
+        <div className="text-red-500 font-semibold mb-4">{error}</div>
+        <button 
+          onClick={handleBack}
+          className="px-4 py-2 bg-[#1e3473] text-white rounded-lg"
+        >
+          Go Back to Products
+        </button>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="p-10 flex justify-center items-center h-screen">
+        <div className="text-gray-700 font-semibold">Product not found</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white font-[outfit]">
+    <div className="bg-white font-[outfit] pb-20">
       {/* Header */}
       <div className="w-full font-[outfit] flex md:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium px-4 py-2 mt-4 ">
         <div className="flex items-center flex-wrap gap-3">
@@ -106,20 +138,20 @@ export default function ProductCard() {
         <div className="w-full md:w-[60%] flex flex-col md:flex-row gap-4 mt-6 pl-0 md:pl-10">
           <div className=" w-full md:h-[450px] flex items-center justify-center">
             <img
-              src={product.image}
+              src={product.image && product.image.length > 0 ? product.image[0] : shop}
               alt={product.name}
-              className="w-full h-full  object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
-          {/* We don't have thumbnails in our product data, but we'll keep the structure */}
+          {/* Thumbnails */}
           <div className="flex md:flex-col flex-row gap-4">
-            {[1, 2, 3,4].map((thumb, i) => (
+            {(product.image && product.image.length > 1 ? product.image.slice(0, 4) : [1, 2, 3, 4]).map((img, i) => (
               <div
                 key={i}
                 className="w-[70px] h-[60px] md:w-[110px] md:h-[115px] border border-[#E5E7EB] rounded-lg flex items-center justify-center"
               >
                 <img 
-                  src={product.image} 
+                  src={typeof img === 'string' ? img : product.image && product.image.length > 0 ? product.image[0] : shop} 
                   alt={`${product.name} thumbnail`}
                   className="max-w-full max-h-full object-contain p-2" 
                 />
@@ -134,12 +166,14 @@ export default function ProductCard() {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-3">
               <h1 className="text-xl md:text-3xl font-bold">{product.name}</h1>
-              <span className="bg-gray-100 text-base font-medium px-5 py-2 rounded-full">
-                16 Gb
-              </span>
+              {/* {product.highlights && product.highlights.length > 0 && (
+                <span className="bg-gray-100 text-base font-medium px-5 py-2 rounded-full">
+                  {product.highlights[0]}
+                </span>
+              )} */}
             </div>
             <p className="text-gray-500 text-sm">
-              Free 2 Days Shipping | 1 Year Warranty
+              Free 2 Days Shipping | {product.warranty_months ? `${product.warranty_months} Month Warranty` : '1 Year Warranty'}
             </p>
           </div>
 
@@ -148,9 +182,9 @@ export default function ProductCard() {
             <div className="flex text-yellow-400 text-2xl">
               {Array(5).fill().map((_, i) => (
                 <span key={i}>
-                  {i < Math.floor(product.rating) ? (
+                  {i < Math.floor(product.rating || 4) ? (
                     <FaStar />
-                  ) : i < product.rating ? (
+                  ) : i < (product.rating || 4) ? (
                     <FaStarHalfAlt />
                   ) : (
                     <FaRegStar />
@@ -159,50 +193,49 @@ export default function ProductCard() {
               ))}
             </div>
             <p className="text-gray-500 text-base">
-              {product.rating} from {product.reviewCount} Reviews
+              {product.rating || 4} from {product.reviewCount || 10} Reviews
             </p>
           </div>
 
           {/* Pricing */}
           <div className="flex items-center gap-3">
             <p className="text-3xl text-[#1e3473] font-bold">
-              Rs {Number(product.price).toLocaleString()}
+              ₹{Number(product.new_price || product.price).toLocaleString()}
             </p>
             <span className="line-through text-gray-400 text-base">
-              ₹{Number(product.originalPrice).toLocaleString()}
+              ₹{Number(product.price).toLocaleString()}
             </span>
+            {product.discount_percentage > 0 && (
+              <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm font-medium">
+                {product.discount_percentage}% OFF
+              </span>
+            )}
           </div>
 
-          {/* Model Number */}
-          <div className="mt-4">
-            <p className="font-semibold mb-3 text-base">Model Number</p>
-            <div className="flex gap-3">
-              <button className="px-6 py-2 text-base rounded-md bg-[#f7941d] text-white font-medium">
-                Hh3
-              </button>
-              <button className="px-6 py-2 text-base rounded-md border border-gray-300 text-[#2F294D] font-medium">
-                Gh2
-              </button>
+          {/* Stock */}
+          {product.stock !== undefined && (
+            <div className="text-sm font-medium">
+              {product.stock > 10 ? (
+                <span className="text-green-600">In Stock ({product.stock} available)</span>
+              ) : product.stock > 0 ? (
+                <span className="text-orange-500">Only {product.stock} left in stock - order soon</span>
+              ) : (
+                <span className="text-red-500">Out of Stock</span>
+              )}
             </div>
-          </div>
+          )}
 
-          
-
-          {/* Features */}
-          <div className="space-y-2 text-base mt-3 font-bold">
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5  flex items-center text-base justify-center rounded-full border border-gray-400">✓</span>
-              Central Processing Unit (CPU)
+          {/* Highlights/Features */}
+          {product.highlights && product.highlights.length > 0 && (
+            <div className="space-y-2 text-base mt-3 font-bold">
+              {product.highlights.map((highlight, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <span className="w-5 h-5 flex items-center text-base justify-center rounded-full border border-gray-400">✓</span>
+                  {highlight}
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5  flex items-center text-base justify-center rounded-full border border-gray-400">✓</span>
-              Memory Unit
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-5 h-5  flex items-center text-base justify-center rounded-full border border-gray-400">✓</span>
-              SD Card Slot
-            </div>
-          </div>
+          )}
 
           {/* Sold Info */}
           <div className="flex items-center gap-3 mt-3">
@@ -217,15 +250,16 @@ export default function ProductCard() {
               ))}
             </div>
             <p className="text-gray-400 text-base font-bold">
-              1,241 Sold in the last 24 hours
+              {Math.floor(Math.random() * 1000) + 200} Sold in the last 24 hours
             </p>
           </div>
 
           {/* Buy Now */}
           <div className="flex items-center gap-8 mt-6">
             <button 
-              className="w-[250px] bg-[#1E2870] hover:bg-[#283590] text-white py-5 rounded-2xl flex justify-center items-center gap-3"
+              className={`w-[250px] bg-[#1E2870] hover:bg-[#283590] text-white py-5 rounded-2xl flex justify-center items-center gap-3 ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleBuyNow}
+              disabled={product.stock === 0}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
                 <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
@@ -237,22 +271,25 @@ export default function ProductCard() {
             </button>
             
             <button 
-              className={`w-16 h-16 rounded-full border ${isInCart(product.id) ? 'bg-[#f7941d] border-[#f7941d]' : 'border-gray-200'} flex items-center justify-center transition-colors`}
+              className={`w-16 h-16 rounded-full border ${isInCart(product._id) ? 'bg-[#f7941d] border-[#f7941d]' : 'border-gray-200'} flex items-center justify-center transition-colors ${product.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleAddToCart}
+              disabled={product.stock === 0}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`w-7 h-7 ${isInCart(product.id) ? 'text-white' : 'text-gray-500'}`}>
-                <path d="M9.0008 22H15.0008C19.0208 22 19.7408 20.39 19.9508 18.43L20.7008 12.43C20.9708 9.99 20.2708 8 16.0008 8H8.0008C3.7308 8 3.0308 9.99 3.3008 12.43L4.0508 18.43C4.2608 20.39 4.9808 22 9.0008 22Z" stroke={isInCart(product.id) ? "white" : "#666"} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke={isInCart(product.id) ? "white" : "#666"} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`w-7 h-7 ${isInCart(product._id) ? 'text-white' : 'text-gray-500'}`}>
+                <path d="M9.0008 22H15.0008C19.0208 22 19.7408 20.39 19.9508 18.43L20.7008 12.43C20.9708 9.99 20.2708 8 16.0008 8H8.0008C3.7308 8 3.0308 9.99 3.3008 12.43L4.0508 18.43C4.2608 20.39 4.9808 22 9.0008 22Z" stroke={isInCart(product._id) ? "white" : "#666"} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke={isInCart(product._id) ? "white" : "#666"} strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            {isInCart(product.id) && (
+            {isInCart(product._id) && (
               <div className="bg-[#f7941d] text-white px-2 py-1 rounded-full text-xs">
-                {getItemQuantity(product.id)}
+                {getItemQuantity(product._id)}
               </div>
             )}
           </div>
         </div>
       </div>
+
+     
     </div>
   );
 }
