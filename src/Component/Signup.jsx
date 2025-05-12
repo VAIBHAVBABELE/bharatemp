@@ -16,6 +16,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const backend = import.meta.env.VITE_BACKEND;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +40,7 @@ const Signup = () => {
     
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/v1/auth/signup', {
+      const response = await axios.post(`${backend}/auth/signup`, {
         name,
         email,
         password,

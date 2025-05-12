@@ -29,7 +29,9 @@ function AdminLogin() {
                     password: ""
                 })
             setLoading(false)
+                
                 navigate('/admin-dashboard')
+                window.location.reload();
             }
         } catch (error) {
             toast.error(error?.response?.data?.data?.message)

@@ -14,6 +14,8 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const backend = import.meta.env.VITE_BACKEND;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -25,7 +27,7 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:8080/api/v1/auth/login', {
+      const response = await axios.post(`${backend}/auth/login`, {
         email,
         password
       });
