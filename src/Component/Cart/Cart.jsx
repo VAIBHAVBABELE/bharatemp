@@ -32,6 +32,11 @@ const Cart = () => {
   // Calculate final total
   const finalTotal = totalAmount + platformFee + shippingFee - codeDiscount - discountOnMrp;
 
+  // Always call hooks before any conditional returns
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (cartItems.length === 0) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto my-10">
@@ -53,10 +58,6 @@ const Cart = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <div className="bg-white py-6 min-h-screen font-[outfit]">
@@ -86,10 +87,10 @@ const Cart = () => {
             <p className="text-gray-500 text-sm mb-6">The sum of all total payments for goods there</p>
 
             {cartItems.map((item) => (
-              <div key={item.id} className="flex border-2 border-gray-300 rounded-2xl p-4 flex-col md:flex-row mb-4 items-start">
+              <div key={item._id} className="flex border-2 border-gray-300 rounded-2xl p-4 flex-col md:flex-row mb-4 items-start">
                 <div className="w-32 h-32 flex items-center justify-center mr-4">
                   <img 
-                    src={item.image} 
+                    src={item.image && item.image.length > 0 ? item.image[0] : ''} 
                     alt={item.name} 
                     className="w-full h-full object-contain"
                   />
@@ -98,39 +99,60 @@ const Cart = () => {
                   <div className="flex flex-row justify-between items-start w-full">
                     <h3 
                       className="font-medium text-[#2F294D] text-lg cursor-pointer hover:text-[#f7941d]"
-                      onClick={() => navigate(`/product/${item.id}`)}
+                      onClick={() => navigate(`/product/${item._id}`)}
                     >
                       {item.name}
                     </h3>
                   </div>
                   <div className="flex flex-col h-full items-end justify-between">
-                    <span className="font-bold text-[#1E3473] text-xl">₹ {item.price.toLocaleString()}</span>
+                    <span className="font-bold text-[#1E3473] text-xl">₹ {(item.new_price || item.price)?.toLocaleString()}</span>
 
-                    <div className="flex items-center border border-gray-300 rounded-md">
+                    <div className="flex items-center">
+                      <div className="flex items-center border border-gray-300 rounded-md mr-3">
+                        <button 
+                          onClick={() => decreaseQuantity(item._id)}
+                          className={`w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 ${item.quantity <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          disabled={item.quantity <= 1}
+                        >
+                          <FaMinus size={12} />
+                        </button>
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <button 
+                          onClick={() => increaseQuantity(item._id)}
+                          className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900"
+                        >
+                          <FaPlus size={12} />
+                        </button>
+                      </div>
                       <button 
-                        onClick={() => decreaseQuantity(item.id)}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900"
-                        disabled={item.quantity <= 1}
+                        onClick={() => removeFromCart(item._id)}
+                        className="text-red-500 hover:text-red-700"
                       >
-                        <FaMinus size={12} />
-                      </button>
-                      <input
-                        type="text"
-                        value={item.quantity}
-                        readOnly
-                        className="w-8 text-center border-none focus:outline-none"
-                      />
-                      <button 
-                        onClick={() => increaseQuantity(item.id)}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900"
-                      >
-                        <FaPlus size={12} />
+                        <FaTrash size={16} />
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
+
+            <div className="mt-6 flex justify-between items-center">
+              <button 
+                onClick={() => {
+                  clearCart();
+                  window.location.reload();
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Clear Cart
+              </button>
+              <button 
+                onClick={() => navigate('/product')}
+                className="px-4 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-blue-800 transition-colors"
+              >
+                Continue Shopping
+              </button>
+            </div>
           </div>
 
           {/* Order Summary Section */}

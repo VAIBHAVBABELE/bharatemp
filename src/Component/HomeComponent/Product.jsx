@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import raspberry from "../../assets/rasperrybi.svg";
 import filtericon from "../../assets/filtericon.png";
 import { IoFilter } from "react-icons/io5";
@@ -8,6 +8,8 @@ import { MdClose } from "react-icons/md";
 import { useCart } from "../../context/CartContext";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
+import { toast , ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -103,6 +105,7 @@ const Product = () => {
   const [sliderValue, setSliderValue] = useState(10000);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Filter states
   const [priceRangeFilter, setPriceRangeFilter] = useState({
@@ -119,11 +122,23 @@ const Product = () => {
 
   // Get cart functions
   const { addToCart, isInCart, getItemQuantity } = useCart();
+  const location = useLocation();
 
   const min = 100;
   const max = 10000;
 
   const navigate = useNavigate();
+
+  // Get search query from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search');
+    if (query) {
+      setSearchQuery(query);
+    } else {
+      setSearchQuery("");
+    }
+  }, [location]);
 
   async function fetchAllProducts() {
     try {
@@ -235,6 +250,17 @@ const Product = () => {
     }
     
     let filtered = [...allProducts];
+    
+    // Apply search filter if there's a search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) => 
+          (p.name && p.name.toLowerCase().includes(query)) || 
+          (p.category && p.category.toLowerCase().includes(query)) || 
+          (p.companyName && p.companyName.toLowerCase().includes(query))
+      );
+    }
 
     // Filter by tab - only apply if product has the required property
     if (activeTab === "On Sale") {
@@ -244,42 +270,29 @@ const Product = () => {
     } else if (activeTab === "Featured") {
       filtered = filtered.filter((p) => p.featured === true);
     }
-   
-
+    
     // Only apply price filter if product has price data
     filtered = filtered.filter(
       (p) => p.new_price && p.new_price >= priceRangeFilter.min && p.new_price <= priceRangeFilter.max
     );
-   
 
     // Filter by price checkbox selections
     if (priceCheckboxFilters.length > 0) {
-
       // First collect all products that match any of the selected price ranges
       const priceFiltered = [];
 
       priceCheckboxFilters.forEach((filter) => {
         const range = priceRanges.find((r) => r.label === filter);
         if (range) {
-
           // For each price range filter, find products that match from the current filtered set
           const matchingProducts = filtered.filter((p) => {
             const matches =
               p.new_price >= range.min &&
               (range.max === Infinity ? true : p.new_price <= range.max);
 
-            if (matches && filter === "Over ₹5000") {
-              console.log(
-                `Product matches "Over ₹5000": ${p.name} (₹${p.new_price})`
-              );
-            }
-
             return matches;
           });
 
-          console.log(
-            `${matchingProducts.length} products match the ${filter} filter`
-          );
           priceFiltered.push(...matchingProducts);
         }
       });
@@ -313,6 +326,7 @@ const Product = () => {
     priceCheckboxFilters,
     categoryFilters,
     brandFilters,
+    searchQuery
   ]);
 
   const handleSliderChange = (e) => {
@@ -392,6 +406,8 @@ const Product = () => {
     window.scrollTo(0, 0);
   }, []);
   return (
+    <>
+    <ToastContainer/>
     <div className="relative bg-white font-[outfit]">
       {/* Mobile Filter Button */}
       <div className="lg:hidden fixed bottom-4 right-4 z-50">
@@ -412,6 +428,25 @@ const Product = () => {
       )}
 
       <div className="w-full px-4 md:px-6 py-6 relative z-40">
+        {searchQuery && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <p className="text-[#1e3473] font-medium">
+                Search results for: <span className="font-bold">"{searchQuery}"</span>
+              </p>
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  navigate("/product");
+                }}
+                className="text-sm bg-white px-3 py-1 rounded-full border border-gray-200 hover:bg-gray-100"
+              >
+                Clear Search
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="w-full flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filter */}
           <div
@@ -705,7 +740,7 @@ const Product = () => {
                   >
                     <div className="flex justify-center mb-5">
                       <img
-                        src={product.image && product.image.length > 0 ? product.image[0] : raspberry}
+                        src={product.image && product.image.length > 0 ? product.image[0] :""}
                         alt={product.name}
                         className="w-full h-40 object-contain"
                       />
@@ -750,7 +785,17 @@ const Product = () => {
                         </button>
                         <button
                           className="bg-gray-50 border border-gray-200 text-[#f7941d] py-1 px-4 rounded-2xl text-sm"
-                          onClick={(e) => handleAddToCart(e, product)}
+                          onClick={(e) => {
+                            handleAddToCart(e, product);
+                            toast.success('Added to cart successfully!', {
+                              position: "top-right",
+                              autoClose: 2000,
+                              hideProgressBar: false,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: true,
+                            });
+                          }}
                         >
                           {isInCart(product._id)
                             ? `In Cart (${getItemQuantity(product._id)})`
@@ -819,6 +864,7 @@ const Product = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
