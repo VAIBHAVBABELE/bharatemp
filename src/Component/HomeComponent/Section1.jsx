@@ -105,7 +105,7 @@ const ProductSlider = ({ products = [] }) => {
   };
 
   return (
-    <div className="h-auto lg:h-[500px] py-10 ">
+    <div className="h-auto  py-10 ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
         <div className="flex   space-x-6">
@@ -137,7 +137,7 @@ const ProductSlider = ({ products = [] }) => {
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[280px] hover:h-[350px] h-[300px] cursor-pointer">
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[290px] hover:h-[350px] h-[310px] cursor-pointer">
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">{product.brand}</p>
               <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:hidden block mb-4">

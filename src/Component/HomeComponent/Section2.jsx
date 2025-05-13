@@ -161,7 +161,7 @@ export default function DronePartsCarousel({ products = [] }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row w-full  lg:h-[450px] gap-8 pb-10 bg-white font-[Outfit]">
+    <div className="flex flex-col md:flex-row w-full  lg:h-[480px] gap-8 pb-10 bg-white font-[Outfit]">
       {/* Left Section */}
       <div
         className="md:w-1/3 w-full bg-gray-50 p-6 rounded-3xl shadow-sm flex flex-col bg-cover bg-center"
@@ -265,7 +265,7 @@ export default function DronePartsCarousel({ products = [] }) {
             {getVisibleProducts().map((product, index) => (
               <div
                 key={product._id || index}
-                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl hover:shadow-lg transition-all duration-500 h-[280px] hover:h-[280px] cursor-pointer"
+                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl hover:shadow-lg transition-all duration-500 h-[290px] hover:h-[290px] py-2 cursor-pointer"
                 onClick={() => handleProductClick(product)}
               >
                 <div className="p-4 flex flex-col items-start relative h-full">
