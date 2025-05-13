@@ -140,7 +140,7 @@ const ProductSlider = ({ products = [] }) => {
             className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[280px] hover:h-[350px] h-[300px] cursor-pointer">
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">{product.brand}</p>
-              <h2 className="text-[18px] font-bold text-[#1E3473] group-hover:hidden block mb-2">
+              <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:hidden block mb-4">
                 {product.name}
               </h2>
               <img
@@ -149,7 +149,7 @@ const ProductSlider = ({ products = [] }) => {
                 className="w-full h-24 object-contain mb-4"
               />
              
-              <h2 className="text-[18px] font-bold text-[#1E3473] group-hover:block hidden mb-2">
+              <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:block hidden mb-4">
                 {product.name}
                 <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:block hidden ">{product.brand}</p>
              
