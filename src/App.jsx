@@ -12,6 +12,9 @@ import Profile from "./Component/HomeComponent/Profile";
 import { CartProvider } from "./context/CartContext.jsx";
 import Login from "./Component/Login";
 import Signup from "./Component/Signup";
+import ForgotPassword from "./Component/ForgotPassword";
+import VerifyOTP from "./Component/VerifyOTP";
+import ResetPassword from "./Component/ResetPassword";
 import AdminLogin from './Component/AdminDashboardComponent/AdminLogin.jsx'
 import AdminDashboard from './Component/AdminDashboardComponent/AdminDashboard.jsx'
 import Admin from './Admin.jsx'
@@ -34,8 +37,14 @@ const App = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/thankyou" element={<Thanku />} />
           <Route path="/profile" element={<Profile />} />
+          
+          {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
           {/* dashboard */}
           <Route path='/admin-login' element={<AdminLogin />} />
 
