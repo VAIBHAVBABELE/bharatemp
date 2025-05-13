@@ -18,7 +18,7 @@ const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
       const existingItemIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) => item._id === action.payload._id
       );
 
       if (existingItemIndex >= 0) {
@@ -45,7 +45,7 @@ const cartReducer = (state, action) => {
     case 'REMOVE_FROM_CART':
       return {
         ...state,
-        cartItems: state.cartItems.filter((item) => item.id !== action.payload)
+        cartItems: state.cartItems.filter((item) => item._id !== action.payload)
       };
 
     case 'CLEAR_CART':
@@ -58,7 +58,7 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
-          item.id === action.payload
+          item._id === action.payload
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
@@ -68,7 +68,7 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
-          item.id === action.payload && item.quantity > 1
+          item._id === action.payload && item.quantity > 1
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
@@ -78,7 +78,7 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
-          item.id === action.payload.id
+          item._id === action.payload.id
             ? { ...item, quantity: action.payload.quantity }
             : item
         )
@@ -87,8 +87,9 @@ const cartReducer = (state, action) => {
     case 'CALCULATE_TOTALS':
       const { totalItems, totalAmount } = state.cartItems.reduce(
         (acc, item) => {
+          const itemPrice = item.new_price || item.price;
           acc.totalItems += item.quantity;
-          acc.totalAmount += item.price * item.quantity;
+          acc.totalAmount += itemPrice * item.quantity;
           return acc;
         },
         { totalItems: 0, totalAmount: 0 }
@@ -202,12 +203,12 @@ export const CartProvider = ({ children }) => {
 
   // Check if item exists in cart
   const isInCart = (productId) => {
-    return state.cartItems.some(item => item.id === productId);
+    return state.cartItems.some(item => item._id === productId);
   };
 
   // Get quantity of specific item in cart
   const getItemQuantity = (productId) => {
-    const item = state.cartItems.find(item => item.id === productId);
+    const item = state.cartItems.find(item => item._id === productId);
     return item ? item.quantity : 0;
   };
 

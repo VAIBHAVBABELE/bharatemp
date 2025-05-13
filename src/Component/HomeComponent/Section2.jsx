@@ -6,6 +6,16 @@ import image2 from "../../assets/homepage2.png";
 import image3 from "../../assets/homepage3.png";
 import image4 from "../../assets/homepage4.png";
 import droneImage from "../../assets/homeleft.jpg";
+import { useCart } from '../../context/CartContext';
+import { useNavigate } from 'react-router-dom';
+
+// Default fallback images
+import fallbackImage1 from "../../assets/homepage1.png";
+import fallbackImage2 from "../../assets/homepage2.png";
+import fallbackImage3 from "../../assets/homepage3.png";
+import fallbackImage4 from "../../assets/homepage4.png";
+
+const fallbackImages = [fallbackImage1, fallbackImage2, fallbackImage3, fallbackImage4];
 
 const categories = [
   "Top 30",
@@ -16,63 +26,72 @@ const categories = [
   "Camera",
 ];
 
-const products = [
+// Fallback products if API fails or props are not passed
+const fallbackProducts = [
   {
-    title: "DJI Battery",
+    _id: "fallback1",
+    name: "DJI Battery",
     brand: "DJI Mini",
     category: "Battery",
     price: 4029.5,
     oldPrice: 8029.5,
     tag: "Buy Now",
     tags: "Add to cart",
-    image: image1,
+    image: fallbackImage1,
   },
   {
-    title: "TVT Cam",
+    _id: "fallback2",
+    name: "TVT Cam",
     brand: "Camera",
     category: "Camera",
     price: 4029.5,
     oldPrice: 9099.5,
     tag: "Buy Now",
     tags: "Add to cart",
-    image: image2,
+    image: fallbackImage2,
   },
   {
-    title: "Omni Cam",
+    _id: "fallback3",
+    name: "Omni Cam",
     brand: "Camera",
     category: "Camera",
     price: 3529.5,
     oldPrice: 6029.5,
     tag: "Buy Now",
     tags: "Add to cart",
-    image: image3,
+    image: fallbackImage3,
   },
   {
-    title: "Mi Air3s",
+    _id: "fallback4",
+    name: "Mi Air3s",
     brand: "Airpod",
     category: "Propellers",
     price: 4029.5,
     oldPrice: 8029.5,
     tag: "Buy Now",
     tags: "Add to cart",
-    image: image4,
-  },
-  {
-    title: "Mi Air3s",
-    brand: "Airpod",
-    category: "Propellers",
-    price: 4029.5,
-    oldPrice: 8029.5,
-    tag: "Buy Now",
-    tags: "Add to cart",
-    image: image4,
+    image: fallbackImage4,
   },
 ];
 
-export default function DronePartsCarousel() {
+export default function DronePartsCarousel({ products = [] }) {
   const [activeCategory, setActiveCategory] = useState("Top 30");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(3);
+  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const navigate = useNavigate();
+
+  // Process products from API or use fallback
+  const processedProducts = products.length > 0
+    ? products.map((product, index) => ({
+        ...product,
+        // Ensure all required fields exist
+        category: product.category || "Top 30",
+        image: product.image || fallbackImages[index % fallbackImages.length],
+        tag: "Buy Now",
+        tags: "Add to cart"
+      }))
+    : fallbackProducts;
 
   useEffect(() => {
     const updateItemsToShow = () => {
@@ -98,8 +117,8 @@ export default function DronePartsCarousel() {
   // Filter based on selected tab
   const filteredProducts =
     activeCategory === "Top 30"
-      ? products
-      : products.filter((product) => product.category === activeCategory);
+      ? processedProducts
+      : processedProducts.filter((product) => product.category === activeCategory);
 
   // Navigation functions
   const nextSlide = () => {
@@ -127,6 +146,18 @@ export default function DronePartsCarousel() {
     }
 
     return visibleItems;
+  };
+
+  // Handle add to cart
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation(); // Prevent card click event
+    addToCart(product);
+  };
+
+  // Handle product click to navigate to details page
+  const handleProductClick = (product) => {
+    navigate(`/product/${product._id}`);
+    localStorage.setItem('selectedProduct', JSON.stringify(product));
   };
 
   return (
@@ -233,40 +264,50 @@ export default function DronePartsCarousel() {
           >
             {getVisibleProducts().map((product, index) => (
               <div
-                key={index}
-                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl  hover:shadow-lg transition-all duration-500 h-[280px]  hover:h-[280px] cursor-pointer"
+                key={product._id || index}
+                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl hover:shadow-lg transition-all duration-500 h-[280px] hover:h-[280px] cursor-pointer"
+                onClick={() => handleProductClick(product)}
               >
                 <div className="p-4 flex flex-col items-start relative h-full">
                   <p className="text-[10px] font-semibold text-[#D9D3D3] mb-1">
                     {product.brand}
                   </p>
                   <h2 className="md:text-[18px] text-[12px] font-bold text-[#1E3473] mb-2">
-                    {product.title}
+                    {product.name}
                   </h2>
                   <img
-                    src={product.image}
-                    alt={product.title}
+                    src={product.image[0]}
+                    alt={product.name}
                     className="w-full h-24 object-contain mb-4"
                   />
                   <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <span className="bg-[#f7941d] text-white md:text-[14px] text-[10px] font-semibold px-3 py-1 rounded-full">
+                    <span 
+                      className="bg-[#f7941d] text-white md:text-[14px] text-[10px] font-semibold px-3 py-1 rounded-full cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProductClick(product);
+                      }}
+                    >
                       {product.tag}
                     </span>
-                    <span className="bg-gray-200 px-3 py-1 text-[12px] text-[#f7941d] rounded-full">
-                      {product.tags}
+                    <span 
+                      className="bg-gray-200 px-3 py-1 text-[12px] text-[#f7941d] rounded-full cursor-pointer"
+                      onClick={(e) => handleAddToCart(e, product)}
+                    >
+                      {isInCart(product._id) ? `In Cart (${getItemQuantity(product._id)})` : product.tags}
                     </span>
                   </div>
-                  <div className=" w-full flex  justify-between items-center  mb-2">
+                  <div className="w-full flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
-                      <p className="lg:text-[15px] text-[12px]  font-bold text-[#000000]">
-                        ₹{product.price.toLocaleString("en-IN")}
+                      <p className="lg:text-[15px] text-[12px] font-bold text-[#000000]">
+                        ₹{product.new_price?.toLocaleString("en-IN")}
                       </p>
                       <p className="text-sm line-through text-gray-400">
-                        ₹{product.oldPrice.toLocaleString("en-IN")}
+                        ₹{product.price?.toLocaleString("en-IN")}
                       </p>
                     </div>
                     <div className="flex justify-end items-end">
-                      <span className="rounded-full group-hover:hidden justify-between py-3 px-3  bg-white border border-[#797979]">
+                      <span className="rounded-full group-hover:hidden justify-between py-3 px-3 bg-white border border-[#797979]">
                         <IoBagOutline
                           size={15}
                           className="group-hover:text-white text-black"
