@@ -1,102 +1,86 @@
 import { useState } from 'react';
 import { IoBagOutline } from "react-icons/io5";
-import image1 from '../../assets/homepage1.png'
-import image2 from '../../assets/homepage2.png'
-import image3 from '../../assets/homepage3.png'
-import image4 from '../../assets/homepage4.png'
-import image5 from '../../assets/homepage5.png'
-import image6 from '../../assets/homepage6.png'
-import { FaStar,FaRegStar ,FaStarHalfAlt} from "react-icons/fa";
-import { CiHeart } from "react-icons/ci";
+import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+
+import fallbackImage1 from '../../assets/homepage1.png';
+import fallbackImage2 from '../../assets/homepage2.png';
+import fallbackImage3 from '../../assets/homepage3.png';
+import fallbackImage4 from '../../assets/homepage4.png';
+import fallbackImage5 from '../../assets/homepage5.png';
+import fallbackImage6 from '../../assets/homepage6.png';
+
+const fallbackImages = [
+  fallbackImage1, fallbackImage2, fallbackImage3, 
+  fallbackImage4, fallbackImage5, fallbackImage6
+];
+
 const tabs = ['Featured', 'On Sale', 'Top Rated'];
 
-const products = [
+// Fallback products in case API fails or props are not passed
+const fallbackProducts = [
   {
-    id: 'prod1',
-   name: "Mark 34",
+    _id: 'prod1',
+    name: "Mark 34",
     brand: "Battery",
     price: 4029.5,
     oldPrice: 8029.5,
     tag: "BUY NOW",
     tags: "Add to cart",
-    image: image1,
+    image: fallbackImage1,
     rating: 4.5,
     reviewCount: 23,
   },
   {
-    id: 'prod2',
-   name: "RedBoard Plus",
+    _id: 'prod2',
+    name: "RedBoard Plus",
     brand: "Spark Fun",
     price: 73529.5,
     oldPrice: 8029.5,
     tag: "BUY NOW",
     tags: "Add to cart",
-    image: image2,
+    image: fallbackImage2,
     rating: 4,
     reviewCount: 15,
   },
-  {
-    id: 'prod3',
-   name: "Distance Sensor",
-    brand: "Ultrasonic",
-    price: 3529.5,
-    oldPrice: 6029.5,
-    tag: "BUY NOW",
-    tags: "Add to cart",
-    image: image3,
-    rating: 3.5,
-    reviewCount: 12,
-  },
-  {
-    id: 'prod4',
-   name: "Flight Controller",
-    brand: "APM 2.8",
-    price: 3529.5,
-    oldPrice: 6029.5,
-    tag: "BUY NOW",
-    tags: "Add to cart",
-    image: image4,
-    rating: 5,
-    reviewCount: 18,
-  },
-  {
-    id: 'prod5',
-   name: "BLDC Motor",
-    brand: "1800 KV",
-    price: 32529.5,
-    oldPrice: 6029.5,
-    tag: "BUY NOW",
-    tags: "Add to cart",
-    image: image5,
-    rating: 4,
-    reviewCount: 20,
-  },
-  {
-    id: 'prod6',
-   name: "Flight Controller",
-    brand: "APM 3.1",
-    price: 52529.5,
-    oldPrice: 8029.5,
-    tag: "BUY NOW",
-    tags: "Add to cart",
-    image: image6,
-    rating: 4.5,
-    reviewCount: 25,
-  },
+  // ... other fallback products
 ];
 
-const ProductSlider = () => {
+const ProductSlider = ({ products = [] }) => {
   const [activeTab, setActiveTab] = useState('Featured');
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
+  // Use passed products or fallback to default if empty
+  const allProducts = products.length > 0 
+    ? products.map((product, index) => ({
+        ...product,
+        // Ensure products have all required fields
+        image: product.image || fallbackImages[index % fallbackImages.length],
+        rating: product.rating || 4,
+        reviewCount: product.reviewCount || 15,
+        tag: "BUY NOW",
+        tags: "Add to cart"
+      }))
+    : fallbackProducts;
+
   // Filter products based on active tab
   const getFilteredProducts = () => {
-    if (activeTab === 'On Sale') return products.slice(0, 4);
-    if (activeTab === 'Top Rated') return products.slice(0, 3);
-    return products; // Featured
+    if (activeTab === 'On Sale') {
+      // Filter products with a discount (oldPrice > price)
+      return allProducts
+        .filter(product => product.oldPrice && product.oldPrice > product.price)
+        .slice(0, 4);
+    }
+    if (activeTab === 'Top Rated') {
+      // Filter products with high ratings
+      return allProducts
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 3);
+    }
+    // Featured - return all products or a subset if there are many
+    return allProducts.slice(0, 6);
   };
 
   const filteredProducts = getFilteredProducts();
@@ -116,11 +100,9 @@ const ProductSlider = () => {
 
   // Handle product click to view product details
   const handleProductClick = (product) => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product._id}`);
     localStorage.setItem('selectedProduct', JSON.stringify(product));
   };
-
-
 
   return (
     <div className="h-auto lg:h-[500px] py-10 ">
@@ -153,7 +135,7 @@ const ProductSlider = () => {
       <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-6 gap-2 pb-4 scrollbar-hide">
         {filteredProducts.map((product, index) => (
           <div
-            key={index}
+            key={product._id || index}
             onClick={() => handleProductClick(product)}
             className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[280px] hover:h-[350px] h-[300px] cursor-pointer">
             <div className="p-4 flex flex-col items-start relative">
@@ -162,7 +144,7 @@ const ProductSlider = () => {
                 {product.name}
               </h2>
               <img
-                src={product.image}
+                src={product.image[0]}
                 alt={product.name}
                 className="w-full h-24 object-contain mb-4"
               />
@@ -188,10 +170,10 @@ const ProductSlider = () => {
  
                       <div className=" items-center gap-2 group-hover:flex hidden">
                   <p className="lg:text-[17px] text-[12px]  font-bold text-[#000000]">
-                    ₹{product.price.toLocaleString("en-IN")}
+                    ₹{product.new_price?.toLocaleString("en-IN")}
                   </p>
                   <p className="text-sm line-through text-gray-400">
-                    ₹{product.oldPrice.toLocaleString("en-IN")}
+                    ₹{product.price?.toLocaleString("en-IN")}
                   </p>
                 </div>
              
@@ -207,27 +189,19 @@ const ProductSlider = () => {
                   className="bg-gray-200 text-[#f7941d] px-3 rounded-full cursor-pointer"
                   onClick={(e) => handleAddToCart(e, product)}
                 >
-                  {isInCart(product.id) ? `In Cart (${getItemQuantity(product.id)})` : product.tags}
+                  {isInCart(product._id) ? `In Cart (${getItemQuantity(product._id)})` : product.tags}
                 </span>
               </div>
               <div className=" w-full flex  justify-between items-center  mb-2">
 
                 <div className="flex items-center gap-2 group-hover:hidden mb-2">
                   <p className="lg:text-[17px] text-[12px]  font-bold text-[#000000]">
-                    ₹{product.price.toLocaleString("en-IN")}
+                    ₹{product.new_price?.toLocaleString("en-IN")}
                   </p>
                   <p className="text-sm line-through text-gray-400">
-                    ₹{product.oldPrice.toLocaleString("en-IN")}
+                    ₹{product.price?.toLocaleString("en-IN")}
                   </p>
                 </div>
-                {/* <div className="flex justify-end items-end">
-                  <span className="rounded-full group-hover:bg-[#336570] justify-between py-3 px-3  bg-white border border-[#797979]">
-                    <IoBagOutline
-                      size={15}
-                      className="group-hover:text-white text-black"
-                    />
-                  </span>
-                </div> */}
               </div>
               <hr />
               <div className=" absolute -bottom-8 gap-1 left-0 w-full bg-white text-[#5D5D5D] px-2 py-2 flex justify-between items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
@@ -235,17 +209,6 @@ const ProductSlider = () => {
                 Get it <span className='text-black'> Friday,</span> Jan 18<br/>
                 <span className="mr-1">   FREE Delivery</span> 
                 </div>
-              
-                {/* <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-50 cursor-pointer"
-                  onClick={(e) => handleAddToCart(e, product)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                  </svg>
-                </div> */}
               </div>
 
             </div>

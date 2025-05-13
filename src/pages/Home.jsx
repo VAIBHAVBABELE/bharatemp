@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
 import Section3 from "./../Component/HomeComponent/Section3";
@@ -18,10 +18,33 @@ import blue from "../assets/bluelight.svg";
 // import InstagramCarousel from "../Component/HomeComponent/Instagram";
 import InstagramSection from "../Component/InstagramSection";
 import Testimonials from "../Component/Testimonials";
+import { fetchProducts } from "../utils/api";
+
 const ProductSlider = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Fetch products from the backend
+    const getProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts();
+        setProducts(data);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch products. Please try again later.");
+        setLoading(false);
+        console.error("Error fetching products:", err);
+      }
+    };
+    
+    getProducts();
   }, []);
+
   return (
     <div className="px-4 md:px-10 py-10">
       <div className="bg-[#32333B] w-full lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
@@ -136,13 +159,23 @@ const ProductSlider = () => {
         </div>
       </div>
 
-      <Section1 />
-      <Section2 />
-      <Section3 />
-      <Section1 />
-      <Section5 />
-      <InstagramSection/>
-      <Testimonials/>
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3473]"></div>
+        </div>
+      ) : error ? (
+        <div className="text-center py-10 text-red-500">{error}</div>
+      ) : (
+        <>
+          <Section1 products={products} />
+          <Section2 products={products} />
+          <Section3 />
+          <Section1 products={products} />
+          <Section5 />
+          <InstagramSection/>
+          <Testimonials/>
+        </>
+      )}
     </div>
   );
 };
