@@ -105,7 +105,7 @@ const ProductSlider = ({ products = [] }) => {
   };
 
   return (
-    <div className="h-auto  py-10 ">
+    <div className="h-auto xl:h-[500px]  py-10 ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
         <div className="flex   space-x-6">

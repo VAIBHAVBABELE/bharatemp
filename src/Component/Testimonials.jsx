@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
+import person1 from "../assets/per1.png";
+import person2 from "../assets/per2.png";
+import person3 from "../assets/per3.png";
+
  
 const users = [
-    { id: 1, name: "Shruti Jain", designation: "CEO", rating: 4, title: "CEO, Mars Furniture", quote: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.", image: "https://via.placeholder.com/100" },
-    { id: 2, name: "Vansh Tyagi", designation: "Manager", rating: 5, title: "Senior Mart", quote: "Doloremque laudantium, totam rem aperiam.", image: "https://via.placeholder.com/100" },
-    { id: 3, name: "Ruhi Singh", designation: "Developer", rating: 3, title: "Junior Mart", quote: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.", image: "https://via.placeholder.com/100" },
-    { id: 4, name: "Amit Kapoor", designation: "Product Lead", rating: 5, title: "Tech Venture", quote: "Et harum quidem rerum facilis est et expedita distinctio.", image: "https://via.placeholder.com/100" },
-    { id: 5, name: "Sneha Iyer", designation: "Designer", rating: 4, title: "Design Co.", quote: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit.", image: "https://via.placeholder.com/100" },
-    { id: 6, name: "Rohan Mehta", designation: "Marketing Head", rating: 5, title: "MarketFlow", quote: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet.", image: "https://via.placeholder.com/100" },
+    { id: 1, name: "Shruti Jain", designation: "CEO", rating: 4, title: "CEO, Mars Furniture", quote: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.", image: person1 },
+    { id: 2, name: "Vansh Tyagi", designation: "Manager", rating: 5, title: "Senior Mart", quote: "Doloremque laudantium, totam rem aperiam.", image: person2 },
+    { id: 3, name: "Ruhi Singh", designation: "Developer", rating: 3, title: "Junior Mart", quote: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.", image: person3},
+    { id: 4, name: "Amit Kapoor", designation: "Product Lead", rating: 5, title: "Tech Venture", quote: "Et harum quidem rerum facilis est et expedita distinctio.", image: person1 },
+    { id: 5, name: "Sneha Iyer", designation: "Designer", rating: 4, title: "Design Co.", quote: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit.", image: person2},
+    { id: 6, name: "Rohan Mehta", designation: "Marketing Head", rating: 5, title: "MarketFlow", quote: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet.", image: person3 },
 ];
  
 function Testimonials() {
