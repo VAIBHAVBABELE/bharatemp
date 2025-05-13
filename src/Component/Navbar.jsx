@@ -55,23 +55,23 @@ const Navbar = () => {
 
   const navItems = [
     {
-      name: "Products",
+      name: "All Category",
       key: "products",
       items: ["All Products", "New Arrivals", "Best Sellers"],
       links: ["/product", "/new-arrivals", "/best-sellers"]
     },
     {
-      name: "Catalog",
+      name: "Shop a brand",
       key: "catalog",
       items: ["Categories", "PDF Download"],
       links: ["/categories", "/download-catalog"]
     },
-    {
-      name: "Popular items",
-      key: "popular",
-      items: ["Trending", "Top Rated"],
-      links: ["/trending", "/top-rated"]
-    },
+    // {
+    //   name: "Popular items",
+    //   key: "popular",
+    //   items: ["Trending", "Top Rated"],
+    //   links: ["/trending", "/top-rated"]
+    // },
   ];
 
   const locations = ["Mumbai, India", "Bengaluru, India", "Hyderabad, India"];
@@ -110,9 +110,10 @@ const Navbar = () => {
       {/* Top Blue Bar */}
       <div className="bg-[#1E3473] text-white text-sm px-4 md:px-12 lg:px-16 py-2 flex justify-between items-center font-[Outfit]">
         <div className="space-x-8 text-[15px] hidden md:flex">
-          <Link to="/store-location" className="hover:text-[#F7941D]">Store Location</Link>
-          <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
-          <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link>
+          <Link to="/store-location" className="hover:text-[#F7941D]">Support@bharatronix.com</Link>
+          {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
+          <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
+          <Link to="#" className="hover:text-[#F7941D]">+91 79827 48787</Link> 
         </div>
         <div className="hidden lg:flex items-center text-[15px]">
           <img src={shipping} alt="Shipping" className="w-5 h-5 mr-2" />
@@ -273,7 +274,7 @@ const Navbar = () => {
         </div>
 
         {/* Bottom Nav */}
-        <div className="bg-white  hidden  md:block  ">
+        <div className="bg-white  hidden  md:flex  ">
           <div className="px-4 py-1 flex items-center space-x-4 text-sm font-medium  whitespace-nowrap lg:px-16 md:px-12  ">
             <Link to="/" className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               HOME
@@ -304,9 +305,12 @@ const Navbar = () => {
               </div>
             ))}
             <Link to="/pcb" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
-              PCB
+            B2B Enquiry
             </Link>
           </div>
+            {/* <div className="flex justify-end">
+                <span>Track order</span>
+            </div> */}
         </div>
 
         {/* Mobile Dropdown */}

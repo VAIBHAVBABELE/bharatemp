@@ -49,6 +49,14 @@ const Sidebar = () => {
                     <Link to='/admin-dashboard/addproduct' onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Add Product</Link>
                     <Link to="/admin-dashboard/allproduct" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">All Products</Link>
                     <Link to="/admin-dashboard/orders" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Orders</Link>
+                     <Link to="/admin-dashboard/coupon" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Discount Coupon</Link>
+                    <Link to="/admin-dashboard/wholesale" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Wholesale Products</Link>
+                    <Link to="/admin-dashboard/wholesale-bulk-orders" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Bulk Orders</Link>
+                    <Link to="/admin-dashboard/area-of-services" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Area of Services</Link>
+                    <Link to="/admin-dashboard/invoices" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Invoices</Link>
+                    <Link to="/admin-dashboard/return-requests" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Return Requests</Link>
+                    <Link to="/admin-dashboard/complaints" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">All Complaint Raised</Link>
+                    <Link to="/admin-dashboard/news-updates" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">News & Updates</Link>
   
                 </nav>
             </div>

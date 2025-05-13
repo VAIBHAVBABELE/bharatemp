@@ -21,8 +21,16 @@ import Admin from './Admin.jsx'
 import AddProduct from './Component/AdminDashboardComponent/ProductsRelatedComponents/AddProduct.jsx'
 import AllProducts from './Component/AdminDashboardComponent/ProductsRelatedComponents/AllProducts.jsx'
 import AllOrders from './Component/AdminDashboardComponent/OrdersRelatedComponents/AllOrders.jsx'
-
-
+import DiscountCoupon from './Component/AdminDashboardComponent/DiscountCoupan/DiscountCoupon.jsx'
+import WholesaleProducts from './Component/AdminDashboardComponent/WholesaleProducts/WholesaleProducts.jsx'
+import WholesaleBulkProductsOrders from './Component/AdminDashboardComponent/WholesaleBulkOrders/WholesaleBulkOrders.jsx'
+import AreaOfServices from './Component/AdminDashboardComponent/AreaOfServices/AreaOfServices.jsx'
+import InventoryManagement from './Component/AdminDashboardComponent/InventoryManagement/Inventory.jsx'
+import Invoice from './Component/AdminDashboardComponent/InvoiceComponents/Invoice.jsx'
+// import MyInvoices from './Components/UsersComponents/MyInvoices.jsx'
+import AllComplaintRaised from './Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx'
+import ReturnRequest from './Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx'
+import NewsUpdates from './Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx'
 const App = () => {
   return (
     <CartProvider>
@@ -54,6 +62,15 @@ const App = () => {
             <Route path='/admin-dashboard/addproduct' element={<AddProduct />} />
             <Route path='/admin-dashboard/allproduct' element={<AllProducts />} />
             <Route path='/admin-dashboard/orders' element={<AllOrders />} />
+            <Route path='/admin-dashboard/coupon' element={<DiscountCoupon />} />
+            <Route path='/admin-dashboard/wholesale' element={<WholesaleProducts />} />
+            <Route path='/admin-dashboard/wholesale-bulk-orders' element={<WholesaleBulkProductsOrders />} />
+            <Route path='/admin-dashboard/area-of-services' element={<AreaOfServices />} />
+            <Route path='/admin-dashboard/invoices' element={<Invoice />} />
+            <Route path='/admin-dashboard/return-requests' element={<ReturnRequest />} />
+            <Route path='/admin-dashboard/news-updates' element={<NewsUpdates />} />
+            <Route path='/admin-dashboard/inventory' element={<InventoryManagement />} />
+            <Route path='/admin-dashboard/complaints' element={<AllComplaintRaised />} />
           </Route>
         </Routes>
         <Footer />

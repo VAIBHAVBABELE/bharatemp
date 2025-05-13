@@ -618,12 +618,12 @@ const Product = () => {
                   </button>
                 ))}
               </div>
-              <Link
+              {/* <Link
                 to="/product2"
                 className="text-sm text-gray-800 hover:text-gray-900 flex items-center"
               >
                 View All Products <span className="ml-1">›</span>
-              </Link>
+              </Link> */}
             </div>
 
             {/* Product Count and Active Filters */}
@@ -849,7 +849,7 @@ const Product = () => {
                       <button
                         onClick={() => {
                           clearAllFilters();
-                          setActiveTab("Featured");
+                          setActiveTab("All");
                         }}
                         className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition"
                       >

@@ -100,7 +100,9 @@ const VerifyOTP = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(`${backend}/auth/verify-email-otp`, {
+    
+      
+      const response = await axios.post(`${backend}/otp/verify-email-otp`, {
         email,
         otp: fullOtp
       });
@@ -115,7 +117,11 @@ const VerifyOTP = () => {
       }
     } catch (error) {
       console.error('OTP verification error:', error);
-      const errorMessage = error.response?.data?.data?.message || "Invalid OTP. Please try again.";
+      const errorMessage = 
+        error.response?.data?.data?.message || 
+        error.response?.data?.message || 
+        "Invalid OTP. Please try again.";
+      
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -127,7 +133,8 @@ const VerifyOTP = () => {
   const resendOtp = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`${backend}/auth/test-mail`, {
+      
+      const response = await axios.post(`${backend}/otp/send-email-otp-forgot-password`, {
         email
       });
 
@@ -139,7 +146,11 @@ const VerifyOTP = () => {
       }
     } catch (error) {
       console.error('Error resending OTP:', error);
-      const errorMessage = error.response?.data?.data?.message || "Failed to resend OTP. Please try again.";
+      const errorMessage = 
+        error.response?.data?.data?.message || 
+        error.response?.data?.message || 
+        "Failed to resend OTP. Please try again later.";
+      
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -187,6 +198,7 @@ const VerifyOTP = () => {
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       onPaste={index === 0 ? handlePaste : undefined}
                       disabled={loading}
+                      autoFocus={index === 0}
                     />
                   ))}
                 </div>

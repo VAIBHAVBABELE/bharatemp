@@ -9,7 +9,6 @@ const ProfilePage = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Form submitted:", data);
   };
 
   useEffect(() => {

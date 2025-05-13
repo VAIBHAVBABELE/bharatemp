@@ -42,7 +42,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.message || "Invalid email or password";
+      const errorMessage = error.response?.data?.data?.message || "Invalid email or password";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -67,7 +67,7 @@ const Login = () => {
               <h1 className="text-4xl font-bold text-white mb-10">Login</h1>
               
               {error && (
-                <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                <div className="mb-3 p-2 flex justify-center items-center bg-red-100 border border-red-400 text-red-700 rounded">
                   {error}
                 </div>
               )}

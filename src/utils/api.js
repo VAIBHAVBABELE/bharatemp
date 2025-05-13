@@ -22,7 +22,6 @@ export const fetchProducts = async () => {
       return response.data.data.productList;
     } else {
       // If API fails or returns no products, use mock data
-      console.log('API returned unsuccessful status, using mock data');
       return mockProducts;
     }
   } catch (error) {
@@ -47,7 +46,6 @@ export const fetchProductsByCategory = async (category) => {
       return response.data.data.productList;
     } else {
       // If API fails, filter mock data
-      console.log(`API returned unsuccessful status for category ${category}, using filtered mock data`);
       const filteredProducts = mockProducts.filter(
         product => product.category.toLowerCase() === category.toLowerCase()
       );

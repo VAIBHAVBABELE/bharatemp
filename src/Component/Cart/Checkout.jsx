@@ -10,6 +10,7 @@ const AddressForm = ({
   onSubmit,
   address,
   onInputChange,
+  errors,
 }) => (
   <div className="border-2 border-gray-300 rounded-2xl p-6 mb-6 relative">
     <button
@@ -30,10 +31,11 @@ const AddressForm = ({
           type="text"
           name="name"
           placeholder="Enter full name"
-          className="w-full border border-gray-300 rounded-lg p-2"
+          className={`w-full border ${errors?.name ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
           value={address.name}
           onChange={onInputChange}
         />
+        {errors?.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
       </div>
 
       <div>
@@ -42,22 +44,39 @@ const AddressForm = ({
           type="text"
           name="address"
           placeholder="Enter address"
-          className="w-full border border-gray-300 rounded-lg p-2"
+          className={`w-full border ${errors?.address ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
           value={address.address}
           onChange={onInputChange}
         />
+        {errors?.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
       </div>
 
-      <div>
-        <label className="block text-gray-700 mb-1">City & Postal Code</label>
-        <input
-          type="text"
-          name="city"
-          placeholder="City, State-Pincode"
-          className="w-full border border-gray-300 rounded-lg p-2"
-          value={address.city}
-          onChange={onInputChange}
-        />
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block text-gray-700 mb-1">City</label>
+          <input
+            type="text"
+            name="city"
+            placeholder="City, State"
+            className={`w-full border ${errors?.city ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
+            value={address.city}
+            onChange={onInputChange}
+          />
+          {errors?.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+        </div>
+        <div className="w-1/3">
+          <label className="block text-gray-700 mb-1">Postal Code</label>
+          <input
+            type="text"
+            name="postalCode"
+            placeholder="6 digits"
+            maxLength="6"
+            className={`w-full border ${errors?.postalCode ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
+            value={address.postalCode}
+            onChange={onInputChange}
+          />
+          {errors?.postalCode && <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>}
+        </div>
       </div>
 
       <div>
@@ -66,10 +85,11 @@ const AddressForm = ({
           type="text"
           name="mobile"
           placeholder="10-digit mobile number"
-          className="w-full border border-gray-300 rounded-lg p-2"
+          className={`w-full border ${errors?.mobile ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
           value={address.mobile}
           onChange={onInputChange}
         />
+        {errors?.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
       </div>
 
       <button
@@ -91,27 +111,18 @@ const Checkout = () => {
   };
 
   // Delivery addresses state
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      name: "Shubham Home",
-      address: "246 Punjabi Bagh, Clubroad,",
-      city: "New Delhi, Delhi-110063",
-      mobile: "7854655484",
-      isSelected: true,
-    },
-   
-  ]);
-
-  const [selectedAddressId, setSelectedAddressId] = useState(1);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [newAddress, setNewAddress] = useState({
     name: "",
     address: "",
     city: "",
+    postalCode: "",
     mobile: "",
   });
 
@@ -151,19 +162,70 @@ const Checkout = () => {
 
   const deliveryDates = getDeliveryDates();
 
-  // Handle address form input change
+  // Validation functions
+  const validateName = (name) => {
+    return /^[A-Za-z\s]+$/.test(name) ? null : "Name should contain only alphabets";
+  };
+
+  const validateAddress = (address) => {
+    return address.trim().length > 0 ? null : "Address cannot be empty";
+  };
+
+  const validateCity = (city) => {
+    return city.trim().length > 0 ? null : "City cannot be empty";
+  };
+  
+  const validatePostalCode = (postalCode) => {
+    return /^[0-9]{6}$/.test(postalCode) ? null : "Please enter a valid 6-digit postal code";
+  };
+
+  const validateMobile = (mobile) => {
+    return /^[0-9]{10}$/.test(mobile) ? null : "Please enter a valid 10-digit mobile number";
+  };
+
+  // Handle address form input change with validation
   const handleAddressInputChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prev) => ({
       ...prev,
       [name]: value,
     }));
+    
+    // Clear error for this field while typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: null
+      }));
+    }
   };
 
-  // Handle adding a new address
+  // Validate all fields
+  const validateFields = () => {
+    const newErrors = {};
+    
+    const nameError = validateName(newAddress.name);
+    if (nameError) newErrors.name = nameError;
+    
+    const addressError = validateAddress(newAddress.address);
+    if (addressError) newErrors.address = addressError;
+    
+    const cityError = validateCity(newAddress.city);
+    if (cityError) newErrors.city = cityError;
+    
+    const postalCodeError = validatePostalCode(newAddress.postalCode);
+    if (postalCodeError) newErrors.postalCode = postalCodeError;
+    
+    const mobileError = validateMobile(newAddress.mobile);
+    if (mobileError) newErrors.mobile = mobileError;
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle adding a new address with validation
   const handleAddAddress = () => {
-    if (!newAddress.name || !newAddress.address || !newAddress.city || !newAddress.mobile) {
-      alert("Please fill all fields");
+    if (!validateFields()) {
       return;
     }
 
@@ -172,27 +234,49 @@ const Checkout = () => {
     const addressToAdd = {
       id: newId,
       ...newAddress,
+      // Combine city and postal code for display
+      fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
       isSelected: false,
     };
 
-    setAddresses([...addresses, addressToAdd]);
+    const newAddresses = [...addresses, addressToAdd];
+    setAddresses(newAddresses);
+    setSelectedAddressId(newId);
     setNewAddress({
       name: "",
       address: "",
       city: "",
+      postalCode: "",
       mobile: "",
     });
     setShowAddForm(false);
+    setErrors({});
   };
 
   // Start editing an address
   const startEditAddress = (id) => {
     const addressToEdit = addresses.find((addr) => addr.id === id);
     if (addressToEdit) {
+      // If the address was created before the split field update,
+      // extract city and postal code from the city field
+      let cityValue = addressToEdit.city || "";
+      let postalCodeValue = addressToEdit.postalCode || "";
+      
+      // Handle legacy addresses that might have combined city and postal code
+      if (!addressToEdit.postalCode && addressToEdit.city) {
+        const postalCodeMatch = addressToEdit.city.match(/[0-9]{6}/);
+        if (postalCodeMatch) {
+          postalCodeValue = postalCodeMatch[0];
+          cityValue = addressToEdit.city.replace(postalCodeValue, "").trim();
+          cityValue = cityValue.replace(/,$/, "").trim(); // Remove trailing comma if any
+        }
+      }
+      
       setNewAddress({
         name: addressToEdit.name,
         address: addressToEdit.address,
-        city: addressToEdit.city,
+        city: cityValue,
+        postalCode: postalCodeValue,
         mobile: addressToEdit.mobile,
       });
       setEditingAddressId(id);
@@ -200,10 +284,9 @@ const Checkout = () => {
     }
   };
 
-  // Handle saving edited address
+  // Handle saving edited address with validation
   const handleSaveEditedAddress = () => {
-    if (!newAddress.name || !newAddress.address || !newAddress.city || !newAddress.mobile) {
-      alert("Please fill all fields");
+    if (!validateFields()) {
       return;
     }
 
@@ -214,6 +297,9 @@ const Checkout = () => {
           name: newAddress.name,
           address: newAddress.address,
           city: newAddress.city,
+          postalCode: newAddress.postalCode,
+          // Update the combined address
+          fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
           mobile: newAddress.mobile,
         };
       }
@@ -227,33 +313,29 @@ const Checkout = () => {
       name: "",
       address: "",
       city: "",
+      postalCode: "",
       mobile: "",
     });
+    setErrors({});
   };
 
   // Handle removing an address
   const handleRemoveAddress = (id) => {
     const updatedAddresses = addresses.filter((addr) => addr.id !== id);
 
-    if (id === selectedAddressId && updatedAddresses.length > 0) {
-      setSelectedAddressId(updatedAddresses[0].id);
-    }
-
     setAddresses(updatedAddresses);
+    if (id === selectedAddressId) {
+      setSelectedAddressId(updatedAddresses.length > 0 ? updatedAddresses[0].id : null);
+    }
   };
 
   // Handle selecting an address
   const handleSelectAddress = (id) => {
     setSelectedAddressId(id);
-    const updatedAddresses = addresses.map((addr) => ({
-      ...addr,
-      isSelected: addr.id === id,
-    }));
-    setAddresses(updatedAddresses);
   };
 
   const handlePayment = () => {
-    if (addresses.length === 0) {
+    if (addresses.length === 0 || !selectedAddressId) {
       alert("Please add a delivery address");
       return;
     }
@@ -265,10 +347,17 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Show add form by default if no addresses
+  useEffect(() => {
+    if (addresses.length === 0 && !showAddForm && !showEditForm) {
+      setShowAddForm(true);
+    }
+  }, [addresses.length, showAddForm, showEditForm]);
+
   return (
     <div className="bg-white py-6 min-h-screen font-[outfit]">
-      <div className="container mx-auto px-4">
-        <div className="w-full font-[outfit] flex md:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium px-4 py-2 mt-4 ">
+      <div className="px-4 md:px-10 lg:px-16">
+        <div className="w-full font-[outfit] flex lg:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium py-2 mt-4 ">
           <div className="flex items-center flex-wrap gap-3">
             <button
               onClick={handleBack}
@@ -290,7 +379,7 @@ const Checkout = () => {
 
         <div className="flex flex-col md:flex-row gap-6 mt-6">
           {/* Delivery Address Section */}
-          <div className="p-6 md:w-[65%]">
+          <div className="p-0 lg:p-6 md:w-[65%]">
             <h1 className="text-xl font-bold text-gray-800 mb-4">
               Select Delivery Address
             </h1>
@@ -308,7 +397,7 @@ const Checkout = () => {
                       addr.id === selectedAddressId
                         ? "border-[#f7941d]"
                         : "border-gray-300"
-                    } rounded-2xl p-6 relative`}
+                    } rounded-2xl p-6 relative cursor-pointer`}
                     onClick={() => handleSelectAddress(addr.id)}
                   >
                     <div className="absolute right-4 top-4">
@@ -327,7 +416,7 @@ const Checkout = () => {
 
                     <h3 className="font-semibold text-lg mb-2">{addr.name}</h3>
                     <p className="text-gray-600 mb-1">{addr.address}</p>
-                    <p className="text-gray-600 mb-3">{addr.city}</p>
+                    <p className="text-gray-600 mb-3">{addr.fullAddress || `${addr.address}, ${addr.city}${addr.postalCode ? `, ${addr.postalCode}` : ''}`}</p>
                     <p className="text-gray-600 mb-4">Mobile: {addr.mobile}</p>
 
                     <div className="flex gap-3">
@@ -359,12 +448,16 @@ const Checkout = () => {
             {showAddForm && (
               <AddressForm
                 onClose={() => {
-                  setShowAddForm(false);
-                  setNewAddress({ name: "", address: "", city: "", mobile: "" });
+                  if (addresses.length > 0) {
+                    setShowAddForm(false);
+                    setNewAddress({ name: "", address: "", city: "", postalCode: "", mobile: "" });
+                    setErrors({});
+                  }
                 }}
                 onSubmit={handleAddAddress}
                 address={newAddress}
                 onInputChange={handleAddressInputChange}
+                errors={errors}
               />
             )}
 
@@ -375,11 +468,13 @@ const Checkout = () => {
                 onClose={() => {
                   setShowEditForm(false);
                   setEditingAddressId(null);
-                  setNewAddress({ name: "", address: "", city: "", mobile: "" });
+                  setNewAddress({ name: "", address: "", city: "", postalCode: "", mobile: "" });
+                  setErrors({});
                 }}
                 onSubmit={handleSaveEditedAddress}
                 address={newAddress}
                 onInputChange={handleAddressInputChange}
+                errors={errors}
               />
             )}
 
@@ -396,7 +491,7 @@ const Checkout = () => {
 
           {/* Order Summary Section */}
           <div className="bg-gray-50 rounded-xl p-6 md:w-[35%] font-[outfit]">
-            {addresses.length > 0 && selectedAddress && (
+            {selectedAddress && (
               <div className="bg-white p-4 rounded-xl mb-6">
                 <h3 className="text-lg font-medium mb-2">
                   Deliver Between :{" "}
@@ -405,7 +500,7 @@ const Checkout = () => {
                   </span>
                 </h3>
                 <p className="text-gray-500 text-sm">
-                  {selectedAddress.address}, {selectedAddress.city}
+                  {selectedAddress.fullAddress || `${selectedAddress.address}, ${selectedAddress.city}${selectedAddress.postalCode ? `, ${selectedAddress.postalCode}` : ''}`}
                 </p>
               </div>
             )}
@@ -453,9 +548,14 @@ const Checkout = () => {
             </div>
             <button
               onClick={handlePayment}
-              className="w-full bg-[#f7941d] cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center"
+              className={`w-full ${
+                !selectedAddress ? "bg-gray-400" : "bg-[#f7941d]"
+              } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
+              disabled={!selectedAddress}
             >
-              Continue to Payment
+              {!selectedAddress
+                ? "Add delivery address to continue"
+                : "Continue to Payment"}
             </button>
           </div>
         </div>

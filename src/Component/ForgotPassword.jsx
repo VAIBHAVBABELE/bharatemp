@@ -32,7 +32,8 @@ const ForgotPassword = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(`${backend}/auth/test-mail`, {
+      
+      const response = await axios.post(`${backend}/otp/send-email-otp-forgot-password`, {
         email
       });
 
@@ -47,7 +48,11 @@ const ForgotPassword = () => {
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
-      const errorMessage = error.response?.data?.data?.message || "Failed to send OTP. Please try again.";
+      const errorMessage = 
+        error.response?.data?.data?.message || 
+        error.response?.data?.message || 
+        "Failed to send OTP. Please try again later.";
+      
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

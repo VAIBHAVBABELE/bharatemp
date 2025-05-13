@@ -76,10 +76,10 @@ const ResetPassword = () => {
 
     try {
       setLoading(true);
+      
       const response = await axios.post(`${backend}/auth/change-password`, {
         email,
         newPassword: password,
-        confirmPassword: confirmPassword
       });
 
       if (response.data.status === "Success") {
@@ -94,7 +94,11 @@ const ResetPassword = () => {
       }
     } catch (error) {
       console.error('Password reset error:', error);
-      const errorMessage = error.response?.data?.data?.message || "Failed to reset password. Please try again.";
+      const errorMessage = 
+        error.response?.data?.data?.message || 
+        error.response?.data?.message || 
+        "Failed to reset password. Please try again later.";
+      
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -137,6 +141,7 @@ const ResetPassword = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
+                    autoFocus
                   />
                   <button
                     type="button"

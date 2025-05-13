@@ -28,7 +28,6 @@ function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalOrders, setTotalOrders] = useState(0);
   const itemsPerPage = 10;
-    console.log("hello");
   // Fetch dashboard data
   async function getDashboardData() {
     try {

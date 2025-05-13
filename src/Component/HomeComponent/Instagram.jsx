@@ -1,120 +1,129 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import img1 from './../../assets/homepage1.png';
-import img2 from './../../assets/homepage2.png'
+import React, { useState, useEffect } from "react";
+import { BsInstagram } from "react-icons/bs";
+
+import left from "../../assets/left.png";
+import right from "../../assets/right.png";
+ 
 const images = [
-  img1, img2, img1, img2, img1, img2
+    "https://via.placeholder.com/300x200?text=Post+1",
+    "https://via.placeholder.com/300x200?text=Post+2",
+    "https://via.placeholder.com/300x200?text=Post+3",
+    "https://via.placeholder.com/300x200?text=Post+4",
+    "https://via.placeholder.com/300x200?text=Post+5",
+    "https://via.placeholder.com/300x200?text=Post+6",
+    "https://via.placeholder.com/300x200?text=Post+7",
+    "https://via.placeholder.com/300x200?text=Post+8",
+    
+    "https://via.placeholder.com/300x200?text=Post+2",
+    "https://via.placeholder.com/300x200?text=Post+3",
+    "https://via.placeholder.com/300x200?text=Post+4",
+    "https://via.placeholder.com/300x200?text=Post+5",
+    "https://via.placeholder.com/300x200?text=Post+6",
+    "https://via.placeholder.com/300x200?text=Post+7",
+    "https://via.placeholder.com/300x200?text=Post+8",
+   
 ];
-
-export default function InstagramCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleSlides, setVisibleSlides] = useState(4);
-  const sliderRef = useRef(null);
-  const intervalRef = useRef(null);
-
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => 
-      (prevIndex + 1) % images.length
-    );
-  };
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setVisibleSlides(1);
-      } else if (window.innerWidth < 1024) {
-        setVisibleSlides(3);
-      } else {
-        setVisibleSlides(4);
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
-  // Calculate the slides to display with looping
-  const getDisplayedImages = () => {
-    let displayed = [];
-    for (let i = 0; i < visibleSlides; i++) {
-      const index = (currentIndex + i) % images.length;
-      displayed.push(images[index]);
+ 
+const Instagram = () => {
+    const [isMobile, setIsMobile] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
+ 
+    const totalSlides = isMobile ? images.length : Math.ceil(images.length / 4);
+ 
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+ 
+    const goNext = () => setCurrentSlide(prev => (prev + 1) % totalSlides);
+    const goPrev = () => setCurrentSlide(prev => (prev - 1 + totalSlides) % totalSlides);
+ 
+   const getActiveDot = () => {
+    if (totalSlides <= 1) return 0;
+    return Math.floor((currentSlide / totalSlides) * 3);
+};
+ 
+const goToSection = (section) => {
+    if (totalSlides <= 1) {
+        setCurrentSlide(0);
+        return;
     }
-    return displayed;
-  };
-
-  const displayedImages = getDisplayedImages();
-
-  return (
-    <div className="w-full px-4 py-12 bg-white">
-      <div className="text-center">
-        <h2 className="text-2xl md:text-3xl font-bold">Our Instagram Page</h2>
-        <p className="text-sm md:text-base text-gray-500 max-w-xl mx-auto mt-2">
-          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam
-        </p>
-      </div>
-
-      <div className="relative mt-10 flex items-center">
-        <button 
-          onClick={handlePrev} 
-          className="absolute left-0 z-10 bg-white p-2 rounded-full  border border-gray-300 hover:bg-gray-100"
-        >
-          <FaArrowLeft />
-        </button>
-
-        <div
-          ref={sliderRef}
-          className="flex overflow-hidden w-full gap-8 justify-center"
-        >
-          {displayedImages.map((src, idx) => (
-            <div 
-              key={`${currentIndex}-${idx}`} 
-              className="min-w-[250px] md:min-w-[280px] lg:min-w-[300px] bg-gray-200 rounded-xl shadow-md h-[250px] animate-fadeIn"
-            >
-              {/* You should add your image here */}
-              <img 
-                src={src} 
-                alt={`Instagram ${idx}`} 
-                className="w-full h-full object-cover rounded-xl"
-              />
+    const newSlide = Math.round((section / 2) * (totalSlides - 1));
+    setCurrentSlide(Math.min(newSlide, totalSlides - 1));
+};
+ 
+    useEffect(() => {
+        const interval = setInterval(goNext, 3000);
+        return () => clearInterval(interval);
+    }, []);
+ 
+    return (
+        <div className="w-full py-10 bg-white text-center">
+            <h2 className="text-2xl font-bold mb-2">Our Instagram Page</h2>
+            <p className="text-gray-500 max-w-xl mx-auto mb-6">
+                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                doloremque laudantium, totam rem aperiam
+            </p>
+ 
+            <div className="relative flex items-center justify-center ">
+                <img
+                    src={left}
+                    alt="Left Arrow"
+                    onClick={goPrev}
+                    className="absolute top-1/2 left-4 z-2 -translate-y-1/2  p-2 rounded-full  transition cursor-pointer"
+                />
+ 
+                <div className="overflow-hidden w-full max-w-7xl   ">
+                    <div
+                        className="flex transition-transform duration-900 ease-in-out"
+                        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    >
+                        {images.map((img, idx) => (
+                            <div
+                                key={idx}
+                                className="w-full md:w-1/4 px-2 flex-shrink-0"
+                            >
+                                <div className="bg-gray-100 rounded-3xl overflow-hidden shadow w-full h-[418px] flex items-center justify-center">
+                                    <img
+                                        src={img}
+                                        alt={`Post ${idx + 1}`}
+                                        className="object-cover w-full h-full"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+ 
+                <img
+                    src={right}
+                    alt="Left Arrow"
+                    onClick={goNext}
+                    className="absolute top-1/2 right-4 -translate-y-1/2 p-2 rounded-full  transition cursor-pointer"
+                />
             </div>
-          ))}
+ 
+           <div className="flex  gap-2 pl-4 md:pl-24 mt-6">
+                {[0, 1, 2].map((dotIndex) => (
+                    <button
+                        key={dotIndex}
+                        onClick={() => goToSection(dotIndex)}
+                        className={`h-4 w-4 rounded-full border-2 border-blue-800 transition-all
+                            ${
+                                getActiveDot() === dotIndex
+                                    ? "bg-blue-800 ring-2 ring-blue-800 ring-offset-2 ring-offset-white"
+                                    : "bg-blue-800 hover:bg-blue-800"
+                            }`}
+                    ></button>
+                ))}
+            </div>
+       
+ 
+ 
         </div>
-
-        <button 
-          onClick={handleNext} 
-          className="absolute right-0 z-10 bg-white p-2 rounded-full shadow border border-gray-300 hover:bg-gray-100"
-        >
-          <FaArrowRight />
-        </button>
-      </div>
-
-      {/* Dots */}
-      <div className="flex justify-start mt-10 gap-2">
-        {images.map((_, i) => (
-          <div
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            className={`w-2 h-2 rounded-full cursor-pointer ${
-              i === currentIndex ? 'bg-blue-800' : 'bg-gray-300'
-            }`}
-          ></div>
-        ))}
-      </div>
-    </div>
-  );
-}
+    );
+};
+ 
+export default Instagram;
