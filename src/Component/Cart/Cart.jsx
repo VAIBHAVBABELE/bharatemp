@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { FaPlus, FaMinus, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 
 const Cart = () => {
@@ -18,6 +20,8 @@ const Cart = () => {
     clearCart
   } = useCart();
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1); // Go back to previous page
@@ -32,10 +36,24 @@ const Cart = () => {
   // Calculate final total
   const finalTotal = totalAmount + platformFee + shippingFee - codeDiscount - discountOnMrp;
 
-  // Always call hooks before any conditional returns
+  // Check if user is logged in
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
     window.scrollTo(0, 0);
   }, []);
+
+  // Handle checkout - check if user is logged in first
+  const handleCheckout = () => {
+    if (isLoggedIn) {
+      navigate('/checkout');
+    } else {
+      toast.warning('Please login to proceed with checkout');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -61,6 +79,7 @@ const Cart = () => {
 
   return (
     <div className="bg-white py-6 min-h-screen font-[outfit]">
+      <ToastContainer />
       <div className="container mx-auto px-4">
         <div className="w-full font-[outfit] flex md:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium px-4 py-2 mt-4 ">
           <div className="flex items-center flex-wrap gap-3">
@@ -193,7 +212,7 @@ const Cart = () => {
               </div>
             </div>
             <button 
-              onClick={() => navigate('/checkout')}
+              onClick={handleCheckout}
               className="w-full bg-[#f7941d] cursor-pointer  text-white py-3 rounded-md font-medium mt-4 flex items-center justify-center"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
