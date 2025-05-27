@@ -30,6 +30,14 @@ import Invoice from './Component/AdminDashboardComponent/InvoiceComponents/Invoi
 import AllComplaintRaised from './Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx'
 import ReturnRequest from './Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx'
 import NewsUpdates from './Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx'
+import TermsAndConditions from './pages/TermsAndConditions'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import OrdersAndPaymentPolicy from './pages/OrdersAndPaymentPolicy'
+import CancellationPolicy from './pages/CancellationPolicy'
+import ShippingPolicy from './pages/ShippingPolicy'
+import ReturnPolicy from './pages/ReturnPolicy'
+import WarrantyPolicy from './pages/WarrantyPolicy'
+
 const App = () => {
   return (
     <CartProvider>
@@ -69,11 +77,19 @@ const App = () => {
             <Route path='/admin-dashboard/inventory' element={<InventoryManagement />} />
             <Route path='/admin-dashboard/complaints' element={<AllComplaintRaised />} />
           </Route>
+
+          {/* Policy Routes */}
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/orders-and-payment-policy" element={<OrdersAndPaymentPolicy />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicy />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/warranty-policy" element={<WarrantyPolicy />} />
         </Routes>
         <Footer />
       </Router>
     </CartProvider>
-
   );
 };
 

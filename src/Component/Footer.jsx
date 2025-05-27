@@ -3,74 +3,61 @@ import upperline from '../assets/Line81.png';
 import footerbg from '../assets/footerbg.png';
 import logobottom from '../assets/footerlogo.svg';
 import { Link } from 'react-router-dom';
-import icon1 from './../assets/Facebook.png'
-import icon2 from './../assets/Twitter.png'
-import icon3 from './../assets/Instagram.png'
-import icon4 from './../assets/Pinterest.png'
-import icon5 from './../assets/YouTube.png'
+import icon1 from './../assets/Facebook.svg'
+import icon2 from './../assets/Twitter.svg'
+import icon3 from './../assets/Instagram.svg'
+import icon4 from './../assets/Pinterest.svg'
+import icon5 from './../assets/YouTube.svg'
+import img1 from './../assets/gpay.svg'
+import img2 from './../assets/stripe.svg'
+import img3 from './../assets/master.svg'
+import img4 from './../assets/visa.svg'
+
 const Footer = () => {
   return (
     <div className="relative w-full h-auto  flex flex-col bg-[#1e3473] overflow-hidden md:px-8 lg:px-0">
-      {/* Line image */}
-     
- <img
-        src={upperline}
-        alt="upperline"
-        className="absolute top-5 left-0 w-full max-h-[15px] md:max-h-[20px] object-contain"
-      />
-      <div className="flex flex-col md:flex-row w-full min-h-[420px] mt-8 md:mt-0">
+     <p className='w-full border-b border-dashed  border-white mt-10'></p>
+      <div className="flex flex-col md:justify-between mt-10 md:flex-row w-full min-h-[380px]">
         {/* Left side - 40% */}
-       
-        <div className="w-full md:w-[40%] flex flex-col text-white z-10 px-4 md:px-10 py-2 md:py-8">
+        <div className="w-full md:w-[35%] flex flex-col text-white z-10 px-4 md:px-10 py-2 md:py-8">
           <img
             src={logobottom}
             alt="logobottom"
-            className="max-w-[200px] md:max-w-full mb-4"
+            className="w-[80%]"
           />
-          <p className="text-xs sm:text-sm md:text-base leading-5 md:leading-6">
+          <p className="text-xs mt-6 sm:text-sm md:text-base leading-5 md:leading-6">
             Reach Out To Our Team Of Experienced Design Professionals For
             Personalized Consultation, Detailed Planning, And Seamless Execution
             Of Your Interior Design Project
-
           </p>
 
-          <div className=" w-full flex flex-wrap gap-2 px-6 py-4 ">
-            <Link to="#" className="text-white text-xl p-3 hover:border-2  hover:border-white hover:rounded-full">
-                      <img src={icon1}/>
+          <div className="w-full flex flex-wrap gap-4 py-4">
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <img src={icon1} alt="Facebook" className="w-6 h-6" />
             </Link>
-            <Link to="#" className="text-white text-xl p-3 hover:border-2  hover:border-white hover:rounded-full flex items-center">
-           <img src={icon2}/>
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <img src={icon2} alt="Twitter" className="w-6 h-6" />
             </Link>
-            <Link to="#" className="text-white text-xl p-3 hover:border-2  hover:border-white hover:rounded-full">
-               <img src={icon3}/>
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <img src={icon3} alt="Instagram" className="w-6 h-6" />
             </Link>
-            <Link to="#" className="text-white text-xl p-3 hover:border-2  hover:border-white hover:rounded-full">
-          <img src={icon4}/>
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <img src={icon4} alt="Pinterest" className="w-6 h-6" />
             </Link>
-            <Link to="#" className="text-white text-xl p-3 hover:border-2  hover:border-white hover:rounded-full">
-            <img src={icon5}/>
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <img src={icon5} alt="YouTube" className="w-6 h-6" />
             </Link>
           </div>
-
-
-
-
         </div>
 
         {/* Right side - 60% with background image */}
         <div
-          className="w-full md:w-[60%] px-4 md:px-6 py-6 md:py-8 text-white"
-          style={{
-            backgroundImage: `url(${footerbg})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 40px',
-          }}
+          className="w-full md:w-[70%] px-4 md:px-6 py-6 md:py-8 text-white"
         >
           <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-2 md:flex md:flex-row justify-between gap-4 md:gap-8">
             {/* Column 1 */}
             <div className="mb-4 md:mb-0">
-              <h3 className=" mb-2 text-xs md:text-sm lg:text-base">SHOPPING SERVICES</h3>
+              <h3 className="mb-2 text-xs md:text-sm lg:text-base">SHOPPING SERVICES</h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
                 <li>Propellers</li>
                 <li>PCBs</li>
@@ -93,41 +80,41 @@ const Footer = () => {
 
             {/* Column 3 */}
             <div className="mb-4 md:mb-0">
-              <h3 className=" mb-2 text-xs md:text-sm lg:text-base">RESOURCES</h3>
+              <h3 className="mb-2 text-xs md:text-sm lg:text-base">POLICIES</h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
-                <li>Look Up Order Status</li>
-                <li>Assembly Intrusions</li>
-                <li>Returns</li>
-                <li>Shipping & Delivery</li>
-                <li>FAQ</li>
-                <li>Refer a Friend</li>
+                <li><Link to="/orders-and-payment-policy" className="hover:text-[#F7941D]">Orders & Payment</Link></li>
+                <li><Link to="/cancellation-policy" className="hover:text-[#F7941D]">Cancellation</Link></li>
+                <li><Link to="/shipping-policy" className="hover:text-[#F7941D]">Shipping</Link></li>
+                <li><Link to="/return-policy" className="hover:text-[#F7941D]">Returns & Refunds</Link></li>
+                <li><Link to="/warranty-policy" className="hover:text-[#F7941D]">Warranty</Link></li>
               </ul>
             </div>
 
             {/* Column 4 */}
             <div className="col-span-2 sm:col-span-1 md:col-auto">
-              <h3 className=" mb-2 text-xs md:text-sm lg:text-base">CONTACT CS</h3>
-              <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
+              <h3 className="mb-2 text-xs md:text-sm lg:text-base">CONTACT CS</h3>
+              <ul className="space-y-2 md:space-y-2 text-xs md:text-[12px] lg:text-[18px]">
                 <li>Email: support@Bharatronix.com</li>
                 <li>Hours:</li>
                 <li>Mon-Fri — 10am to 8pm</li>
                 <li>Sat-Sun — 10am to 2pm</li>
-                <li>Delhi, India</li>
               </ul>
+              <div className='flex gap-2 mt-4'>
+                <img src={img1} alt="" className='w-20'/>
+                <img src={img2} alt="" className='w-20'/>
+                <img src={img3} alt="" className='w-20'/>
+                <img src={img4} alt="" className='w-20'/>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <img
-        src={upperline}
-        alt="upperline"
-        className="absolute bottom-14 left-0 w-full max-h-[15px] md:max-h-[20px] object-contain"
-      />
-      <div className="w-full  flex flex-col md:flex-row  items-center md:justify-between gap-1 md:gap-4 text-white px-10 text-xs sm:text-sm md:text-base ">
+      <p className='w-full border-b border-dashed  border-white'></p>
+      <div className="w-full my-6  flex flex-col md:flex-row  items-center md:justify-between gap-1 md:gap-4 text-white px-10 text-xs sm:text-sm md:text-base ">
         <span>© Copyright 2024, All Rights Reserved</span>
-        <span className="flex gap-4">
-          <span>Terms of Service</span>
-          <span>Privacy Policy </span>
+        <span className="flex gap-10">
+          <Link to="/terms-and-conditions" className="hover:text-[#F7941D]">Terms and Conditions</Link>
+          <Link to="/privacy-policy" className="hover:text-[#F7941D]">Privacy Policy</Link>
         </span>
       </div>
 
