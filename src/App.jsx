@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from './Component/Navbar';
+import Ouronline from './Component/B2bComponent/Ouronline.jsx'
 import Footer from './Component/Footer'
 import Product from './Component/HomeComponent/Product'
 import SingleProduct from './Component/HomeComponent/SingleProduct'
@@ -30,6 +31,14 @@ import Invoice from './Component/AdminDashboardComponent/InvoiceComponents/Invoi
 import AllComplaintRaised from './Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx'
 import ReturnRequest from './Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx'
 import NewsUpdates from './Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx'
+import TermsAndConditions from './pages/TermsAndConditions'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import OrdersAndPaymentPolicy from './pages/OrdersAndPaymentPolicy'
+import CancellationPolicy from './pages/CancellationPolicy'
+import ShippingPolicy from './pages/ShippingPolicy'
+import ReturnPolicy from './pages/ReturnPolicy'
+import WarrantyPolicy from './pages/WarrantyPolicy'
+import Subcategory  from './pages/Subcategory.jsx'
 const App = () => {
   return (
     <CartProvider>
@@ -44,7 +53,8 @@ const App = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/thankyou/:id" element={<Thanku />} />
           <Route path="/profile" element={<Profile />} />
-          
+          <Route path="/b2bpage" element={<Ouronline/>}/>
+          <Route path="/subcategory" element={<Subcategory/>}/>
           {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -69,11 +79,19 @@ const App = () => {
             <Route path='/admin-dashboard/inventory' element={<InventoryManagement />} />
             <Route path='/admin-dashboard/complaints' element={<AllComplaintRaised />} />
           </Route>
+
+          {/* Policy Routes */}
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/orders-and-payment-policy" element={<OrdersAndPaymentPolicy />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicy />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/warranty-policy" element={<WarrantyPolicy />} />
         </Routes>
         <Footer />
       </Router>
     </CartProvider>
-
   );
 };
 

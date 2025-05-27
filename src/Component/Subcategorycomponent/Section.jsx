@@ -1,0 +1,732 @@
+import React, { useState, useEffect } from "react";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import raspberry from "../../assets/rasperrybi.svg";
+import filtericon from "../../assets/filtericon.png";
+import { IoFilter } from "react-icons/io5";
+import { MdClose } from "react-icons/md";
+import { useCart } from "../../context/CartContext";
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
+import { toast , ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const backend = import.meta.env.VITE_BACKEND;
+
+// Mock data for testing when API fails
+const mockProducts = [
+  {
+    id: 1,
+    name: "Raspberry Pi 4",
+    category: "Development Boards",
+    companyName: "Raspberry Pi",
+    price: 3500,
+    new_price: 3200,
+    image: raspberry,
+    rating: 4.5,
+    reviewCount: 120,
+    featured: true,
+    topRated: true,
+    onSale: true,
+    deliveryDate: "May 15, 2023",
+    deliveryType: "Free Delivery"
+  },
+  {
+    id: 2,
+    name: "Arduino Uno",
+    category: "Development Boards",
+    companyName: "Arduino",
+    price: 1500,
+    new_price: 1200,
+    image: raspberry,
+    rating: 4.2,
+    reviewCount: 85,
+    featured: true,
+    topRated: false,
+    onSale: true,
+    deliveryDate: "May 16, 2023",
+    deliveryType: "Free Delivery"
+  },
+  {
+    id: 3,
+    name: "ESP32 Development Board",
+    category: "Development Boards",
+    companyName: "Espressif",
+    price: 800,
+    new_price: 650,
+    image: raspberry,
+    rating: 4.0,
+    reviewCount: 60,
+    featured: false,
+    topRated: false,
+    onSale: true,
+    deliveryDate: "May 17, 2023",
+    deliveryType: "Free Delivery"
+  },
+  {
+    id: 4,
+    name: "Ultrasonic Sensor HC-SR04",
+    category: "Sensors",
+    companyName: "Generic",
+    price: 250,
+    new_price: 200,
+    image: raspberry,
+    rating: 3.8,
+    reviewCount: 45,
+    featured: false,
+    topRated: false,
+    onSale: false,
+    deliveryDate: "May 18, 2023",
+    deliveryType: "Standard Delivery"
+  },
+  {
+    id: 5,
+    name: "Servo Motor SG90",
+    category: "Motors",
+    companyName: "TowerPro",
+    price: 300,
+    new_price: 280,
+    image: raspberry,
+    rating: 4.3,
+    reviewCount: 70,
+    featured: true,
+    topRated: true,
+    onSale: false,
+    deliveryDate: "May 19, 2023",
+    deliveryType: "Free Delivery"
+  }
+];
+
+const Product = () => {
+  const [allProducts, setAllProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [activeTab, setActiveTab] = useState("All");
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [sliderValue, setSliderValue] = useState(10000);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter states
+  const [priceRangeFilter, setPriceRangeFilter] = useState({
+    min: 100,
+    max: 10000,
+  });
+  const [tempPriceRange, setTempPriceRange] = useState({
+    min: 100,
+    max: 10000,
+  }); // Temporary state for slider before Apply
+  const [priceCheckboxFilters, setPriceCheckboxFilters] = useState([]);
+  const [categoryFilters, setCategoryFilters] = useState([]);
+  const [brandFilters, setBrandFilters] = useState([]);
+
+  // Get cart functions
+  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const location = useLocation();
+
+  const min = 100;
+  const max = 10000;
+
+  const navigate = useNavigate();
+
+  // Get search query from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search');
+    if (query) {
+      setSearchQuery(query);
+    } else {
+      setSearchQuery("");
+    }
+  }, [location]);
+
+  async function fetchAllProducts() {
+    try {
+      setLoading(true);
+      const response = await axios.post(`${backend}/product/list`, {
+        pageNum: 1,
+        pageSize: 50,
+        filters: {},
+      });
+      if (response.data.status === "Success") {
+        setAllProducts(response.data.data.productList);
+        setTotalProducts(response.data.data.productCount);
+      } else {
+        // If API fails or returns no products, use mock data
+        setAllProducts(mockProducts);
+        setTotalProducts(mockProducts.length);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      // If API call fails, use mock data
+      setAllProducts(mockProducts);
+      setTotalProducts(mockProducts.length);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchAllProducts();
+  }, []);
+
+
+  // Fix the order of function declarations and usage
+  const tabs = ["All", "Featured", "On Sale", "Top Rated"];
+
+  // Get category, color, and brand counts
+  function getCountForCategory(category) {
+    return allProducts.filter((p) => p.category === category).length;
+  }
+
+  function getCountForBrand(brand) {
+    return allProducts.filter((p) => p.companyName === brand).length;
+  }
+
+  function getCountForPriceRange(min, max) {
+    if (max === Infinity) {
+      return allProducts.filter((p) => p.new_price && p.new_price >= min).length;
+    }
+    return allProducts.filter((p) => p.new_price && p.new_price >= min && p.new_price <= max).length;
+  }
+
+  const priceRanges = [
+    {
+      label: "Under ₹500",
+      min: 0,
+      max: 499,
+      count: getCountForPriceRange(0, 499),
+    },
+    {
+      label: "₹500 - ₹999",
+      min: 500,
+      max: 999,
+      count: getCountForPriceRange(500, 999),
+    },
+    {
+      label: "₹1000 - ₹1999",
+      min: 1000,
+      max: 1999,
+      count: getCountForPriceRange(1000, 1999),
+    },
+    {
+      label: "₹2000 - ₹3999",
+      min: 2000,
+      max: 3999,
+      count: getCountForPriceRange(2000, 3999),
+    },
+    {
+      label: "₹4000 - ₹4999",
+      min: 4000,
+      max: 4999,
+      count: getCountForPriceRange(4000, 4999),
+    },
+    {
+      label: "Over ₹5000",
+      min: 5000,
+      max: Infinity,
+      count: getCountForPriceRange(5000, Infinity),
+    },
+  ];
+
+  const uniqueCategories = [...new Set(allProducts.map((p) => p.category))];
+  const uniqueBrands = [...new Set(allProducts.map((p) => p.companyName))];
+
+  const categories = uniqueCategories.map((category) => ({
+    label: category,
+    count: getCountForCategory(category),
+  }));
+
+  const brands = uniqueBrands.map((brand) => ({
+    label: brand,
+    count: getCountForBrand(brand),
+  }));
+
+  // Complete the rest of the filter logic with debugging
+  useEffect(() => {
+    if (allProducts.length === 0) {
+      setDisplayedProducts([]);
+      return;
+    }
+    
+    let filtered = [...allProducts];
+    
+    // Apply search filter if there's a search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) => 
+          (p.name && p.name.toLowerCase().includes(query)) || 
+          (p.category && p.category.toLowerCase().includes(query)) || 
+          (p.companyName && p.companyName.toLowerCase().includes(query))
+      );
+    }
+
+    // Filter by tab - only apply if product has the required property
+    if (activeTab === "On Sale") {
+      filtered = filtered.filter((p) => p.discount_percentage > 0);
+    } else if (activeTab === "Top Rated") {
+      filtered = filtered.filter((p) => p.topRated === true);
+    } else if (activeTab === "Featured") {
+      filtered = filtered.filter((p) => p.featured === true);
+    }
+    
+    // Only apply price filter if product has price data
+    filtered = filtered.filter(
+      (p) => p.new_price && p.new_price >= priceRangeFilter.min && p.new_price <= priceRangeFilter.max
+    );
+
+    // Filter by price checkbox selections
+    if (priceCheckboxFilters.length > 0) {
+      // First collect all products that match any of the selected price ranges
+      const priceFiltered = [];
+
+      priceCheckboxFilters.forEach((filter) => {
+        const range = priceRanges.find((r) => r.label === filter);
+        if (range) {
+          // For each price range filter, find products that match from the current filtered set
+          const matchingProducts = filtered.filter((p) => {
+            const matches =
+              p.new_price >= range.min &&
+              (range.max === Infinity ? true : p.new_price <= range.max);
+
+            return matches;
+          });
+
+          priceFiltered.push(...matchingProducts);
+        }
+      });
+
+      // Remove duplicates from the price filtered results
+      if (priceFiltered.length > 0) {
+        filtered = priceFiltered.filter(
+          (product, index, self) =>
+            index === self.findIndex((p) => p._id === product._id)
+        );
+      } else {
+        filtered = [];
+      }
+    }
+
+    // Filter by category
+    if (categoryFilters.length > 0) {
+      filtered = filtered.filter((p) => categoryFilters.includes(p.category));
+    }
+
+    // Filter by brand
+    if (brandFilters.length > 0) {
+      filtered = filtered.filter((p) => brandFilters.includes(p.companyName));
+    }
+
+    setDisplayedProducts(filtered);
+  }, [
+    allProducts,
+    activeTab,
+    priceRangeFilter,
+    priceCheckboxFilters,
+    categoryFilters,
+    brandFilters,
+    searchQuery
+  ]);
+
+  const handleSliderChange = (e) => {
+    const value = Number(e.target.value);
+    setSliderValue(value);
+    // Update temp price range but don't apply it yet
+    setTempPriceRange({ min: min, max: value });
+  };
+
+  const handleApply = () => {
+    // Now apply the temporary price range to the actual filter
+    setPriceRangeFilter(tempPriceRange);
+    setShowSidebar(false);
+  };
+
+  const handlePriceCheckboxChange = (label) => {
+    setPriceCheckboxFilters((prev) => {
+      if (prev.includes(label)) {
+        return prev.filter((item) => item !== label);
+      } else {
+        return [...prev, label];
+      }
+    });
+  };
+
+  const handleCategoryChange = (category) => {
+    setCategoryFilters((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((item) => item !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  const handleBrandChange = (brand) => {
+    setBrandFilters((prev) => {
+      if (prev.includes(brand)) {
+        return prev.filter((item) => item !== brand);
+      } else {
+        return [...prev, brand];
+      }
+    });
+  };
+
+  const clearAllFilters = () => {
+    setPriceRangeFilter({ min: min, max: max });
+    setTempPriceRange({ min: min, max: max });
+    setSliderValue(max);
+    setPriceCheckboxFilters([]);
+    setCategoryFilters([]);
+    setBrandFilters([]);
+  };
+
+  // Calculate slider percentage for display
+  const percentage = ((sliderValue - min) / (max - min)) * 100;
+
+  // Calculate applied range percentage for the applied filter indicator
+  const appliedPercentage = ((priceRangeFilter.max - min) / (max - min)) * 100;
+
+  // Update the function to handle product click with the proper ID
+  const handleProductClick = (product) => {
+    // Navigate to the product detail page with the product ID
+    navigate(`/product/${product._id}`);
+
+    // Store the selected product in localStorage
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
+  };
+
+  // Add a new function to handle adding to cart
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation(); // Prevent click from bubbling up to the card
+    addToCart(product);
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  return (
+    <>
+    <ToastContainer/>
+    <div className="relative bg-white font-[outfit]">
+      {/* Mobile Filter Button */}
+      {/* <div className="lg:hidden fixed bottom-4 right-4 z-50">
+        <button
+          className="bg-[#1e3473] text-white p-3 rounded-full shadow-lg flex items-center justify-center"
+          onClick={() => setShowSidebar(true)}
+        >
+          <IoFilter size={24} />
+        </button>
+      </div> */}
+
+      {/* Overlay */}
+      {/* {showSidebar && (
+        <div
+          className="fixed inset-0 bg-transparent bg-opacity-40 z-40"
+          onClick={() => setShowSidebar(false)}
+        />
+      )} */}
+
+      <div className="w-full px-4 md:px-6 py-6 relative z-40">
+        {searchQuery && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <p className="text-[#1e3473] font-medium">
+                Search results for: <span className="font-bold">"{searchQuery}"</span>
+              </p>
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  navigate("/product");
+                }}
+                className="text-sm bg-white px-3 py-1 rounded-full border border-gray-200 hover:bg-gray-100"
+              >
+                Clear Search
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="w-full flex flex-col lg:flex-row gap-6">
+          {/* Sidebar Filter */}
+          
+
+            {/* Filter by Price Options */}
+        
+
+           
+
+          
+
+          {/* Product Grid Section */}
+          <div className=" w-full">
+            <div className="border-b text-sm md:text-base lg:text-lg border-gray-300 flex items-center justify-between mb-6">
+              <div className="flex space-x-4 lg:space-x-8">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`font-medium relative ${
+                      activeTab === tab
+                        ? "text-gray-900 font-semibold"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {tab}
+                    {activeTab === tab && (
+                      <span className="absolute left-0 -bottom-0.5 w-full h-1 bg-[#f7941d] rounded-full"></span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {/* <Link
+                to="/product2"
+                className="text-sm text-gray-800 hover:text-gray-900 flex items-center"
+              >
+                View All Products <span className="ml-1">›</span>
+              </Link> */}
+            </div>
+
+            {/* Product Count and Active Filters */}
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-gray-600">
+                {displayedProducts.length}{" "}
+                {displayedProducts.length === 1 ? "product" : "products"} found
+              </p>
+
+              {[
+                // Add slider price range if it's not at max
+                ...(priceRangeFilter.max < max
+                  ? [
+                      {
+                        type: "slider",
+                        value: `₹${min} - ₹${priceRangeFilter.max}`,
+                      },
+                    ]
+                  : []),
+                ...priceCheckboxFilters.map((filter) => ({
+                  type: "price",
+                  value: filter,
+                })),
+                ...categoryFilters.map((category) => ({
+                  type: "category",
+                  value: category,
+                })),
+                ...brandFilters.map((brand) => ({
+                  type: "brand",
+                  value: brand,
+                })),
+              ].length > 0 && (
+                <div className="flex flex-wrap gap-2 ml-2">
+                  {/* Price Range Slider Tag */}
+                  {priceRangeFilter.max < max && (
+                    <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 flex items-center">
+                      Price: ₹{min} - ₹{priceRangeFilter.max}
+                      <button
+                        className="ml-1 text-blue-600 hover:text-blue-800"
+                        onClick={() => {
+                          setPriceRangeFilter({ min, max });
+                          setTempPriceRange({ min, max });
+                          setSliderValue(max);
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+
+                  {priceCheckboxFilters.map((filter) => (
+                    <span
+                      key={filter}
+                      className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    >
+                      {filter}
+                      <button
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                        onClick={() => handlePriceCheckboxChange(filter)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+
+                  {categoryFilters.map((category) => (
+                    <span
+                      key={category}
+                      className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    >
+                      {category}
+                      <button
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                        onClick={() => handleCategoryChange(category)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+
+                  {brandFilters.map((brand) => (
+                    <span
+                      key={brand}
+                      className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    >
+                      {brand}
+                      <button
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                        onClick={() => handleBrandChange(brand)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Product Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {loading ? (
+                <div className="col-span-full flex justify-center items-center py-20">
+                  <div className="flex flex-col items-center">
+                    <FaSpinner className="text-[#1e3473] text-4xl animate-spin mb-4" />
+                    <p className="text-gray-600 text-lg">Loading products...</p>
+                  </div>
+                </div>
+              ) : displayedProducts.length > 0 ? (
+                displayedProducts.map((product, index) => (
+                  <div
+                    key={index}
+                    className="bg-white border border-gray-200 rounded-[20px] p-4 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col h-full"
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <div className="flex justify-center mb-5">
+                      <img
+                        src={product.image && product.image.length > 0 ? product.image[0] :""}
+                        alt={product.name}
+                        className="w-full h-40 object-contain"
+                      />
+                    </div>
+                    <div className="">
+                      <h2 className="text-[#1e3473] font-semibold text-lg">
+                        {product.name}
+                      </h2>
+                      <p className="text-gray-400 text-sm ">{product.category}</p>
+                      <div className="flex items-center my-3">
+                        {Array(5)
+                          .fill()
+                          .map((_, i) => (
+                            <span key={i} className="text-orange-400">
+                              {i < Math.floor(product.rating || 0) ? (
+                                <FaStar />
+                              ) : i < (product.rating || 0) ? (
+                                <FaStarHalfAlt />
+                              ) : (
+                                <FaRegStar />
+                              )}
+                            </span>
+                          ))}
+                        <span className="text-gray-600 ml-1 text-sm">
+                          ({product.reviewCount || 0})
+                        </span>
+                      </div>
+                      <div className="">
+                        <span className="text-xl font-semibold">
+                          ₹{product.new_price?.toLocaleString()}
+                        </span>
+                        <span className="text-sm line-through text-gray-400 ml-2">
+                          ₹{product.price?.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-5 space-y-3">
+                      <div className="flex gap-3">
+                        <button className="bg-[#f7941d] text-white font-medium py-1 px-4 rounded-2xl text-sm">
+                          Buy Now
+                        </button>
+                        <button
+                          className="bg-gray-50 border border-gray-200 text-[#f7941d] py-1 px-4 rounded-2xl text-sm"
+                          onClick={(e) => {
+                            handleAddToCart(e, product);
+                            toast.success('Added to cart successfully!', {
+                              position: "top-right",
+                              autoClose: 2000,
+                              hideProgressBar: false,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: true,
+                            });
+                          }}
+                        >
+                          {isInCart(product._id)
+                            ? `In Cart (${getItemQuantity(product._id)})`
+                            : "Add to cart"}
+                        </button>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <p>
+                          Get it <span className="font-bold">Friday</span>
+                          {product.deliveryDate && `, ${product.deliveryDate.split(",")[1]}`}
+                        </p>
+                        <p className="text-gray-400">{product?.deliveryType || "Standard Delivery"}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-16">
+                  <div className="max-w-md mx-auto bg-white rounded-xl overflow-hidden shadow-lg p-8 text-center">
+                    <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-10 w-10 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      No products found
+                    </h3>
+                    <p className="text-gray-500 mb-6">
+                      We couldn't find any products that match your current
+                      filter selections. Try adjusting your filters to see more
+                      results.
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <button
+                        onClick={clearAllFilters}
+                        className="px-5 py-2.5 bg-[#f7941d] text-white font-medium rounded-full hover:bg-orange-600 transition shadow-md"
+                      >
+                        Clear All Filters
+                      </button>
+                      <button
+                        onClick={() => {
+                          clearAllFilters();
+                          setActiveTab("All");
+                        }}
+                        className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition"
+                      >
+                        View All Products
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
+  );
+};
+
+export default Product;

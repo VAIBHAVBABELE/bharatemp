@@ -304,7 +304,7 @@ const Navbar = () => {
                 )}
               </div>
             ))}
-            <Link to="/pcb" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+            <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
             B2B Enquiry
             </Link>
           </div>
