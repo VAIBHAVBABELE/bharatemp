@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from './Component/Navbar';
+import Ouronline from './Component/B2bComponent/Ouronline.jsx'
 import Footer from './Component/Footer'
 import Product from './Component/HomeComponent/Product'
 import SingleProduct from './Component/HomeComponent/SingleProduct'
@@ -44,7 +45,7 @@ const App = () => {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/thankyou/:id" element={<Thanku />} />
           <Route path="/profile" element={<Profile />} />
-          
+          <Route path="/b2bpage" element={<Ouronline/>}/>
           {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
