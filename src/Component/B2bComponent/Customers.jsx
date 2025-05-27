@@ -68,7 +68,7 @@ const Section4 = () => {
   }, [totalSlides]);
 
   return (
-    <div className="w-full py-20 bg-white">
+    <div className="w-full py-10 bg-white">
       <h2 className="text-2xl text-[#133240] font-bold mb-2 lg:text-[41px] md:text-[30px] text-[25px]">
         Our Customer Feedback
       </h2>
@@ -76,8 +76,8 @@ const Section4 = () => {
         Don’t take our word for it. Trust our customers
       </p>
 
-      <div className="relative flex items-center justify-center">
-        <div className="overflow-hidden w-full max-w-7xl px-4">
+      <div className="flex items-center justify-center">
+        <div className="overflow-hidden w-full  px-4">
           <div
             className="flex transition-transform duration-700 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}

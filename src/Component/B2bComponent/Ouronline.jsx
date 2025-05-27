@@ -1,7 +1,7 @@
 import React from "react";
 import  Section2  from './Section2';
 import Section3 from './Section3'
-import Section4 from './Section4'
+import Customers from './Customers'
 const OnlinePresenceSection = () => {
   return (
     <div className=" w-full px-6 py-10  md:px-16">
@@ -37,7 +37,7 @@ const OnlinePresenceSection = () => {
     </div>
    <Section2/>
    <Section3/>
-   <Section4/>
+   <Customers/>
     </div>
   );
 };

@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Section1 from "./../Component/HomeComponent/Section1";
-import Section2 from "./../Component/HomeComponent/Section2";
-import Section3 from "./../Component/HomeComponent/Section3";
-import Section4 from "./../Component/HomeComponent/Section4";
 import image7 from "./../assets/homepage7.png";
 import vector1 from "./../assets/Vector1.png";
 import vector2 from "./../assets/Vector2.png";
-import image1 from "./../assets/homepage9.png";
-import image2 from "./../assets/homepage8.png";
 import vector3 from "./../assets/Vector3.png";
-import Section5 from "./../Component/HomeComponent/Section5";
-import image8 from "../assets/homepage8.png";
-import image9 from "../assets/homepage9.png";
 import icon4 from "../assets/icon4.png";
 import image10 from "../assets/homepage10.png";
 import blue from "../assets/bluelight.svg";
-// import InstagramCarousel from "../Component/HomeComponent/Instagram";
 import InstagramSection from "../Component/InstagramSection";
-// import Testimonials from "../Component/Testimonials";
 import { fetchProducts } from "../utils/api";
-import Customers from '../Component/B2bComponent/Customers.jsx'
-import Marquee from "../Component/HomeComponent/Marquee.jsx";
+import Product from '../Component/Subcategorycomponent/Product'
+import Section from '../Component/Subcategorycomponent/Section.jsx';
 
 const ProductSlider = () => {
   const [products, setProducts] = useState([]);
@@ -110,56 +99,7 @@ const ProductSlider = () => {
         </div>
       </div>
 
-      {/* Bottom Categories */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-between items-center ">
-        <div className="flex-1 bg-[#E0E0E0] shadow-md rounded-xl p-4 flex items-center  gap-6 justify-between w-full relative">
-          <div className="text-sm h-[76px] ">
-            <span className="text-[#555555]">
-              CATCH BIG <span className="text-[#1E3473]">DEALS</span>ON
-            </span>
-            <br />
-            <span className="font-semibold text-[#555555]"> Drone Parts</span>
-          </div>
-
-          <img
-            src={image9}
-            className="w-[220px] md:h-[160px] lg:h-[190px] h-[120px] object-contain absolute md:right-6 -right-3 md:-top-14 -top-8"
-          />
-          <img src={icon4} className=" right w-8 h-5" />
-        </div>
-
-        <div className="flex-1 bg-[#E0E0E0] shadow-md rounded-xl p-4 flex items-center  gap-6 justify-between w-full relative">
-          <div className="text-sm h-[76px] ">
-            <span className="text-[#555555]">
-              CATCH BIG <span className="text-[#1E3473]">DEALS</span>ON
-            </span>
-            <br />
-            <span className="font-semibold text-[#555555]"> Drone Parts</span>
-          </div>
-
-          <img
-            src={image8}
-            className="w-[210px] lg:h-[180px] h-[120px] object-contain absolute md:right-6 right-4 lg:-top-12 -top-4"
-          />
-          <img src={icon4} className=" right w-8 h-5" />
-        </div>
-
-        <div className="flex-1 bg-[#E0E0E0] shadow-md rounded-xl p-4 flex items-center  gap-6 justify-between w-full relative">
-          <div className="text-sm h-[76px] ">
-            <span className="text-[#555555]">
-              CATCH BIG <span className="text-[#1E3473]">DEALS</span>ON
-            </span>
-            <br />
-            <span className="font-semibold text-[#555555]"> Drone Parts</span>
-          </div>
-
-          <img
-            src={image10}
-                className="w-[210px] lg:h-[150px] h-[120px] object-contain absolute md:right-6 right-4 lg:-top-10 -top-4"
-          />
-          <img src={icon4} className=" right w-8 h-5" />
-        </div>
-      </div>
+     
 
       {loading ? (
         <div className="flex justify-center items-center py-10">
@@ -169,19 +109,20 @@ const ProductSlider = () => {
         <div className="text-center py-10 text-red-500">{error}</div>
       ) : (
         <>
-          <Section1 products={products} />
-          <Section2 products={products} />
-          <Section3 />
+        <Product/>
+          <Section/>
+          {/* <Section2 products={products} /> */}
+          {/* <Section3 />
           <Section1 products={products} />
           <Section5 />
           <InstagramSection/>
           {/* <Testimonials/> */}
-          <Customers/>
-          <Marquee/>
+          {/* <Customers/> */}
+          {/* <Marquee/>  */}
         </>
       )}
     </div>
   );
 };
 
-export default ProductSlider;
+export default ProductSlider ;
