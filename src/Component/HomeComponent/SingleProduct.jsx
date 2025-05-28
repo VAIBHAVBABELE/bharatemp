@@ -14,6 +14,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Section1 from "../HomeComponent/Section1";
 import { fetchProducts } from "../../utils/api";
+import SideCart from './SideCart';
+import ProductDetailsModal from './ProductDetailsModal';
 const backend = import.meta.env.VITE_BACKEND;
 
 // Bulk order pricing data
@@ -38,6 +40,8 @@ export default function ProductCard() {
     phone: "",
   });
   const [selectedBulkRange, setSelectedBulkRange] = useState(null);
+  const [showCart, setShowCart] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
@@ -115,6 +119,7 @@ export default function ProductCard() {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product);
+      setShowCart(true);
     }
   };
 
@@ -311,18 +316,12 @@ export default function ProductCard() {
 
           {/* Quantity Controls */}
           <div className="flex items-center gap-4">
-            <button
-              onClick={decrementQuantity}
-              className="w-10 h-10 rounded-full border cursor-pointer border-gray-300 flex items-center justify-center text-xl font-bold"
+            
+             <button 
+              onClick={handleAddToCart} 
+              className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
             >
-              −
-            </button>
-            <span className="text-xl">{quantity}</span>
-            <button
-              onClick={incrementQuantity}
-              className="w-10 h-10 rounded-full border cursor-pointer border-gray-300 flex items-center justify-center text-xl font-bold"
-            >
-              +
+              Add to Cart
             </button>
 
             <button 
@@ -334,7 +333,7 @@ export default function ProductCard() {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-4">
+          <div className="flex gap-5 items-center">
             <button
               onClick={handleBuyNow}
               className="w-[200px] bg-[#1e3473] text-white py-3 rounded-2xl cursor-pointer font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
@@ -445,7 +444,10 @@ export default function ProductCard() {
               increases in processor speed, multimedia performance, memory; and
               connectivity compared....
             </p>
-            <button className="bg-[#1e3473] text-white px-4 py-2 rounded-xl font-medium mb-4">
+            <button 
+              // onClick={() => setShowDetailsModal(true)}
+              className="bg-[#1e3473] text-white px-4 py-2 rounded-xl font-medium mb-4"
+            >
               More Details
             </button>
           </div>
@@ -589,6 +591,16 @@ export default function ProductCard() {
       ) : (
         <Section1 products={products} />
       )}
+
+      {/* Add SideCart */}
+      <SideCart isOpen={showCart} onClose={() => setShowCart(false)} />
+
+      {/* Add ProductDetailsModal */}
+      <ProductDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        product={product}
+      />
     </div>
   );
 }

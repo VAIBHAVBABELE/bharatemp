@@ -17,7 +17,11 @@ import icon2 from "../assets/icon2.png";
 import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import icon3 from './../assets/Facebook.svg'
+import icon4 from './../assets/Twitter.svg'
+import icon5 from './../assets/Instagram.svg'
 
+import icon6 from './../assets/YouTube.svg'
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -113,13 +117,13 @@ const Navbar = () => {
           <Link to="/store-location" className="hover:text-[#F7941D]">Support@bharatronix.com</Link>
           {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
           <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
-          <Link to="#" className="hover:text-[#F7941D]">+91 79827 48787</Link> 
+          <Link to="#" className="hover:text-[#F7941D]">+91 79827 48787</Link>
         </div>
         <div className="hidden lg:flex items-center text-[15px]">
           <img src={shipping} alt="Shipping" className="w-5 h-5 mr-2" />
           <span>24 hour delivery across India</span>
         </div>
-        <div className="flex items-center gap-4 text-sm">
+        {/* <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <FaGlobeAmericas />
             <FaChevronDown />
@@ -128,6 +132,23 @@ const Navbar = () => {
             <span>USD</span>
             <FaChevronDown />
           </div>
+        </div> */}
+        <div className=" flex flex-wrap   gap-4 items-center ">
+           <Link to="#" className="text-white  ">
+            <img src={icon5} alt="Instagram" className="w-6 h-6" />
+          </Link>
+          <Link to="#" className="text-white  ">
+            <img src={icon3} alt="Facebook" className="w-6 h-6" />
+          </Link>
+          <Link to="#" className="text-white  ">
+            <img src={icon6} alt="YouTube" className="w-6 h-6" />
+          </Link>
+          <Link to="#" className="text-white  ">
+            <img src={icon4} alt="Twitter" className="w-6 h-6" />
+          </Link>
+         
+
+         
         </div>
       </div>
 
@@ -186,8 +207,8 @@ const Navbar = () => {
                 onChange={handleSearchInputChange}
                 onKeyPress={handleKeyPress}
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
               >
                 <FaSearch size={15} className="text-white" />
@@ -199,7 +220,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4 text-gray-600">
             <div className="flex items-center space-x-4">
               {/* Shopping Bag Icon */}
-              <div 
+              <div
                 className="bg-gray-100 p-3 rounded-full relative cursor-pointer"
                 onClick={() => navigate('/cart')}
               >
@@ -217,7 +238,7 @@ const Navbar = () => {
               {/* User Icon or Auth Buttons */}
               {user ? (
                 <div className="relative">
-                  <div 
+                  <div
                     className="bg-gray-100 p-3 rounded-full cursor-pointer"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                   >
@@ -236,9 +257,9 @@ const Navbar = () => {
                       </button>
                       <button
                         onClick={() => {
-                            localStorage.removeItem('token');
-                            setUser(null);
-                            window.location.href = '/';
+                          localStorage.removeItem('token');
+                          setUser(null);
+                          window.location.href = '/';
                           setShowProfileDropdown(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -250,13 +271,13 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => navigate('/login')}
                     className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
                   >
                     Login
                   </button>
-                  <button 
+                  <button
                     onClick={() => navigate('/signup')}
                     className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
                   >
@@ -305,10 +326,10 @@ const Navbar = () => {
               </div>
             ))}
             <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
-            B2B Enquiry
+              B2B Enquiry
             </Link>
           </div>
-            {/* <div className="flex justify-end">
+          {/* <div className="flex justify-end">
                 <span>Track order</span>
             </div> */}
         </div>
@@ -325,7 +346,7 @@ const Navbar = () => {
                 onChange={handleSearchInputChange}
                 onKeyPress={handleKeyPress}
               />
-              <button 
+              <button
                 type="submit"
                 className="bg-[#F7941D] px-3 py-2 rounded-r-md text-white"
               >

@@ -559,7 +559,7 @@ const Checkout = () => {
       const createdOrderId = orderResponse.data.data.order._id;
 
       // Initiate PhonePe payment with the newly created orderId
-      const FRONTEND_URL = "http://localhost:5173/thankyou/" || "https://bharatroni-x-web-frontend.vercel.app/thankyou/" || "https://www.bharatronix.com/thankyou/" || window.location.origin;
+      const FRONTEND_URL =  "https://www.bharatronix.com/thankyou/";
 
       const paymentData = {
         orderId: createdOrderId, // Use the orderId directly instead of from state
