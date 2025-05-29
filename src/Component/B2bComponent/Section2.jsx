@@ -71,8 +71,8 @@ export default function B2BIndustriesSection() {
       </div>
   </section>
       {/* Brands */}
-     <Marquee pauseOnHover gradient={false} speed={50}>
-      <div className="flex gap-8 items-center py-4 w-full ">
+      <Marquee pauseOnHover gradient={false} speed={50}>
+      <div className="flex gap-8 items-center py-4 mb-10 w-full ">
         {brands.map((brand, index) => (
           <div
             key={index}

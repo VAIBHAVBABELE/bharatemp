@@ -96,6 +96,7 @@ const features = [
   ];
 
   return (
+    <>
     <div className="px-4 md:px-10 pt-6">
 {/* top section */}
         <div className=" py-4">
@@ -216,10 +217,13 @@ const features = [
           <InstagramSection/>
           {/* <Testimonials/> */}
           <Customers/>
-          <Marquee/>
+          
         </>
       )}
+     
     </div>
+     <Marquee/>
+     </>
   );
 };
 

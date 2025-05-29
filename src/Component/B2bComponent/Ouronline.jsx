@@ -4,8 +4,8 @@ import Section3 from './Section3'
 import Customers from './Customers'
 const OnlinePresenceSection = () => {
   return (
-    <div className=" w-full px-6 py-10  md:px-16">
-    <div className="flex flex-col md:flex-row   gap-10">
+    <div className=" w-full ">
+    <div className="flex flex-col md:flex-row  px-6 py-10  md:px-16  gap-10">
       {/* Left Text Content */}
       <div className="  w-full px-4">
         <h2 className="text-3xl md:text-4xl  lg:text-[57px] font-bold text-[#1E3473] mb-6">
@@ -36,8 +36,13 @@ const OnlinePresenceSection = () => {
     </div>
     </div>
    <Section2/>
+   <div className="px-6 py-10  md:px-16">
    <Section3/>
+
+   </div>
+   <div className="px-6 py-10  md:px-16">
    <Customers/>
+   </div>
     </div>
   );
 };

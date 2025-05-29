@@ -16,8 +16,11 @@ import Section1 from "../HomeComponent/Section1";
 import { fetchProducts } from "../../utils/api";
 import SideCart from './SideCart';
 import ProductDetailsModal from './ProductDetailsModal';
+import { toast } from "react-toastify";
+import Customers from "../B2bComponent/Customers";
 const backend = import.meta.env.VITE_BACKEND;
 
+  
 // Bulk order pricing data
 const bulkPriceData = [
   { range: "3-4", price: "₹50,080" },
@@ -34,6 +37,8 @@ export default function ProductCard() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showBulkOrder, setShowBulkOrder] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
   const [bulkOrderForm, setBulkOrderForm] = useState({
     name: "",
     email: "",
@@ -115,6 +120,17 @@ export default function ProductCard() {
     navigate(-1); // Go back to previous page
   };
 
+  const handleSubmitReview = () => {
+    if (reviewText.trim() === "") {
+      toast.error("Please enter a review");
+      return;
+    }
+    // Handle review submission
+    toast.success("Review submitted successfully");
+    setReviewText("");
+    setRating(0);
+  };
+
   // Handle adding to cart
   const handleAddToCart = () => {
     if (product) {
@@ -153,7 +169,6 @@ export default function ProductCard() {
   const handleBulkOrderSubmit = (e) => {
     e.preventDefault();
     // Handle bulk order submission
-    console.log("Bulk order form submitted:", bulkOrderForm);
     setShowBulkOrder(false);
   };
 
@@ -171,7 +186,6 @@ export default function ProductCard() {
   const handleBulkAddToCart = () => {
     if (selectedBulkRange) {
       // Add bulk items to cart
-      console.log("Adding bulk items to cart:", selectedBulkRange);
       setShowBulkOrder(false);
     }
   };
@@ -179,7 +193,6 @@ export default function ProductCard() {
   const handleBulkBuyNow = () => {
     if (selectedBulkRange) {
       // Process bulk buy now
-      console.log("Processing bulk buy now:", selectedBulkRange);
       setShowBulkOrder(false);
       navigate('/cart');
     }
@@ -445,7 +458,7 @@ export default function ProductCard() {
               connectivity compared....
             </p>
             <button 
-              // onClick={() => setShowDetailsModal(true)}
+              onClick={() => setShowDetailsModal(true)}
               className="bg-[#1e3473] text-white px-4 py-2 rounded-xl font-medium mb-4"
             >
               More Details
@@ -584,6 +597,8 @@ export default function ProductCard() {
           </div>
         </>
       )}
+
+      
       {loading ? (
         <div className="flex justify-center items-center py-10">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3473]"></div>
@@ -591,6 +606,48 @@ export default function ProductCard() {
       ) : (
         <Section1 products={products} />
       )}
+
+       {/* Review Section */}
+       <div className="w-full bg-[#1e3473] py-4 mt-8 rounded-2xl">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 justify-between">
+            <h3 className="text-xl font-semibold text-white">Write a Review</h3>
+            <div className="w-full md:flex-1 flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="flex items-center gap-2 md:gap-4 mx-0 md:mx-8">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`text-2xl md:text-3xl focus:outline-none cursor-pointer ${
+                      star <= (rating || 0) ? 'text-[#FFB800]' : 'text-gray-300'
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Write Review"
+                className="w-full md:flex-1 px-4 py-2 rounded-lg border-none bg-white focus:outline-none focus:ring-2 focus:ring-[#F7941D]"
+              />
+              <button
+                onClick={handleSubmitReview}
+                className="w-full md:w-[250px] bg-[#F7941D] text-white flex justify-center items-center cursor-pointer py-2 rounded-lg hover:bg-[#e88a1a] transition-colors font-medium"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <Customers/>
+
+     
 
       {/* Add SideCart */}
       <SideCart isOpen={showCart} onClose={() => setShowCart(false)} />

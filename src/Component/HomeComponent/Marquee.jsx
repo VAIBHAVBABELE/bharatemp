@@ -14,8 +14,8 @@ const brands = [
 
 export default function B2BIndustriesSection() {
   return (
-    <section className="px-4 md:px-8 lg:px-16 bg-white text-center">
-      <Marquee pauseOnHover gradient={false} speed={50}>
+    <section className="bg-white text-center mb-10">
+      <Marquee pauseOnHover gradient={false} speed={100}>
         <div className="flex gap-8 items-center py-4 w-full">
           {brands.map((brand, index) => (
             <div
