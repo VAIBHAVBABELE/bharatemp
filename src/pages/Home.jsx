@@ -51,6 +51,8 @@ const ProductSlider = () => {
     
     getProducts();
   }, []);
+
+  console.log(products)
   const cardData = [
   {
     image: top1,
