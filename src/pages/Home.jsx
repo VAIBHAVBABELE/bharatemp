@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
 import Section3 from "./../Component/HomeComponent/Section3";
@@ -53,32 +54,43 @@ const ProductSlider = () => {
   }, []);
 
   const cardData = [
-  {
-    image: top1,
-    title: 'Raspberry Pi',
-    version: '1.2.3',
-  },
-  {
-    image: top2,
-    title: 'Raspberry Pi',
-    version: '1.2.3',
-  },
-  {
-  image: top2,
-    title: 'Raspberry Pi',
-    version: '1.2.3',
-  },
-  {
-  image: top2,
-    title: 'Raspberry Pi',
-    version: '1.2.3',
-  },
-  {
-    image: top2,
-    title: 'Raspberry Pi',
-    version: '1.2.3',
-  }
-];
+    {
+      image: top1,
+      title: 'Development Boards',
+      version: 'Arduino, ESP32, RPi',
+      category: 'development-boards'
+    },
+    {
+      image: top2, 
+      title: 'Sensors',
+      version: 'Temperature, Pressure, Motion',
+      category: 'sensors'
+    },
+    {
+      image: top2,
+      title: 'Drone Parts',
+      version: 'ESC, Flight Controllers, Props',
+      category: 'drone-parts'
+    },
+    {
+      image: top2,
+      title: 'Batteries',
+      version: 'LiPo, Li-ion, NiMH',
+      category: 'batteries'
+    },
+    {
+      image: top2,
+      title: 'Motors & Drivers',
+      version: 'DC, Stepper, Servo',
+      category: 'motors-and-drivers'
+    },
+    {
+      image: top2,
+      title: 'Connectors',
+      version: 'Headers, Terminals, Cables',
+      category: 'connectors'
+    }
+  ];
 const features = [
     {
        img: cart1,
@@ -101,24 +113,27 @@ const features = [
     <div className="px-4 md:px-10 pt-6">
 {/* top section */}
         <div className=" py-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {cardData.map((card, index) => (
-          <div
+          <Link
+            to={`/product?category=${card.category}`}
             key={index}
-            className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between text-center"
+            className="group"
           >
-           <div>
-            <h2 className="text-lg font-semibold text-blue-900">{card.title}</h2>
-            <p className="text-sm text-gray-500">Version {card.version}</p>
-             </div>
-             <div className="">
-             <img
-              src={card.image}
-              alt={card.title}
-              className="w-20 h-20 object-cover mb-2"
-            />
+            <div className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between hover:shadow-lg transition-shadow duration-300">
+              <div>
+                <h2 className="text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">{card.title}</h2>
+                <p className="text-sm text-gray-500">{card.version}</p>
+              </div>
+              <div className="">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="w-20 h-20 object-cover mb-2"
+                />
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
