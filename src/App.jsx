@@ -10,6 +10,7 @@ import Cart from './Component/Cart/Cart'
 import Checkout from './Component/Cart/Checkout'
 import Thanku from "./Component/HomeComponent/Thankyou.jsx";
 import Profile from "./Component/HomeComponent/Profile";
+import TrackOrder from "./pages/TrackOrder";
 import { CartProvider } from "./context/CartContext.jsx";
 import Login from "./Component/Login";
 import Signup from "./Component/Signup";
@@ -39,6 +40,7 @@ import ShippingPolicy from './pages/ShippingPolicy'
 import ReturnPolicy from './pages/ReturnPolicy'
 import WarrantyPolicy from './pages/WarrantyPolicy'
 import Subcategory  from './pages/Subcategory.jsx'
+
 const App = () => {
   return (
     <CartProvider>
@@ -48,6 +50,7 @@ const App = () => {
           {/* Route Definitions */}
           <Route path="/" element={<Home />} />
           <Route path="/product" element={<Product />} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/product/:id" element={<SingleProduct />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />

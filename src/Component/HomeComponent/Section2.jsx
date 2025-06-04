@@ -99,9 +99,12 @@ export default function DronePartsCarousel({ products = [] }) {
       if (width < 640) {
         // Mobile
         setItemsToShow(1);
-      } else if (width >= 640 && width < 1024) {
+      } else if (width >= 640 && width < 1100) {
         // Tablet
         setItemsToShow(2);
+      } else if (width >= 1100 && width < 1300) {
+        // Desktop
+        setItemsToShow(3);
       } else {
         // Desktop
         setItemsToShow(4);
@@ -259,6 +262,8 @@ export default function DronePartsCarousel({ products = [] }) {
                 ? "grid-cols-1"
                 : itemsToShow === 2
                 ? "grid-cols-2"
+                : itemsToShow === 3
+                ? "grid-cols-3"
                 : "grid-cols-4"
             }`}
           >
@@ -272,7 +277,7 @@ export default function DronePartsCarousel({ products = [] }) {
                   <p className="text-[10px] font-semibold text-[#D9D3D3] mb-1">
                     {product.brand}
                   </p>
-                  <h2 className="md:text-[18px] text-[12px] font-bold text-[#1E3473] mb-2">
+                  <h2 className="md:text-[13px] text-[10px] font-bold text-[#1E3473] mb-2">
                     {product.product_name}
                   </h2>
                   <img
