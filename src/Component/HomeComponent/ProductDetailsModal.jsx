@@ -3,7 +3,6 @@ import { FaTimes } from 'react-icons/fa';
 
 const ProductDetailsModal = ({ isOpen, onClose, product }) => {
   const [activeTab, setActiveTab] = useState('Features');
-  console.log("product", product); 
   const features = [
     'Faster Wireless modem',
     'Fastest Bluetooth Capability',
