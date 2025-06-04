@@ -273,11 +273,12 @@ export default function DronePartsCarousel({ products = [] }) {
                     {product.brand}
                   </p>
                   <h2 className="md:text-[18px] text-[12px] font-bold text-[#1E3473] mb-2">
-                    {product.name}
+                    {product.product_name}
                   </h2>
                   <img
-                    src={product.image[0]}
-                    alt={product.name}
+                    src={product.product_image_main
+                    }
+                    alt={product.product_name}
                     className="w-full h-24 object-contain mb-4"
                   />
                   <div className="flex items-center flex-wrap gap-2 mb-2">
@@ -300,10 +301,10 @@ export default function DronePartsCarousel({ products = [] }) {
                   <div className="w-full flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <p className="lg:text-[15px] text-[12px] font-bold text-[#000000]">
-                        ₹{product.new_price?.toLocaleString("en-IN")}
+                        ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
                       </p>
                       <p className="text-sm line-through text-gray-400">
-                        ₹{product.price?.toLocaleString("en-IN")}
+                        ₹{product.non_discounted_price?.toLocaleString("en-IN")}
                       </p>
                     </div>
                     <div className="flex justify-end items-end">

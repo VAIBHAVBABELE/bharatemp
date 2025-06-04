@@ -3,7 +3,6 @@ import { FaTimes } from 'react-icons/fa';
 
 const ProductDetailsModal = ({ isOpen, onClose, product }) => {
   const [activeTab, setActiveTab] = useState('Features');
-
   const features = [
     'Faster Wireless modem',
     'Fastest Bluetooth Capability',
@@ -57,24 +56,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
               <div>
                 <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Features</h2>
                 <div className="space-y-4">
-                  {features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#1e3473] flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-white"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 text-lg">{feature}</span>
-                    </div>
-                  ))}
+                 {product.product_feature}
                 </div>
               </div>
             )}
@@ -83,34 +65,14 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
               <div>
                 <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Specifications</h2>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">Processor</h3>
-                      <p className="text-gray-700">Broadcom BCM2711</p>
+                  {product.product_specification[0]?.data?.map((spec, index) => (
+                    <div key={spec._id} className="space-y-4">
+                      <div className="border-b pb-2">
+                        <h3 className="text-sm text-gray-500">{spec.key}</h3>
+                        <p className="text-gray-700">{spec.value}</p>
+                      </div>
                     </div>
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">RAM</h3>
-                      <p className="text-gray-700">8GB LPDDR4-3200</p>
-                    </div>
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">Storage</h3>
-                      <p className="text-gray-700">MicroSD card support</p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">Connectivity</h3>
-                      <p className="text-gray-700">2.4 GHz and 5.0 GHz IEEE 802.11ac wireless</p>
-                    </div>
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">Ports</h3>
-                      <p className="text-gray-700">2 × USB 3.0 ports, 2 × USB 2.0 ports</p>
-                    </div>
-                    <div className="border-b pb-2">
-                      <h3 className="text-sm text-gray-500">Power</h3>
-                      <p className="text-gray-700">5V DC via USB-C connector</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -118,13 +80,13 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
             {activeTab === 'Images' && (
               <div>
                 <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Product Images</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {product.image?.map((img, index) => (
-                    <div key={index} className="aspect-square rounded-lg overflow-hidden border border-gray-200">
+                <div className="grid grid-cols-3 gap-4">
+                  {product.product_image_sub?.map((img, index) => (
+                    <div key={index} className="aspect-square flex justify-center items-center w-[200px] h-[200px] rounded-lg overflow-hidden border border-gray-200">
                       <img
                         src={img}
                         alt={`${product.name} view ${index + 1}`}
-                        className="w-full h-full object-contain"
+                        className="w-[90%] h-[90%] object-contain"
                       />
                     </div>
                   ))}
