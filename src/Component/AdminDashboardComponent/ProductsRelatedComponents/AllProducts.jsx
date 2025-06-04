@@ -57,7 +57,6 @@ const AllProducts = () => {
 
   // Open Modal for delete products
   const openModalDelete = (id) => {
-    console.log("id in openModalDelete", id);
     setSelectedProduct(id);
     setIsDeleteModalOpen(true);
   };
@@ -149,13 +148,11 @@ const AllProducts = () => {
 
   // Single product delete
   const handleDelete = (productId) => {
-    console.log("productId in handleDelete", productId);
     openModalDelete(productId);
   };
 
   async function deleteProduct(id) {
 
-    console.log("id in deleteProduct", id);
     toast.dismiss();
     try {
       setLoading(true);
@@ -211,7 +208,6 @@ const AllProducts = () => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  console.log("products", products);
 
   // View mode toggle buttons
   const ViewModeToggle = () => (
