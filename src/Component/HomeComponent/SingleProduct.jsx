@@ -14,20 +14,19 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Section1 from "../HomeComponent/Section1";
 import { fetchProducts } from "../../utils/api";
-import SideCart from './SideCart';
-import ProductDetailsModal from './ProductDetailsModal';
+import SideCart from "./SideCart";
+import ProductDetailsModal from "./ProductDetailsModal";
 import { toast } from "react-toastify";
 import Customers from "../B2bComponent/Customers";
 const backend = import.meta.env.VITE_BACKEND;
 
-  
 // Bulk order pricing data
 const bulkPriceData = [
   { range: "3-4", price: "₹50,080" },
   { range: "1-2", price: "₹25,000" },
   { range: "2-3", price: "₹35,040" },
   { range: "4-5", price: "₹60,100" },
-  { range: "5-6", price: "₹75,150" }
+  { range: "5-6", price: "₹75,150" },
 ];
 
 export default function ProductCard() {
@@ -58,7 +57,7 @@ export default function ProductCard() {
       try {
         // Fetch from API
         const response = await axios.get(`${backend}/product/${id}`);
-        
+
         if (response.data.status === "Success" && response.data.data.product) {
           setProduct(response.data.data.product);
         } else {
@@ -73,7 +72,7 @@ export default function ProductCard() {
         }
       } catch (error) {
         console.error("Error fetching product:", error);
-        
+
         // Try to get from localStorage as fallback
         const selectedProduct = localStorage.getItem("selectedProduct");
         if (selectedProduct) {
@@ -86,18 +85,16 @@ export default function ProductCard() {
         setLoading(false);
       }
     };
-    
+
     if (id) {
       fetchProductData();
       window.scrollTo(0, 0);
     }
   }, [id]);
 
-
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Fetch products from the backend
     const getProducts = async () => {
       try {
@@ -111,7 +108,7 @@ export default function ProductCard() {
         console.error("Error fetching products:", err);
       }
     };
-    
+
     getProducts();
   }, []);
 
@@ -194,7 +191,7 @@ export default function ProductCard() {
     if (selectedBulkRange) {
       // Process bulk buy now
       setShowBulkOrder(false);
-      navigate('/cart');
+      navigate("/cart");
     }
   };
 
@@ -213,7 +210,7 @@ export default function ProductCard() {
     return (
       <div className="p-10 flex flex-col justify-center items-center h-screen">
         <div className="text-red-500 font-semibold mb-4">{error}</div>
-        <button 
+        <button
           onClick={handleBack}
           className="px-4 py-2 bg-[#1e3473] text-white rounded-lg"
         >
@@ -236,7 +233,7 @@ export default function ProductCard() {
       {/* Breadcrumb Navigation */}
       <div className="w-full font-[outfit] pb-10 flex md:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium px-4 py-2 mt-4 ">
         <div className="flex items-center flex-wrap gap-3">
-          <button 
+          <button
             onClick={handleBack}
             className="w-10 h-10 flex items-center justify-center cursor-pointer bg-[#f7941d] text-white rounded-full"
           >
@@ -250,7 +247,7 @@ export default function ProductCard() {
           </span>
           <div className="text-[#2F294D] pl-0 md:pl-10 font-semibold whitespace-nowrap">
             Single Product Page
-        </div>
+          </div>
         </div>
       </div>
       {/* Main Content */}
@@ -259,12 +256,8 @@ export default function ProductCard() {
         <div className="w-full lg:w-[45%]">
           <div className="bg-white rounded-lg mb-4">
             <img
-              src={
-                product.image && product.image.length > 0
-                  ? product.image[0]
-                  : shop
-              }
-              alt={product.name}
+              src={product.product_image_main}
+              alt={product.product_name}
               className="w-full h-[400px] object-contain"
             />
           </div>
@@ -275,13 +268,14 @@ export default function ProductCard() {
                 key={index}
                 className="border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-[#1e3473]"
               >
-                <img 
+                <img
                   src={
-                    product.image && product.image[index - 1]
-                      ? product.image[index - 1]
+                    product.product_image_sub &&
+                    product.product_image_sub[index - 1]
+                      ? product.product_image_sub[index - 1]
                       : shop
                   }
-                  alt={`${product.name} thumbnail ${index}`}
+                  alt={`${product.product_name} thumbnail ${index}`}
                   className="w-full h-[100px] object-contain"
                 />
               </div>
@@ -291,25 +285,36 @@ export default function ProductCard() {
 
         {/* Right: Product Details */}
         <div className="w-full lg:w-[45%] space-y-6">
-          <div className="flex justify-between items-start mb-2">
+          <div className="flex justify-between items-center mb-2">
             <h1 className="text-2xl md:text-3xl font-bold text-[#2F294D]">
-              {product.name}
+              {product.product_name}
               <span className="ml-4 inline-block px-3 py-1 text-sm font-medium text-green-600 bg-green-50 rounded-full">
-                In stock
-                </span>
+                {product.product_instock ? "In stock" : "Out of stock"}
+              </span>
             </h1>
           </div>
 
           {/* Rating Section */}
           <div className="flex items-center gap-2 mb-2">
             <div className="flex text-[#FFB800]">
-              {[1, 2, 3, 4].map((star) => (
-                <FaStar key={star} className="w-5 h-5" />
-              ))}
-              <FaStarHalfAlt className="w-5 h-5" />
+              {Array(5)
+                .fill()
+                .map((_, i) => (
+                  <span key={i}>
+                    {i < Math.floor(product.review_stars) ? (
+                      <FaStar className="w-5 h-5" />
+                    ) : i < product.review_stars ? (
+                      <FaStarHalfAlt className="w-5 h-5" />
+                    ) : (
+                      <FaRegStar className="w-5 h-5" />
+                    )}
+                  </span>
+                ))}
             </div>
-            <span className="text-gray-600">4.5</span>
-            <span className="text-gray-400">from 392 Reviews</span>
+            <span className="text-gray-600">{product.review_stars}</span>
+            <span className="text-gray-400">
+              from {product.no_of_reviews} Reviews
+            </span>
           </div>
 
           {/* Price Section */}
@@ -318,27 +323,35 @@ export default function ProductCard() {
               ₹2345 (incl. of all taxes)
             </div>
             <div className="flex items-baseline gap-4">
-              <span className="text-4xl font-bold text-[#162554]">₹50,080</span>
+              <span className="text-4xl font-bold text-[#162554]">
+                ₹
+                {product.discounted_single_product_price?.toLocaleString(
+                  "en-IN"
+                )}
+              </span>
               <span className="text-sm text-gray-500">+₹41 Shipping</span>
             </div>
-          <div className="flex items-center gap-2">
-              <span className="text-gray-500 line-through">MRP ₹3,029.50</span>
-              <span className="text-[#F7941D] font-medium">55% Off</span>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500 line-through">
+                MRP ₹{product.non_discounted_price?.toLocaleString("en-IN")}
+              </span>
+              <span className="text-[#F7941D] font-medium">
+                {product.discount}% Off
+              </span>
             </div>
           </div>
 
           {/* Quantity Controls */}
           <div className="flex items-center gap-4">
-            
-             <button 
-              onClick={handleAddToCart} 
+            <button
+              onClick={handleAddToCart}
               className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
             >
               Add to Cart
             </button>
 
-            <button 
-              onClick={handleBulkOrderClick} 
+            <button
+              onClick={handleBulkOrderClick}
               className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
             >
               Bulk Orders
@@ -427,7 +440,7 @@ export default function ProductCard() {
               <div className="flex flex-col">
                 <span className="font-medium">Secure</span>
                 <span>Certified marketplace</span>
-                </div>
+              </div>
             </div>
           </div>
 
@@ -452,12 +465,9 @@ export default function ProductCard() {
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-[#2F294D]">Description</h2>
             <p className="text-gray-500 mb-2 text-base font-semibold">
-              Raspberry Pi 4 Model B is the latest product in the popular
-              Raspberry Pi range of computers. It offers ground-breaking
-              increases in processor speed, multimedia performance, memory; and
-              connectivity compared....
+              {product.product_description}
             </p>
-            <button 
+            <button
               onClick={() => setShowDetailsModal(true)}
               className="bg-[#1e3473] text-white px-4 py-2 rounded-xl font-medium mb-4"
             >
@@ -470,18 +480,20 @@ export default function ProductCard() {
       {/* Bulk Order Sidebar */}
       {showBulkOrder && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
             onClick={handleCloseBulkOrder}
           />
-          
+
           <div className="fixed right-0 top-0 h-full w-full md:w-[500px] bg-white z-50 shadow-xl rounded-l-3xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="p-6">
                 <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-xl font-bold text-[#1e3473]">Bulk Order Discounts</h2>
-                  <button 
+                  <h2 className="text-xl font-bold text-[#1e3473]">
+                    Bulk Order Discounts
+                  </h2>
+                  <button
                     onClick={handleCloseBulkOrder}
                     className="text-gray-500 hover:text-gray-700"
                   >
@@ -493,29 +505,33 @@ export default function ProductCard() {
 
               {/* Price Table Header */}
               <div className="px-6">
-              <div className="bg-[#1e3473] text-white px-6 py-2 grid grid-cols-4 text-sm rounded-xl">
-                <span className="col-span-1 ">Select</span>
-                <span className="col-span-1 text-center">Quantity</span>
-                <span className="col-span-2 text-center">Discounted Price per piece</span>
-              </div>
+                <div className="bg-[#1e3473] text-white px-6 py-2 grid grid-cols-4 text-sm rounded-xl">
+                  <span className="col-span-1 ">Select</span>
+                  <span className="col-span-1 text-center">Quantity</span>
+                  <span className="col-span-2 text-center">
+                    Discounted Price per piece
+                  </span>
+                </div>
               </div>
 
               {/* Price Table Body */}
               <div className="flex-1 overflow-y-auto py-2 px-6">
                 {bulkPriceData.map((item, index) => (
-                  <div 
+                  <div
                     key={index}
                     onClick={() => handleBulkRangeSelect(item.range)}
                     className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${
-                      selectedBulkRange === item.range ? 'bg-blue-50 border border-gray-800 rounded-xl px-6' : 'px-6'
+                      selectedBulkRange === item.range
+                        ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
+                        : "px-6"
                     }`}
                   >
                     <div className="flex items-center">
-                      <div 
+                      <div
                         className={`w-3 h-3 rounded-full border-2 ${
-                          selectedBulkRange === item.range 
-                            ? 'border-[#f7941d] bg-[#f7941d]' 
-                            : 'border-gray-300'
+                          selectedBulkRange === item.range
+                            ? "border-[#f7941d] bg-[#f7941d]"
+                            : "border-gray-300"
                         } flex items-center justify-center`}
                       >
                         {selectedBulkRange === item.range && (
@@ -523,82 +539,100 @@ export default function ProductCard() {
                         )}
                       </div>
                     </div>
-                    <span className="text-gray-600 text-center">{item.range}</span>
-                    <span className="text-[#1e3473] col-span-2 text-center font-medium">{item.price}</span>
+                    <span className="text-gray-600 text-center">
+                      {item.range}
+                    </span>
+                    <span className="text-[#1e3473] col-span-2 text-center font-medium">
+                      {item.price}
+                    </span>
                   </div>
                 ))}
-                  <div className="py-4 border-t border-gray-200">
-                <div className="flex justify-between gap-10">
-                  <button
-                    onClick={handleBulkAddToCart}
-                    className="flex-1 px-4 py-2 bg-[#f7941d] text-white rounded-xl font-medium hover:bg-[#e88a1a] transition-colors flex items-center justify-center gap-2"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M9 20a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zm-7-3h7a2 2 0 002-2V9a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" strokeWidth="2"/>
-                    </svg>
-                    Add to Cart
-                  </button>
-                  <button
-                    onClick={handleBulkBuyNow}
-                    className="flex-1 px-4 py-2 bg-[#1e3473] text-white rounded-xl font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M17 8l4 4m0 0l-4 4m4-4H3" strokeWidth="2"/>
-                    </svg>
-                    Buy Now
-                  </button>
+                <div className="py-4 border-t border-gray-200">
+                  <div className="flex justify-between gap-10">
+                    <button
+                      onClick={handleBulkAddToCart}
+                      className="flex-1 px-4 py-2 bg-[#f7941d] text-white rounded-xl font-medium hover:bg-[#e88a1a] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          d="M9 20a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zm-7-3h7a2 2 0 002-2V9a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                      Add to Cart
+                    </button>
+                    <button
+                      onClick={handleBulkBuyNow}
+                      className="flex-1 px-4 py-2 bg-[#1e3473] text-white rounded-xl font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path d="M17 8l4 4m0 0l-4 4m4-4H3" strokeWidth="2" />
+                      </svg>
+                      Buy Now
+                    </button>
+                  </div>
                 </div>
               </div>
-              </div>
               <div className="p-6">
-              <div className="bg-[#1e3473] rounded-2xl p-6 text-white">
-                <h3 className="text-lg font-bold mb-4">Get Customised Price</h3>
-                <form onSubmit={handleBulkOrderSubmit} className="space-y-4">
-                  <div>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Name"
-                      value={bulkOrderForm.name}
-                      onChange={handleBulkOrderInputChange}
-                      className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email address"
-                      value={bulkOrderForm.email}
-                      onChange={handleBulkOrderInputChange}
-                      className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Phone Number"
-                      value={bulkOrderForm.phone}
-                      onChange={handleBulkOrderInputChange}
-                      className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full py-2 bg-[#F7941D] text-white rounded-xl font-medium hover:bg-[#e88a1a] transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </form>
-              </div>
+                <div className="bg-[#1e3473] rounded-2xl p-6 text-white">
+                  <h3 className="text-lg font-bold mb-4">
+                    Get Customised Price
+                  </h3>
+                  <form onSubmit={handleBulkOrderSubmit} className="space-y-4">
+                    <div>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Name"
+                        value={bulkOrderForm.name}
+                        onChange={handleBulkOrderInputChange}
+                        className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email address"
+                        value={bulkOrderForm.email}
+                        onChange={handleBulkOrderInputChange}
+                        className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Phone Number"
+                        value={bulkOrderForm.phone}
+                        onChange={handleBulkOrderInputChange}
+                        className="w-full p-2 rounded-xl bg-white text-gray-800 placeholder-gray-400"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full py-2 bg-[#F7941D] text-white rounded-xl font-medium hover:bg-[#e88a1a] transition-colors"
+                    >
+                      Sign Up
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </>
       )}
 
-      
       {loading ? (
         <div className="flex justify-center items-center py-10">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3473]"></div>
@@ -607,8 +641,8 @@ export default function ProductCard() {
         <Section1 products={products} />
       )}
 
-       {/* Review Section */}
-       <div className="w-full bg-[#1e3473] py-4 mt-8 rounded-2xl">
+      {/* Review Section */}
+      <div className="w-full bg-[#1e3473] py-4 mt-8 rounded-2xl">
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 justify-between">
             <h3 className="text-xl font-semibold text-white">Write a Review</h3>
@@ -619,7 +653,7 @@ export default function ProductCard() {
                     key={star}
                     onClick={() => setRating(star)}
                     className={`text-2xl md:text-3xl focus:outline-none cursor-pointer ${
-                      star <= (rating || 0) ? 'text-[#FFB800]' : 'text-gray-300'
+                      star <= (rating || 0) ? "text-[#FFB800]" : "text-gray-300"
                     }`}
                   >
                     ★
@@ -644,10 +678,7 @@ export default function ProductCard() {
         </div>
       </div>
 
-
-      <Customers/>
-
-     
+      <Customers />
 
       {/* Add SideCart */}
       <SideCart isOpen={showCart} onClose={() => setShowCart(false)} />

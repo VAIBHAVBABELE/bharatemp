@@ -1,27 +1,31 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { IoBagOutline } from "react-icons/io5";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
-import { Link, useNavigate } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
-import fallbackImage1 from '../../assets/homepage1.png';
-import fallbackImage2 from '../../assets/homepage2.png';
-import fallbackImage3 from '../../assets/homepage3.png';
-import fallbackImage4 from '../../assets/homepage4.png';
-import fallbackImage5 from '../../assets/homepage5.png';
-import fallbackImage6 from '../../assets/homepage6.png';
+import fallbackImage1 from "../../assets/homepage1.png";
+import fallbackImage2 from "../../assets/homepage2.png";
+import fallbackImage3 from "../../assets/homepage3.png";
+import fallbackImage4 from "../../assets/homepage4.png";
+import fallbackImage5 from "../../assets/homepage5.png";
+import fallbackImage6 from "../../assets/homepage6.png";
 
 const fallbackImages = [
-  fallbackImage1, fallbackImage2, fallbackImage3, 
-  fallbackImage4, fallbackImage5, fallbackImage6
+  fallbackImage1,
+  fallbackImage2,
+  fallbackImage3,
+  fallbackImage4,
+  fallbackImage5,
+  fallbackImage6,
 ];
 
-const tabs = ['Featured', 'On Sale', 'Top Rated'];
+const tabs = ["Featured", "On Sale", "Top Rated"];
 
 // Fallback products in case API fails or props are not passed
 const fallbackProducts = [
   {
-    _id: 'prod1',
+    _id: "prod1",
     name: "Mark 34",
     brand: "Battery",
     price: 4029.5,
@@ -33,7 +37,7 @@ const fallbackProducts = [
     reviewCount: 23,
   },
   {
-    _id: 'prod2',
+    _id: "prod2",
     name: "RedBoard Plus",
     brand: "Spark Fun",
     price: 73529.5,
@@ -48,36 +52,37 @@ const fallbackProducts = [
 ];
 
 const ProductSlider = ({ products = [] }) => {
-  const [activeTab, setActiveTab] = useState('Featured');
+  const [activeTab, setActiveTab] = useState("Featured");
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
   // Use passed products or fallback to default if empty
-  const allProducts = products.length > 0 
-    ? products.map((product, index) => ({
-        ...product,
-        // Ensure products have all required fields
-        image: product.image || fallbackImages[index % fallbackImages.length],
-        rating: product.rating || 4,
-        reviewCount: product.reviewCount || 15,
-        tag: "BUY NOW",
-        tags: "Add to cart"
-      }))
-    : fallbackProducts;
+  const allProducts =
+    products.length > 0
+      ? products.map((product, index) => ({
+          ...product,
+          // Ensure products have all required fields
+          image: product.image || fallbackImages[index % fallbackImages.length],
+          rating: product.rating || 4,
+          reviewCount: product.reviewCount || 15,
+          tag: "BUY NOW",
+          tags: "Add to cart",
+        }))
+      : fallbackProducts;
 
   // Filter products based on active tab
   const getFilteredProducts = () => {
-    if (activeTab === 'On Sale') {
+    if (activeTab === "On Sale") {
       // Filter products with a discount (oldPrice > price)
       return allProducts
-        .filter(product => product.oldPrice && product.oldPrice > product.price)
+        .filter(
+          (product) => product.oldPrice && product.oldPrice > product.price
+        )
         .slice(0, 4);
     }
-    if (activeTab === 'Top Rated') {
+    if (activeTab === "Top Rated") {
       // Filter products with high ratings
-      return allProducts
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 3);
+      return allProducts.sort((a, b) => b.rating - a.rating).slice(0, 3);
     }
     // Featured - return all products or a subset if there are many
     return allProducts.slice(0, 6);
@@ -95,13 +100,13 @@ const ProductSlider = ({ products = [] }) => {
   const handleBuyNow = (e, product) => {
     e.stopPropagation(); // Prevent the card click event
     addToCart(product);
-    navigate('/cart');
+    navigate("/cart");
   };
 
   // Handle product click to view product details
   const handleProductClick = (product) => {
     navigate(`/product/${product._id}`);
-    localStorage.setItem('selectedProduct', JSON.stringify(product));
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
   };
 
   return (
@@ -113,8 +118,9 @@ const ProductSlider = ({ products = [] }) => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 font-medium lg:text-[20px] md:text-[13px]  text-[10px] relative ${activeTab === tab ? 'text-[#333333]  ' : 'text-gray-500 '
-                }`}
+              className={`pb-2 font-medium lg:text-[20px] md:text-[13px]  text-[10px] relative ${
+                activeTab === tab ? "text-[#333333]  " : "text-gray-500 "
+              }`}
             >
               {tab}
               {activeTab === tab && (
@@ -137,80 +143,92 @@ const ProductSlider = ({ products = [] }) => {
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[290px] hover:h-[350px] h-[310px] cursor-pointer">
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[290px] hover:h-[350px] h-[310px] cursor-pointer"
+          >
             <div className="p-4 flex flex-col items-start relative">
-              <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">{product.brand}</p>
+              <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">
+                {product.brand}
+              </p>
               <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:hidden block mb-4">
-                {product.name}
+                {product.product_name}
               </h2>
               <img
-                src={product.image[0]}
-                alt={product.name}
+                src={product.product_image_main}
+                alt={product.brand_name}
                 className="w-full h-24 object-contain mb-4"
               />
-             
+
               <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:block hidden mb-4">
-                {product.name}
-                <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:block hidden ">{product.brand}</p>
-             
+                {product.brand_name}
+                <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:block hidden ">
+                  {product.brand}
+                </p>
+
                 <div className=" items-center group-hover:flex hidden my-3">
-                        {Array(5).fill().map((_, i) => (
-                          <span key={i} className="text-orange-400">
-                            {i < Math.floor(product.rating) ? (
-                              <FaStar />
-                            ) : i < product.rating ? (
-                              <FaStarHalfAlt />
-                            ) : (
-                              <FaRegStar />
-                            )}
-                          </span>
-                        ))}
-                        <span className="text-gray-600 ml-1 text-sm">({product.reviewCount})</span>
-                      </div>
- 
-                      <div className=" items-center gap-2 group-hover:flex hidden">
+                  {Array(5)
+                    .fill()
+                    .map((_, i) => (
+                      <span key={i} className="text-orange-400">
+                        {i < Math.floor(product.review_stars) ? (
+                          <FaStar />
+                        ) : i < product.rating ? (
+                          <FaStarHalfAlt />
+                        ) : (
+                          <FaRegStar />
+                        )}
+                      </span>
+                    ))}
+                  <span className="text-gray-600 ml-1 text-sm">
+                    ({product.no_of_reviews})
+                  </span>
+                </div>
+
+                <div className=" items-center gap-2 group-hover:flex hidden">
                   <p className="lg:text-[17px] text-[12px]  font-bold text-[#000000]">
-                    ₹{product.new_price?.toLocaleString("en-IN")}
+                    ₹
+                    {product.discounted_single_product_price?.toLocaleString(
+                      "en-IN"
+                    )}
                   </p>
                   <p className="text-sm line-through text-gray-400">
-                    ₹{product.price?.toLocaleString("en-IN")}
+                    ₹{product.non_discounted_price?.toLocaleString("en-IN")}
                   </p>
                 </div>
-             
               </h2>
               <div className="flex items-center flex-wrap gap-2 mb-2">
-                <span 
+                <span
                   className="bg-[#f7941d] text-white lg:text-[12px] font-semibold px-3 py-1 rounded-full cursor-pointer"
                   onClick={(e) => handleBuyNow(e, product)}
                 >
                   {product.tag}
                 </span>
-                <span 
+                <span
                   className="bg-gray-200 text-[#f7941d] px-3 rounded-full cursor-pointer"
                   onClick={(e) => handleAddToCart(e, product)}
                 >
-                  {isInCart(product._id) ? `In Cart (${getItemQuantity(product._id)})` : product.tags}
+                  {isInCart(product._id)
+                    ? `In Cart (${getItemQuantity(product._id)})`
+                    : product.tags}
                 </span>
               </div>
               <div className=" w-full flex  justify-between items-center  mb-2">
-
                 <div className="flex items-center gap-2 group-hover:hidden mb-2">
                   <p className="lg:text-[17px] text-[12px]  font-bold text-[#000000]">
-                    ₹{product.new_price?.toLocaleString("en-IN")}
+                    ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
                   </p>
                   <p className="text-sm line-through text-gray-400">
-                    ₹{product.price?.toLocaleString("en-IN")}
+                    ₹{product.non_discounted_price?.toLocaleString("en-IN")}
                   </p>
                 </div>
               </div>
               <hr />
               <div className=" absolute -bottom-8 gap-1 left-0 w-full bg-white text-[#5D5D5D] px-2 py-2 flex justify-between items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-900 rounded-b-2xl">
                 <div className="  text-[14px] text-[#ABA1A1] font-[outfit]">
-                Get it <span className='text-black'> Friday,</span> Jan 18<br/>
-                <span className="mr-1">   FREE Delivery</span> 
+                  Get it <span className="text-black"> Friday,</span> Jan 18
+                  <br />
+                  <span className="mr-1"> FREE Delivery</span>
                 </div>
               </div>
-
             </div>
           </div>
         ))}
