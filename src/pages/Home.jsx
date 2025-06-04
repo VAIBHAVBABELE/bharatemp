@@ -95,16 +95,16 @@ const features = [
     {
        img: cart1,
       title: '100% Original Products',
-      subtitle: 'We Only sell genuine Products',
+      subtitle: 'Shop worry-free with 100% original products.',
     },
     { img: cart2,
       title: 'Secure Payment',
-      subtitle: 'We Only sell genuine Products',
+      subtitle: 'Secure and seamless payments, every time.',
     },
     {
       img: cart3,
       title: '24×7 Technical support available',
-      subtitle: 'We Only sell genuine Products',
+      subtitle: 'We’re always here – round-the-clock technical assistance.',
     },
   ];
 
