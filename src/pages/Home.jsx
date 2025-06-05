@@ -139,9 +139,9 @@ const features = [
     </div>
 
     
-      <div className="bg-[#000127] w-full lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
+      <div className="bg-[#000127] w-full lg:h-[550px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
         {/* Left: Text Section */}
-        <div className="flex-1 md:w-1/2 w-full lg:text-left">
+        <div className="flex-1 md:w-1/2 w-full lg:text-left  pt-12">
           <h2 className="md:text-[33.12px] text-[20px] text-[#FFFFFF] font-semibold">
             Rasberry Pie
           </h2>
@@ -159,7 +159,7 @@ const features = [
             </button>
           </div>
           {/* Icons */}
-          <div className="flex flex-col md:flex-row gap-6 pt-6  ">
+          <div className="flex flex-col md:flex-row  gap-6 pt-6  ">
             <div className="flex items-center gap-2 font-[outfit]">
               <img src={vector1} className="text-xl text-[#FFFFFF]" />
               <div>
@@ -193,7 +193,7 @@ const features = [
             />
             <img 
               src={blue} 
-              className="absolute -top-24 -left-44 w-full h-[480px] z-10 " 
+              className="absolute -top-48 -left-44 w-full h-[480px] z-10 " 
             />
           </div>
         </div>
