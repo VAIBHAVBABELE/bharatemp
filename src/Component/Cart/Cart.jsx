@@ -11,7 +11,7 @@ const Cart = () => {
     cartItems,
     totalItems,
     uniqueItems,
-    totalAmount,
+    totalAmount: rawTotalAmount,
     shipping,
     tax,
     removeFromCart,
@@ -27,14 +27,33 @@ const Cart = () => {
     navigate(-1); // Go back to previous page
   };
 
-  // Calculate the discount (assume 10% off MRP for this example)
+  // Calculate total amount using only discounted price
+  const calculateTotalAmount = () => {
+    return cartItems.reduce((sum, item) => {
+      const price = Number(item.discounted_single_product_price || 0);
+      return sum + (price * item.quantity);
+    }, 0);
+  };
+
+  // Calculate the total MRP (original price)
+  const calculateTotalMRP = () => {
+    return cartItems.reduce((sum, item) => {
+      const mrp = Number(item.discounted_single_product_price || 0);
+      return sum + (mrp * item.quantity);
+    }, 0);
+  };
+
+  const totalAmount = calculateTotalAmount();
+  const totalMRP = calculateTotalMRP();
+
+  // Calculate the discount (difference between MRP and discounted price)
   const codeDiscount = 15;
   const platformFee = 5;
   const shippingFee = 5;
-  const discountOnMrp = Math.round(totalAmount * 0.01 * 100) / 100;
+  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
   
-  // Calculate final total
-  const finalTotal = totalAmount + platformFee + shippingFee - codeDiscount - discountOnMrp;
+  // Calculate final total using only discounted price
+  const finalTotal = Math.max(0, totalAmount + platformFee + shippingFee - codeDiscount);
 
   // Check if user is logged in
   useEffect(() => {
@@ -109,8 +128,8 @@ const Cart = () => {
               <div key={item._id} className="flex border-2 border-gray-300 rounded-2xl p-4 flex-col md:flex-row mb-4 items-start">
                 <div className="w-32 h-32 flex items-center justify-center mr-4">
                   <img 
-                    src={item.image && item.image.length > 0 ? item.image[0] : ''} 
-                    alt={item.name} 
+                    src={item.product_image_main || ''} 
+                    alt={item.product_name} 
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -120,11 +139,13 @@ const Cart = () => {
                       className="font-medium text-[#2F294D] text-lg cursor-pointer hover:text-[#f7941d]"
                       onClick={() => navigate(`/product/${item._id}`)}
                     >
-                      {item.name}
+                      {item.product_name}
                     </h3>
                   </div>
                   <div className="flex flex-col h-full items-end justify-between">
-                    <span className="font-bold text-[#1E3473] text-xl">₹ {(item.new_price || item.price)?.toLocaleString()}</span>
+                    <span className="font-bold text-[#1E3473] text-xl">
+                      ₹ {Number(item.discounted_single_product_price).toLocaleString()}
+                    </span>
 
                     <div className="flex items-center">
                       <div className="flex items-center border border-gray-300 rounded-md mr-3">
@@ -180,7 +201,7 @@ const Cart = () => {
             <div className="space-y-4 text-[#2F294D]">
               <div className="flex justify-between">
                 <span className="text-gray-600">Total MRP</span>
-                <span className="font-medium">₹{totalAmount.toFixed(2)}</span>
+                <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Code Discount</span>
@@ -208,7 +229,7 @@ const Cart = () => {
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between font-bold text-xl text-[#2F294D]">
                 <span>Total Amount</span>
-                <span>₹ {finalTotal.toFixed(2)}</span>
+                <span>₹{finalTotal.toFixed(2)}</span>
               </div>
             </div>
             <button 

@@ -56,39 +56,39 @@ const ProductSlider = () => {
   const cardData = [
     {
       image: top1,
-      title: 'Development Boards',
+      title: 'Development Board',
       version: 'Arduino, ESP32, RPi',
-      category: 'development-boards'
+      category: 'Development Board'
     },
     {
       image: top2, 
       title: 'Sensors',
       version: 'Temperature, Pressure, Motion',
-      category: 'sensors'
+      category: 'Sensors'
+    },
+    {
+      image: top2,
+      title: 'Motors and Drivers',
+      version: 'DC, Stepper, Servo',
+      category: 'Motors and Drivers'
+    },
+    {
+      image: top2,
+      title: 'Battery',
+      version: 'LiPo, Li-ion, NiMH',
+      category: 'Battery'
+    },
+    {
+      image: top2,
+      title: '3D Printer',
+      version: 'Parts & Accessories',
+      category: '3D Printer'
     },
     {
       image: top2,
       title: 'Drone Parts',
       version: 'ESC, Flight Controllers, Props',
-      category: 'drone-parts'
-    },
-    {
-      image: top2,
-      title: 'Batteries',
-      version: 'LiPo, Li-ion, NiMH',
-      category: 'batteries'
-    },
-    {
-      image: top2,
-      title: 'Motors & Drivers',
-      version: 'DC, Stepper, Servo',
-      category: 'motors-and-drivers'
-    },
-    {
-      image: top2,
-      title: 'Connectors',
-      version: 'Headers, Terminals, Cables',
-      category: 'connectors'
+      category: 'Drone Parts'
     }
   ];
 const features = [
@@ -116,7 +116,7 @@ const features = [
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
         {cardData.map((card, index) => (
           <Link
-            to={`/product?category=${card.category}`}
+            to={`/allproducts?category=${encodeURIComponent(card.category)}`}
             key={index}
             className="group"
           >
@@ -137,6 +137,8 @@ const features = [
         ))}
       </div>
     </div>
+
+    
       <div className="bg-[#000127] w-full lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
         {/* Left: Text Section */}
         <div className="flex-1 md:w-1/2 w-full lg:text-left">
@@ -160,25 +162,24 @@ const features = [
           <div className="flex flex-col md:flex-row gap-6 pt-6  ">
             <div className="flex items-center gap-2 font-[outfit]">
               <img src={vector1} className="text-xl text-[#FFFFFF]" />
-              <span className="text-[#FFFFFF] text-[14.42px]">
-                Transparent
-                <br />
-                Customer service
-              </span>
+              <div>
+                <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">100% Original Products</h3>
+                <p className="text-[#FFFFFF] text-[11px]">Shop worry-free with 100% original products</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 font-[outfit] ">
               <img src={vector2} className="text-xl text-[#FFFFFF]" />
-              <span className="text-[#FFFFFF] text-[14.42px]">
-                Shipping <br /> Free,fast and reliable in India
-              </span>
+              <div>
+                <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">Secure Payment</h3>
+                <p className="text-[#FFFFFF] text-[11px]">Secure and seamless payments, every time</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 font-[outfit]">
               <img src={vector3} className="text-xl text-[#FFFFFF]" />
-              <span className="text-[#FFFFFF] text-[14.42px]">
-                Secure
-                <br />
-                Certified and trustworthy marketplace
-              </span>
+              <div>
+                <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">24×7 Technical support</h3>
+                <p className="text-[#FFFFFF] text-[11px]">We're always here – round-the-clock technical assistance</p>
+              </div>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ const SideCart = ({ isOpen, onClose }) => {
     };
 
     cartItems.forEach(item => {
-      const itemPrice = item.new_price || item.price;
+      const itemPrice = item.discounted_single_product_price || item.non_discounted_price;
       summary.totalMRP += itemPrice * item.quantity;
       // Calculate discount as 10% of item total
       summary.discountOnMRP += (itemPrice * item.quantity * 0.1);
@@ -70,21 +70,21 @@ const SideCart = ({ isOpen, onClose }) => {
                 {cartItems.map((item, index) => (
                   <div key={index} className="flex gap-4 mb-6 pb-2 ">
                     <img
-                      src={item.image?.[0] || ''}
-                      alt={item.name}
+                      src={item.product_image_main || ''}
+                      alt={item.product_name}
                       className="w-24 h-24 object-contain mr-6"
                     />
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#2F294D]">{item.name}</h3>
+                      <h3 className="text-lg font-semibold text-[#2F294D]">{item.product_name}</h3>
                       <div className="flex items-baseline gap-6 mt-1">
                         <span className="text-xl font-bold text-[#1e3473]">
-                          ₹{((item.new_price || item.price) * item.quantity).toFixed(2)}
+                          ₹{((item.discounted_single_product_price || item.non_discounted_price) * item.quantity).toFixed(2)}
                         </span>
                         <span className="text-sm text-gray-500 font-semibold line-through">
-                          MRP ₹{(item.price * item.quantity).toFixed(2)}
+                          MRP ₹{(item.non_discounted_price * item.quantity).toFixed(2)}
                         </span>
                         <span className="text-sm font-bold text-[#F7941D]">
-                          {(((item.price - (item.new_price || item.price)) / item.price) * 100).toFixed(0)}% Off
+                          {item.discount}% Off
                         </span>
                       </div>
                       <div className="flex items-center gap-4 mt-4">
