@@ -16,82 +16,92 @@ const backend = import.meta.env.VITE_BACKEND;
 // Mock data for testing when API fails
 const mockProducts = [
   {
-    id: 1,
-    name: "Raspberry Pi 4",
-    category: "Development Boards",
-    companyName: "Raspberry Pi",
-    price: 3500,
-    new_price: 3200,
-    image: raspberry,
-    rating: 4.5,
-    reviewCount: 120,
+    _id: 1,
+    product_name: "Raspberry Pi 4",
+    category_name: "Development Boards",
+    brand_name: "Raspberry Pi",
+    non_discounted_price: 3500,
+    discounted_single_product_price: 3200,
+    product_image_main: raspberry,
+    product_image_sub: [raspberry],
+    review_stars: 4.5,
+    no_of_reviews: 120,
     featured: true,
     topRated: true,
     onSale: true,
+    discount_percentage: 8,
     deliveryDate: "May 15, 2023",
     deliveryType: "Free Delivery"
   },
   {
-    id: 2,
-    name: "Arduino Uno",
-    category: "Development Boards",
-    companyName: "Arduino",
-    price: 1500,
-    new_price: 1200,
-    image: raspberry,
-    rating: 4.2,
-    reviewCount: 85,
+    _id: 2,
+    product_name: "Arduino Uno",
+    category_name: "Development Boards",
+    brand_name: "Arduino",
+    non_discounted_price: 1500,
+    discounted_single_product_price: 1200,
+    product_image_main: raspberry,
+    product_image_sub: [raspberry],
+    review_stars: 4.2,
+    no_of_reviews: 85,
     featured: true,
     topRated: false,
     onSale: true,
+    discount_percentage: 20,
     deliveryDate: "May 16, 2023",
     deliveryType: "Free Delivery"
   },
   {
-    id: 3,
-    name: "ESP32 Development Board",
-    category: "Development Boards",
-    companyName: "Espressif",
-    price: 800,
-    new_price: 650,
-    image: raspberry,
-    rating: 4.0,
-    reviewCount: 60,
+    _id: 3,
+    product_name: "ESP32 Development Board",
+    category_name: "Development Boards",
+    brand_name: "Espressif",
+    non_discounted_price: 800,
+    discounted_single_product_price: 650,
+    product_image_main: raspberry,
+    product_image_sub: [raspberry],
+    review_stars: 4.0,
+    no_of_reviews: 60,
     featured: false,
     topRated: false,
     onSale: true,
+    discount_percentage: 18,
     deliveryDate: "May 17, 2023",
     deliveryType: "Free Delivery"
   },
   {
-    id: 4,
-    name: "Ultrasonic Sensor HC-SR04",
-    category: "Sensors",
-    companyName: "Generic",
-    price: 250,
-    new_price: 200,
-    image: raspberry,
-    rating: 3.8,
-    reviewCount: 45,
+    _id: 4,
+    product_name: "Ultrasonic Sensor HC-SR04",
+    category_name: "Sensors",
+    brand_name: "Generic",
+    non_discounted_price: 250,
+    discounted_single_product_price: 200,
+    product_image_main: raspberry,
+    product_image_sub: [raspberry],
+    review_stars: 3.8,
+    no_of_reviews: 45,
     featured: false,
     topRated: false,
     onSale: false,
+    discount_percentage: 0,
     deliveryDate: "May 18, 2023",
     deliveryType: "Standard Delivery"
   },
   {
-    id: 5,
-    name: "Servo Motor SG90",
-    category: "Motors",
-    companyName: "TowerPro",
-    price: 300,
-    new_price: 280,
-    image: raspberry,
-    rating: 4.3,
-    reviewCount: 70,
+    _id: 5,
+    product_name: "Servo Motor SG90",
+    category_name: "Motors",
+    brand_name: "TowerPro",
+    non_discounted_price: 300,
+    discounted_single_product_price: 280,
+    product_image_main: raspberry,
+    product_image_sub: [raspberry],
+    review_stars: 4.3,
+    no_of_reviews: 70,
     featured: true,
     topRated: true,
     onSale: false,
+    discount_percentage: 6,
     deliveryDate: "May 19, 2023",
     deliveryType: "Free Delivery"
   }
@@ -102,7 +112,7 @@ const Product = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [activeTab, setActiveTab] = useState("All");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [sliderValue, setSliderValue] = useState(10000);
+  const [sliderValue, setSliderValue] = useState(50000);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -110,11 +120,11 @@ const Product = () => {
   // Filter states
   const [priceRangeFilter, setPriceRangeFilter] = useState({
     min: 100,
-    max: 10000,
+    max: 50000,
   });
   const [tempPriceRange, setTempPriceRange] = useState({
     min: 100,
-    max: 10000,
+    max: 50000,
   }); // Temporary state for slider before Apply
   const [priceCheckboxFilters, setPriceCheckboxFilters] = useState([]);
   const [categoryFilters, setCategoryFilters] = useState([]);
@@ -125,18 +135,26 @@ const Product = () => {
   const location = useLocation();
 
   const min = 100;
-  const max = 10000;
+  const max = 50000;
 
   const navigate = useNavigate();
 
-  // Get search query from URL
+  // Get search query and category from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('search');
+    const category = params.get('category');
+    
     if (query) {
       setSearchQuery(query);
     } else {
       setSearchQuery("");
+    }
+
+    // If category is provided, set it in the filters
+    if (category) {
+      // Use the exact category name from the URL since it matches the database
+      setCategoryFilters([category]);
     }
   }, [location]);
 
@@ -171,23 +189,27 @@ const Product = () => {
   }, []);
 
 
+
   // Fix the order of function declarations and usage
   const tabs = ["All", "Featured", "On Sale", "Top Rated"];
 
   // Get category, color, and brand counts
   function getCountForCategory(category) {
-    return allProducts.filter((p) => p.category === category).length;
+    return allProducts.filter((p) => p.category_name === category).length;
   }
 
   function getCountForBrand(brand) {
-    return allProducts.filter((p) => p.companyName === brand).length;
+    return allProducts.filter((p) => p.brand_name === brand).length;
   }
 
   function getCountForPriceRange(min, max) {
-    if (max === Infinity) {
-      return allProducts.filter((p) => p.new_price && p.new_price >= min).length;
-    }
-    return allProducts.filter((p) => p.new_price && p.new_price >= min && p.new_price <= max).length;
+    return allProducts.filter((p) => {
+      const price = p.discounted_single_product_price || p.non_discounted_price;
+      if (max === Infinity) {
+        return price && price >= min;
+      }
+      return price && price >= min && price <= max;
+    }).length;
   }
 
   const priceRanges = [
@@ -229,20 +251,21 @@ const Product = () => {
     },
   ];
 
-  const uniqueCategories = [...new Set(allProducts.map((p) => p.category))];
-  const uniqueBrands = [...new Set(allProducts.map((p) => p.companyName))];
+  const uniqueCategories = [...new Set(allProducts.map((p) => p.category_name))];
+  const uniqueBrands = [...new Set(allProducts.map((p) => p.brand_name))];
 
   const categories = uniqueCategories.map((category) => ({
     label: category,
     count: getCountForCategory(category),
   }));
 
+
   const brands = uniqueBrands.map((brand) => ({
     label: brand,
     count: getCountForBrand(brand),
   }));
 
-  // Complete the rest of the filter logic with debugging
+  // Update the filtering logic in useEffect
   useEffect(() => {
     if (allProducts.length === 0) {
       setDisplayedProducts([]);
@@ -256,53 +279,51 @@ const Product = () => {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (p) => 
-          (p.name && p.name.toLowerCase().includes(query)) || 
-          (p.category && p.category.toLowerCase().includes(query)) || 
-          (p.companyName && p.companyName.toLowerCase().includes(query))
+          (p.product_name && p.product_name.toLowerCase().includes(query)) || 
+          (p.category_name && p.category_name.toLowerCase().includes(query)) || 
+          (p.brand_name && p.brand_name.toLowerCase().includes(query))
       );
     }
 
-    // Filter by tab - only apply if product has the required property
+    // Filter by tab
     if (activeTab === "On Sale") {
       filtered = filtered.filter((p) => p.discount_percentage > 0);
     } else if (activeTab === "Top Rated") {
-      filtered = filtered.filter((p) => p.topRated === true);
+      filtered = filtered.filter((p) => p.review_stars >= 4);
     } else if (activeTab === "Featured") {
       filtered = filtered.filter((p) => p.featured === true);
     }
     
-    // Only apply price filter if product has price data
-    filtered = filtered.filter(
-      (p) => p.new_price && p.new_price >= priceRangeFilter.min && p.new_price <= priceRangeFilter.max
-    );
+    // Price range slider filter
+    filtered = filtered.filter((p) => {
+      const price = p.discounted_single_product_price || p.non_discounted_price;
+      return price >= priceRangeFilter.min && price <= priceRangeFilter.max;
+    });
 
-    // Filter by price checkbox selections
+    // Price checkbox filters
     if (priceCheckboxFilters.length > 0) {
-      // First collect all products that match any of the selected price ranges
       const priceFiltered = [];
-
-      priceCheckboxFilters.forEach((filter) => {
-        const range = priceRanges.find((r) => r.label === filter);
+      
+      priceCheckboxFilters.forEach((filterLabel) => {
+        const range = priceRanges.find((r) => r.label === filterLabel);
         if (range) {
-          // For each price range filter, find products that match from the current filtered set
           const matchingProducts = filtered.filter((p) => {
-            const matches =
-              p.new_price >= range.min &&
-              (range.max === Infinity ? true : p.new_price <= range.max);
-
-            return matches;
+            const price = p.discounted_single_product_price || p.non_discounted_price;
+            if (!price) return false;
+            
+            if (range.max === Infinity) {
+              return price >= range.min;
+            }
+            return price >= range.min && price <= range.max;
           });
-
           priceFiltered.push(...matchingProducts);
         }
       });
 
-      // Remove duplicates from the price filtered results
       if (priceFiltered.length > 0) {
-        filtered = priceFiltered.filter(
-          (product, index, self) =>
-            index === self.findIndex((p) => p._id === product._id)
-        );
+        // Remove duplicates
+        filtered = Array.from(new Set(priceFiltered.map(p => p._id)))
+          .map(id => priceFiltered.find(p => p._id === id));
       } else {
         filtered = [];
       }
@@ -310,24 +331,16 @@ const Product = () => {
 
     // Filter by category
     if (categoryFilters.length > 0) {
-      filtered = filtered.filter((p) => categoryFilters.includes(p.category));
+      filtered = filtered.filter((p) => categoryFilters.includes(p.category_name));
     }
 
     // Filter by brand
     if (brandFilters.length > 0) {
-      filtered = filtered.filter((p) => brandFilters.includes(p.companyName));
+      filtered = filtered.filter((p) => brandFilters.includes(p.brand_name));
     }
 
     setDisplayedProducts(filtered);
-  }, [
-    allProducts,
-    activeTab,
-    priceRangeFilter,
-    priceCheckboxFilters,
-    categoryFilters,
-    brandFilters,
-    searchQuery
-  ]);
+  }, [allProducts, activeTab, priceRangeFilter, priceCheckboxFilters, categoryFilters, brandFilters, searchQuery]);
 
   const handleSliderChange = (e) => {
     const value = Number(e.target.value);
@@ -740,24 +753,24 @@ const Product = () => {
                   >
                     <div className="flex justify-center mb-5">
                       <img
-                        src={product.image && product.image.length > 0 ? product.image[0] :""}
-                        alt={product.name}
+                        src={product.product_image_main}
+                        alt={product.product_name}
                         className="w-full h-40 object-contain"
                       />
                     </div>
                     <div className="">
-                      <h2 className="text-[#1e3473] font-semibold text-lg">
-                        {product.name}
+                      <h2 className="text-[#1e3473] font-semibold h-[84px] text-lg">
+                        {product.product_name}
                       </h2>
-                      <p className="text-gray-400 text-sm ">{product.category}</p>
+                      <p className="text-gray-400 text-sm">{product.category_name}</p>
                       <div className="flex items-center my-3">
                         {Array(5)
                           .fill()
                           .map((_, i) => (
                             <span key={i} className="text-orange-400">
-                              {i < Math.floor(product.rating || 0) ? (
+                              {i < Math.floor(product.review_stars || 0) ? (
                                 <FaStar />
-                              ) : i < (product.rating || 0) ? (
+                              ) : i < (product.review_stars || 0) ? (
                                 <FaStarHalfAlt />
                               ) : (
                                 <FaRegStar />
@@ -765,15 +778,15 @@ const Product = () => {
                             </span>
                           ))}
                         <span className="text-gray-600 ml-1 text-sm">
-                          ({product.reviewCount || 0})
+                          ({product.no_of_reviews || 0})
                         </span>
                       </div>
                       <div className="">
                         <span className="text-xl font-semibold">
-                          ₹{product.new_price?.toLocaleString()}
+                          ₹{product.discounted_single_product_price?.toLocaleString()}
                         </span>
                         <span className="text-sm line-through text-gray-400 ml-2">
-                          ₹{product.price?.toLocaleString()}
+                          ₹{product.non_discounted_price?.toLocaleString()}
                         </span>
                       </div>
                     </div>

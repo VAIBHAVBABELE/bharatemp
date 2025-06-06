@@ -93,7 +93,7 @@ const AddressForm = ({
 );
 
 const Checkout = () => {
-  const { cartItems, totalAmount, clearCart } = useCart();
+  const { cartItems, clearCart } = useCart();
   const backend = import.meta.env.VITE_BACKEND;
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
@@ -125,15 +125,33 @@ const Checkout = () => {
   const selectedAddress =
     addresses.find((addr) => addr.id === selectedAddressId) || addresses[0];
 
+  // Calculate total amount using only discounted price
+  const calculateTotalAmount = () => {
+    return cartItems.reduce((sum, item) => {
+      const price = Number(item.discounted_single_product_price || 0);
+      return sum + (price * item.quantity);
+    }, 0);
+  };
+
+  // Calculate the total MRP (original price)
+  const calculateTotalMRP = () => {
+    return cartItems.reduce((sum, item) => {
+      const mrp = Number(item.discounted_single_product_price || 0);
+      return sum + (mrp * item.quantity);
+    }, 0);
+  };
+
+  const totalAmount = calculateTotalAmount();
+  const totalMRP = calculateTotalMRP();
+
   // Calculate pricing
   const codeDiscount = 15;
   const platformFee = 5;
   const shippingFee = 5;
-  const discountOnMrp = Math.round(totalAmount * 0.01 * 100) / 100;
-
-  // Calculate final total
-  const finalTotal =
-    totalAmount + platformFee + shippingFee - codeDiscount - discountOnMrp;
+  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
+  
+  // Calculate final total using only discounted price
+  const finalTotal = Math.max(0, totalAmount + platformFee + shippingFee - codeDiscount);
 
   // Delivery date calculation
   const getDeliveryDates = () => {
@@ -830,7 +848,7 @@ const Checkout = () => {
             <div className="space-y-4 text-[#2F294D]">
               <div className="flex justify-between">
                 <span className="text-gray-600">Total MRP</span>
-                <span className="font-medium">₹{totalAmount.toFixed(2)}</span>
+                <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Code Discount</span>

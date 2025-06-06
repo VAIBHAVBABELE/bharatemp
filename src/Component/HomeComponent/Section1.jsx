@@ -20,7 +20,7 @@ const fallbackImages = [
   fallbackImage6,
 ];
 
-const tabs = ["Featured", "On Sale", "Top Rated"];
+const tabs = ["Trending Product ", "Offer", "New Arrivals"];
 
 // Fallback products in case API fails or props are not passed
 const fallbackProducts = [
@@ -52,7 +52,7 @@ const fallbackProducts = [
 ];
 
 const ProductSlider = ({ products = [] }) => {
-  const [activeTab, setActiveTab] = useState("Featured");
+  const [activeTab, setActiveTab] = useState("Trending Product");
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
@@ -72,7 +72,7 @@ const ProductSlider = ({ products = [] }) => {
 
   // Filter products based on active tab
   const getFilteredProducts = () => {
-    if (activeTab === "On Sale") {
+    if (activeTab === "offers") {
       // Filter products with a discount (oldPrice > price)
       return allProducts
         .filter(
@@ -80,7 +80,7 @@ const ProductSlider = ({ products = [] }) => {
         )
         .slice(0, 4);
     }
-    if (activeTab === "Top Rated") {
+    if (activeTab === "New Arrivals") {
       // Filter products with high ratings
       return allProducts.sort((a, b) => b.rating - a.rating).slice(0, 3);
     }
@@ -138,12 +138,12 @@ const ProductSlider = ({ products = [] }) => {
       </div>
 
       {/* Products Grid */}
-      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-6 gap-2 pb-4 scrollbar-hide">
+      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-5 gap-2 pb-4 scrollbar-hide">
         {filteredProducts.map((product, index) => (
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[300px] hover:h-[350px] h-[310px] cursor-pointer"
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[320px] hover:h-[360px] h-[310px] cursor-pointer"
           >
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">
@@ -155,7 +155,7 @@ const ProductSlider = ({ products = [] }) => {
               <img
                 src={product.product_image_main}
                 alt={product.brand_name}
-                className="w-full h-24 object-contain mb-4"
+                className="w-full h-28 object-contain mb-4"
               />
 
               <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:block hidden mb-4">

@@ -50,6 +50,7 @@ const App = () => {
           {/* Route Definitions */}
           <Route path="/" element={<Home />} />
           <Route path="/product" element={<Product />} />
+          <Route path="/allproducts" element={<Product />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/product/:id" element={<SingleProduct />} />
           <Route path="/cart" element={<Cart />} />

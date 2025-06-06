@@ -164,7 +164,7 @@ export default function DronePartsCarousel({ products = [] }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row w-full  lg:h-[480px] gap-8 pb-10 bg-white font-[Outfit]">
+    <div className="flex flex-col md:flex-row w-full  lg:h-[520px] gap-8 pb-10 bg-white font-[Outfit]">
       {/* Left Section */}
       <div
         className="md:w-1/3 w-full bg-gray-50 p-6 rounded-3xl shadow-sm flex flex-col bg-cover bg-center"
@@ -189,7 +189,7 @@ export default function DronePartsCarousel({ products = [] }) {
       {/* Right Section */}
       <div className="md:w-2/3 w-full overflow-hidden">
         {/* Tabs */}
-        <div className="flex gap-4 text-[16px] mb-6 border-b pb-2 flex-wrap">
+        <div className="flex gap-4 text-[16px] md:text-[20px] mb-6 border-b pb-2 flex-wrap">
           {categories.map((item) => (
             <button
               key={item}
@@ -270,7 +270,7 @@ export default function DronePartsCarousel({ products = [] }) {
             {getVisibleProducts().map((product, index) => (
               <div
                 key={product._id || index}
-                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl hover:shadow-lg transition-all duration-500 h-[290px] hover:h-[290px] py-2 cursor-pointer"
+                className="group hover:border-2 hover:border-[#c2c2c2] rounded-2xl hover:shadow-lg transition-all duration-500 h-[320px] hover:h-[330px] py-2 cursor-pointer"
                 onClick={() => handleProductClick(product)}
               >
                 <div className="p-4 flex flex-col items-start relative h-full">
@@ -284,7 +284,7 @@ export default function DronePartsCarousel({ products = [] }) {
                     src={product.product_image_main
                     }
                     alt={product.product_name}
-                    className="w-full h-24 object-contain mb-4"
+                    className="w-full h-32 object-contain mb-4"
                   />
                   <div className="flex items-center flex-wrap gap-2 mb-2">
                     <span 

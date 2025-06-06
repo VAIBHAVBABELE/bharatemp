@@ -7,7 +7,7 @@ import {
   FaGlobeAmericas,
   FaChevronDown,
   FaBolt,
-  FaAngleRight
+  FaMicrophone
 } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import location1 from "../assets/location.png";
@@ -33,6 +33,7 @@ const Navbar = () => {
   const [location, setLocation] = useState("Delhi, India");
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
   const currentLocation = useLocation();
@@ -101,26 +102,55 @@ const Navbar = () => {
   };
 
   const categoryImages = {
-    "Development Boards": top1,
+    "Development Board": top1,
     "Sensors": top2,
-    "Drone Parts": top2,
-    "Batteries": top2,
-    "Motors & Drivers": top2,
-    "Connectors": top2
+    "Motors and Drivers": top2,
+    "Battery": top2,
+    "3D Printer": top2,
+    "Drone Parts": top2
   };
 
   const categories = {
-    "Development Boards": {
-    },
-    "Sensors": {
-    },
-    "Drone Parts": {
-    },
-    "Batteries": {
-    },
-    "Motors & Drivers": {
-    },
-    "Connectors": {
+    "Development Board": {},
+    "Sensors": {},
+    "Motors and Drivers": {},
+    "Battery": {},
+    "3D Printer": {},
+    "Drone Parts": {}
+  };
+
+  const startVoiceSearch = () => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+      
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setSearchQuery(transcript);
+        // Wait for state update before navigating
+        setTimeout(() => {
+          navigate(`/product?search=${encodeURIComponent(transcript.trim())}`);
+        }, 500);
+      };
+
+      recognition.onerror = (event) => {
+        setIsListening(false);
+        console.error('Speech recognition error:', event.error);
+        alert('Sorry, there was an error with voice recognition. Please try again.');
+      };
+      
+      recognition.start();
+    } else {
+      alert('Voice search is not supported in this browser');
     }
   };
 
@@ -238,32 +268,19 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className="bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
-                onClick={() => {
-                  if ('webkitSpeechRecognition' in window) {
-                    const recognition = new window.webkitSpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-                    
-                    recognition.onresult = (event) => {
-                      const transcript = event.results[0][0].transcript;
-                      setSearchQuery(transcript);
-                    };
-                    
-                    recognition.start();
-                  } else {
-                    alert('Voice search is not supported in this browser');
-                  }
-                }}
+                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${isListening ? 'ring-2 ring-[#F7941D]' : ''}`}
+                onClick={startVoiceSearch}
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-5 w-5 text-gray-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
-                </svg>
+                <FaMicrophone className={`h-5 w-5 ${isListening ? 'text-[#F7941D]' : 'text-gray-600'}`} />
+                
+                {/* Listening Animation */}
+                {isListening && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>
+                    <div className="absolute w-3/4 h-3/4 rounded-full animate-ping bg-[#F7941D] opacity-10 delay-150"></div>
+                    <div className="absolute w-1/2 h-1/2 rounded-full animate-ping bg-[#F7941D] opacity-5 delay-300"></div>
+                  </div>
+                )}
               </button>
             </div>
           </div>
@@ -368,7 +385,7 @@ const Navbar = () => {
                   {Object.keys(categories).map((category, index) => (
                     <Link
                       key={index}
-                      to={`/product?category=${category.toLowerCase()}`}
+                      to={`/allproducts?category=${category}`}
                       className="group"
                     >
                       <div className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between hover:shadow-lg transition-shadow duration-300">
@@ -377,12 +394,12 @@ const Navbar = () => {
                             {category}
                           </h2>
                           <p className="text-[10px] text-gray-500">
-                            {category === "Development Boards" && "Arduino, ESP32, RPi"}
+                            {category === "Development Board" && "Arduino, ESP32, RPi"}
                             {category === "Sensors" && "Temperature, Pressure, Motion"}
+                            {category === "Motors and Drivers" && "DC, Stepper, Servo"}
+                            {category === "Battery" && "LiPo, Li-ion, NiMH"}
+                            {category === "3D Printer" && "Parts & Accessories"}
                             {category === "Drone Parts" && "ESC, Flight Controllers, Props"}
-                            {category === "Batteries" && "LiPo, Li-ion, NiMH"}
-                            {category === "Motors & Drivers" && "DC, Stepper, Servo"}
-                            {category === "Connectors" && "Headers, Terminals, Cables"}
                           </p>
                         </div>
                         <div className="pl-4">
