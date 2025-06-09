@@ -19,20 +19,20 @@ const PromoSection = () => {
                         <p className="text-[17px] font-medium ">From</p>
                         <p className="text-[30px] font-medium"> ₹399</p>
                     </div>
-                    <div className='w-1/2 '>
-                        <img
+                    <div className='w-full md:w-1/2 '>
+                        <img 
                             src={image7}
                             alt="Case BB-3"
-                            className='rotate-180 tranform scale-x-[-1] right-0 object-contain absolute bottom-0 lg:w-[400px] w-[180px] rounded-2xl'
+                            className='rotate-180 tranform scale-x-[-1] right-0 object-contain absolute bottom-0 md:w-[400px] w-[180px]  rounded-2xl'
                         />
                     </div>
                 </div>
             </div>
             {/* Right Grid Cards */}
             <div className='md:w-1/2 w-full'>
-                <div className=" grid sm:grid-cols-2 gap-4 ">
+                <div className=" grid md:grid-cols-2 grid-cols-1 gap-4 ">
                     {/* Card 1 */}
-                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  justify-between relative">
+                    <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex   justify-between relative">
                         <div >
                             <p className="text-blue-900 font-bold lg:text-[34.83px] lg:py-2 pt-6 md:px-0 text-2xl">3d Printer</p>
                            <p className="text-sm text-[#f7941d] mb-2 py-2">Parts</p>
@@ -46,7 +46,7 @@ const PromoSection = () => {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex items-center gap-6 h-[186px]  justify-between relative">
+                    <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex items-center gap-6 h-[186px]  justify-between relative">
                         <div>
                             <button className="bg-[#1E3473] text-white px-3 text-center text-[16px] py-2 rounded-full mb-1">
                                 Discover Now
@@ -62,7 +62,7 @@ const PromoSection = () => {
                     </div>
 
                     {/* Card 3 (repeated like Card 2) */}
-                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex items-center gap-6 h-[186px]  justify-between relative">
+                    <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  items-center gap-6 h-[186px]  justify-between relative">
                         <div>
                             <button className="bg-[#1E3473] text-white px-3 py-2 text-[16px] rounded-full mb-1">
                                 Discover Now
@@ -78,7 +78,7 @@ const PromoSection = () => {
                     </div>
 
                     {/* Card 4 (like Card 1) */}
-                    <div className="bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  justify-between relative">
+                    <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  justify-between relative">
                         <div >
                             <p className="text-blue-900 font-bold md:text-[34.83px] py-2 text-2xl">3d Printer</p>
                            <p className="text-sm text-[#f7941d] mb-2 py-2">Parts</p>

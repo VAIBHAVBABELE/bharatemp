@@ -421,7 +421,7 @@ const Product = () => {
   return (
     <>
     <ToastContainer/>
-    <div className="relative bg-white font-[outfit]">
+    <div className="relative bg-white font-[outfit] z-20">
       {/* Mobile Filter Button */}
       <div className="lg:hidden fixed bottom-4 right-4 z-50">
         <button

@@ -12,11 +12,13 @@ import img1 from './../assets/gpay.svg'
 import img2 from './../assets/stripe.svg'
 import img3 from './../assets/master.svg'
 import img4 from './../assets/visa.svg'
-
+import { FaCheck } from 'react-icons/fa';
+import { FaLinkedinIn } from "react-icons/fa6";
+import { FaXTwitter } from "react-icons/fa6";
 const Footer = () => {
   return (
     <div className="relative w-full h-auto  flex flex-col bg-[#1e3473] overflow-hidden md:px-8 lg:px-0">
-     <p className='w-full border-b border-dashed  border-white mt-10'></p>
+      {/* <p className='w-full border-b border-dashed  border-white mt-10'></p> */}
       <div className="flex flex-col md:justify-between mt-10 md:flex-row w-full min-h-[380px]">
         {/* Left side - 40% */}
         <div className="w-full md:w-[35%] flex flex-col text-white z-10 px-4 md:px-10 py-2 md:py-8">
@@ -26,9 +28,7 @@ const Footer = () => {
             className="w-[80%]"
           />
           <p className="text-xs mt-6 sm:text-sm md:text-base leading-5 md:leading-6">
-            Reach Out To Our Team Of Experienced Design Professionals For
-            Personalized Consultation, Detailed Planning, And Seamless Execution
-            Of Your Interior Design Project
+            India’s first one-stop platform for sourcing and manufacturing electronic components, complete with an integrated supply chain and logistics network.
           </p>
 
           <div className="w-full flex flex-wrap gap-4 py-4">
@@ -36,9 +36,9 @@ const Footer = () => {
               <img src={icon1} alt="Facebook" className="w-6 h-6" />
             </Link>
             <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
-              <img src={icon2} alt="Twitter" className="w-6 h-6" />
+              <FaXTwitter  alt="Twitter" className="w-6 h-6" />
             </Link>
-            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+            <Link to="https://www.instagram.com/bharatronix?igsh=ZTY0enIzZHBhdHBy" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
               <img src={icon3} alt="Instagram" className="w-6 h-6" />
             </Link>
             <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
@@ -47,6 +47,9 @@ const Footer = () => {
             <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
               <img src={icon5} alt="YouTube" className="w-6 h-6" />
             </Link>
+            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+              <FaLinkedinIn  alt="Linkedin" className="w-6 h-6" />
+            </Link>
           </div>
         </div>
 
@@ -54,15 +57,15 @@ const Footer = () => {
         <div
           className="w-full md:w-[70%] px-4 md:px-6 py-6 md:py-8 text-white"
         >
-          <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-2 md:flex md:flex-row justify-between gap-4 md:gap-8">
+          <div className="grid lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 grid-cols-2 md:flex md:flex-row justify-between gap-4 md:gap-8">
             {/* Column 1 */}
             <div className="mb-4 md:mb-0">
-              <h3 className="mb-2 text-xs md:text-sm lg:text-base">SHOPPING SERVICES</h3>
+              <h3 className="mb-2 text-xs md:text-lg lg:text-base">Services </h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
-                <li>Propellers</li>
-                <li>PCBs</li>
-                <li>Drone Parts</li>
-                <li>Trade program</li>
+                <li >B2B</li>
+                <li>Manufacturing </li>
+                <li>Videos </li>
+                {/* <li>Trade program</li> */}
               </ul>
             </div>
 
@@ -95,22 +98,34 @@ const Footer = () => {
               <h3 className="mb-2 text-xs md:text-sm lg:text-base">CONTACT CS</h3>
               <ul className="space-y-2 md:space-y-2 text-xs md:text-[12px] lg:text-[18px]">
                 <li>Email: support@Bharatronix.com</li>
-                <li>Hours:</li>
+                {/* <li>Hours:</li>
                 <li>Mon-Fri — 10am to 8pm</li>
-                <li>Sat-Sun — 10am to 2pm</li>
+                <li>Sat-Sun — 10am to 2pm</li> */}
+                
+                  <div className="flex items-center space-x-2 py-3">
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      className="rounded-full px-5 py-2 text-white bg-transparent border border-gray-400 placeholder-gray-400 focus:outline-none"
+                    />
+                    <button className="bg-[#e91e63] hover:bg-pink-600 p-3 rounded-full text-white flex items-center justify-center">
+                      <FaCheck size={16} />
+                    </button>
+                  </div>
+            
               </ul>
               <div className='flex gap-2 mt-4'>
-                <img src={img1} alt="" className='w-20'/>
-                <img src={img2} alt="" className='w-20'/>
-                <img src={img3} alt="" className='w-20'/>
-                <img src={img4} alt="" className='w-20'/>
+                <img src={img1} alt="" className='w-16' />
+                <img src={img2} alt="" className='w-16' />
+                <img src={img3} alt="" className='w-16' />
+                <img src={img4} alt="" className='w-16' />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <p className='w-full border-b border-dashed  border-white'></p>
-      <div className="w-full my-6  flex flex-col md:flex-row  items-center md:justify-between gap-1 md:gap-4 text-white px-10 text-xs sm:text-sm md:text-base ">
+      {/* <p className='w-full border-b border-dashed  border-white'></p> */}
+      <div className="w-full mb-4  flex flex-col md:flex-row  items-center md:justify-between gap-1 md:gap-4 text-white px-10 text-xs sm:text-sm md:text-base ">
         <span>© Copyright 2024, All Rights Reserved</span>
         <span className="flex gap-10">
           <Link to="/terms-and-conditions" className="hover:text-[#F7941D]">Terms and Conditions</Link>

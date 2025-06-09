@@ -40,6 +40,7 @@ import ShippingPolicy from './pages/ShippingPolicy'
 import ReturnPolicy from './pages/ReturnPolicy'
 import WarrantyPolicy from './pages/WarrantyPolicy'
 import Subcategory  from './pages/Subcategory.jsx'
+import SubCategories from './pages/SubCategories'
 
 const App = () => {
   return (
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/b2bpage" element={<Ouronline/>}/>
           <Route path="/subcategory" element={<Subcategory/>}/>
+          <Route path="/subcategories" element={<SubCategories />} />
           {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
