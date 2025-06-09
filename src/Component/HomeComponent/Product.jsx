@@ -188,7 +188,6 @@ const Product = () => {
     fetchAllProducts();
   }, []);
 
-  console.log(allProducts);
 
 
   // Fix the order of function declarations and usage
@@ -260,7 +259,6 @@ const Product = () => {
     count: getCountForCategory(category),
   }));
 
-  console.log("categories",categories);
 
   const brands = uniqueBrands.map((brand) => ({
     label: brand,
@@ -274,7 +272,6 @@ const Product = () => {
       return;
     }
     
-    console.log("Starting filtering with products:", allProducts.length);
     let filtered = [...allProducts];
     
     // Apply search filter if there's a search query
@@ -286,19 +283,15 @@ const Product = () => {
           (p.category_name && p.category_name.toLowerCase().includes(query)) || 
           (p.brand_name && p.brand_name.toLowerCase().includes(query))
       );
-      console.log("After search filter:", filtered.length);
     }
 
     // Filter by tab
     if (activeTab === "On Sale") {
       filtered = filtered.filter((p) => p.discount_percentage > 0);
-      console.log("After On Sale filter:", filtered.length);
     } else if (activeTab === "Top Rated") {
       filtered = filtered.filter((p) => p.review_stars >= 4);
-      console.log("After Top Rated filter:", filtered.length);
     } else if (activeTab === "Featured") {
       filtered = filtered.filter((p) => p.featured === true);
-      console.log("After Featured filter:", filtered.length);
     }
     
     // Price range slider filter
@@ -306,7 +299,6 @@ const Product = () => {
       const price = p.discounted_single_product_price || p.non_discounted_price;
       return price >= priceRangeFilter.min && price <= priceRangeFilter.max;
     });
-    console.log("After price slider filter:", filtered.length);
 
     // Price checkbox filters
     if (priceCheckboxFilters.length > 0) {
@@ -335,22 +327,18 @@ const Product = () => {
       } else {
         filtered = [];
       }
-      console.log("After price checkbox filters:", filtered.length);
     }
 
     // Filter by category
     if (categoryFilters.length > 0) {
       filtered = filtered.filter((p) => categoryFilters.includes(p.category_name));
-      console.log("After category filter:", filtered.length);
     }
 
     // Filter by brand
     if (brandFilters.length > 0) {
       filtered = filtered.filter((p) => brandFilters.includes(p.brand_name));
-      console.log("After brand filter:", filtered.length);
     }
 
-    console.log("Final filtered products:", filtered);
     setDisplayedProducts(filtered);
   }, [allProducts, activeTab, priceRangeFilter, priceCheckboxFilters, categoryFilters, brandFilters, searchQuery]);
 

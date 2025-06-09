@@ -7,7 +7,8 @@ import {
   FaGlobeAmericas,
   FaChevronDown,
   FaBolt,
-  FaMicrophone
+  FaMicrophone,
+  FaChevronRight
 } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import location1 from "../assets/location.png";
@@ -25,6 +26,69 @@ import icon6 from './../assets/YouTube.svg'
 import top1 from '../assets/generator.png'
 import top2 from '../assets/top1.png'
 
+const subcategories = {
+  "Development Board": [
+    { name: "Arduino", description: "Boards & Accessories", image: "https://picsum.photos/300/200?random=1" },
+    { name: "Raspberry Pi", description: "Boards & Kits", image: "https://picsum.photos/300/200?random=2" },
+    { name: "ESP32", description: "WiFi & Bluetooth", image: "https://picsum.photos/300/200?random=3" },
+    { name: "ESP8266", description: "IoT Development", image: "https://picsum.photos/300/200?random=4" },
+    { name: "STM32", description: "ARM Controllers", image: "https://picsum.photos/300/200?random=5" },
+    { name: "Teensy", description: "USB Development", image: "https://picsum.photos/300/200?random=6" },
+    { name: "BeagleBone", description: "Linux Boards", image: "https://picsum.photos/300/200?random=7" },
+    { name: "FPGA", description: "Programmable Logic", image: "https://picsum.photos/300/200?random=8" }
+  ],
+  "Sensors": [
+    { name: "Temperature", description: "Heat & Cold Detection", image: "https://picsum.photos/300/200?random=11" },
+    { name: "Pressure", description: "Force & Weight", image: "https://picsum.photos/300/200?random=12" },
+    { name: "Motion", description: "Movement Detection", image: "https://picsum.photos/300/200?random=13" },
+    { name: "Gas", description: "Air Quality", image: "https://picsum.photos/300/200?random=14" },
+    { name: "Humidity", description: "Moisture Sensing", image: "https://picsum.photos/300/200?random=15" },
+    { name: "Light", description: "Luminosity Detection", image: "https://picsum.photos/300/200?random=16" },
+    { name: "Sound", description: "Audio Sensing", image: "https://picsum.photos/300/200?random=17" },
+    { name: "Distance", description: "Range Finding", image: "https://picsum.photos/300/200?random=18" }
+  ],
+  "Motors and Drivers": [
+    { name: "DC Motors", description: "Various Sizes", image: "https://picsum.photos/300/200?random=21" },
+    { name: "Stepper Motors", description: "Precise Control", image: "https://picsum.photos/300/200?random=22" },
+    { name: "Servo Motors", description: "Robotics & RC", image: "https://picsum.photos/300/200?random=23" },
+    { name: "Motor Drivers", description: "Control Boards", image: "https://picsum.photos/300/200?random=24" },
+    { name: "Encoders", description: "Position Feedback", image: "https://picsum.photos/300/200?random=25" },
+    { name: "Gearboxes", description: "Speed Reduction", image: "https://picsum.photos/300/200?random=26" },
+    { name: "Linear Actuators", description: "Linear Motion", image: "https://picsum.photos/300/200?random=27" },
+    { name: "Motor Controllers", description: "Speed Control", image: "https://picsum.photos/300/200?random=28" }
+  ],
+  "Battery": [
+    { name: "LiPo", description: "High Performance", image: "https://picsum.photos/300/200?random=31" },
+    { name: "Li-ion", description: "Rechargeable", image: "https://picsum.photos/300/200?random=32" },
+    { name: "NiMH", description: "Long Lasting", image: "https://picsum.photos/300/200?random=33" },
+    { name: "Battery Holders", description: "Storage Solutions", image: "https://picsum.photos/300/200?random=34" },
+    { name: "Chargers", description: "Smart Charging", image: "https://picsum.photos/300/200?random=35" },
+    { name: "Power Banks", description: "Portable Power", image: "https://picsum.photos/300/200?random=36" },
+    { name: "Battery Monitors", description: "Voltage Display", image: "https://picsum.photos/300/200?random=37" },
+    { name: "Protection Circuits", description: "Safety First", image: "https://picsum.photos/300/200?random=38" }
+  ],
+  "3D Printer": [
+    { name: "Filaments", description: "PLA, ABS & More", image: "https://picsum.photos/300/200?random=41" },
+    { name: "Hot Ends", description: "Print Heads", image: "https://picsum.photos/300/200?random=42" },
+    { name: "Extruders", description: "Feed Systems", image: "https://picsum.photos/300/200?random=43" },
+    { name: "Control Boards", description: "Printer Brains", image: "https://picsum.photos/300/200?random=44" },
+    { name: "Stepper Motors", description: "Axis Control", image: "https://picsum.photos/300/200?random=45" },
+    { name: "Linear Rails", description: "Smooth Motion", image: "https://picsum.photos/300/200?random=46" },
+    { name: "Build Plates", description: "Print Surfaces", image: "https://picsum.photos/300/200?random=47" },
+    { name: "Nozzles", description: "Various Sizes", image: "https://picsum.photos/300/200?random=48" }
+  ],
+  "Drone Parts": [
+    { name: "ESC", description: "Speed Controls", image: "https://picsum.photos/300/200?random=51" },
+    { name: "Flight Controllers", description: "Brain Units", image: "https://picsum.photos/300/200?random=52" },
+    { name: "Props", description: "Propellers", image: "https://picsum.photos/300/200?random=53" },
+    { name: "Frames", description: "Drone Bodies", image: "https://picsum.photos/300/200?random=54" },
+    { name: "Motors", description: "Brushless Motors", image: "https://picsum.photos/300/200?random=55" },
+    { name: "Batteries", description: "Flight Power", image: "https://picsum.photos/300/200?random=56" },
+    { name: "FPV Cameras", description: "Live View", image: "https://picsum.photos/300/200?random=57" },
+    { name: "Radio Systems", description: "Control Link", image: "https://picsum.photos/300/200?random=58" }
+  ]
+};
+
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,6 +101,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
   const currentLocation = useLocation();
+  const [activeCategory, setActiveCategory] = useState("Development Board");
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -379,39 +444,55 @@ const Navbar = () => {
               </Link>
               
               {/* Categories Dropdown */}
-              <div className="absolute left-0 top-full mt-1 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 w-[800px] flex">
-                {/* Left Side - Category List */}
-                <div className="grid grid-cols-3 gap-4 p-6 w-full">
-                  {Object.keys(categories).map((category, index) => (
-                    <Link
-                      key={index}
-                      to={`/allproducts?category=${category}`}
-                      className="group"
-                    >
-                      <div className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between hover:shadow-lg transition-shadow duration-300">
-                        <div>
-                          <h2 className="text-base font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">
-                            {category}
-                          </h2>
-                          <p className="text-[10px] text-gray-500">
-                            {category === "Development Board" && "Arduino, ESP32, RPi"}
-                            {category === "Sensors" && "Temperature, Pressure, Motion"}
-                            {category === "Motors and Drivers" && "DC, Stepper, Servo"}
-                            {category === "Battery" && "LiPo, Li-ion, NiMH"}
-                            {category === "3D Printer" && "Parts & Accessories"}
-                            {category === "Drone Parts" && "ESC, Flight Controllers, Props"}
-                          </p>
+              <div className="absolute -left-[200px] right-[400px] top-full mt-1 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-[1400px] duration-300 z-50">
+                <div className="w-full ">
+                  <div className="flex">
+                    {/* Left Side - Category List */}
+                    <div className="w-1/4 bg-gray-50 p-4 border-r border-gray-200">
+                      {Object.keys(categories).map((category, index) => (
+                        <div
+                          key={index}
+                          onMouseEnter={() => setActiveCategory(category)}
+                          className="flex items-center justify-between py-3 px-4 hover:bg-gray-100 rounded-lg group cursor-pointer"
+                        >
+                          <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">{category}</span>
+                          <FaChevronRight className="text-gray-400 text-xs" />
                         </div>
-                        <div className="pl-4">
-                          <img
-                            src={categoryImages[category]}
-                            alt={category}
-                            className="w-20 h-20 object-cover mb-2"
-                          />
-                        </div>
+                      ))}
+                    </div>
+
+                    {/* Right Side - Subcategories Grid */}
+                    <div className="w-3/4 p-6">
+                      <div className="grid grid-cols-4 gap-4">
+                        {subcategories[activeCategory]?.slice(0, 8).map((subcat, index) => (
+                          <Link 
+                            key={index}
+                            to={`/allproducts?category=${activeCategory}&subcategory=${subcat.name.toLowerCase()}`} 
+                            className="group"
+                          >
+                            <div className="relative overflow-hidden rounded-lg">
+                              <img 
+                                src={subcat.image}
+                                alt={subcat.name}
+                                className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                                <h3 className="text-white font-medium text-sm">{subcat.name}</h3>
+                                <p className="text-gray-200 text-xs">{subcat.description}</p>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                    </Link>
-                  ))}
+                      <Link 
+                        to={`/subcategories?category=${activeCategory}`}
+                        className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors"
+                      >
+                        See All Categories
+                        <FaChevronRight className="ml-2 text-xs" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
