@@ -2,6 +2,7 @@ import React from "react";
 import  Section2  from './Section2';
 import Section3 from './Section3'
 import Customers from './Customers'
+import { Link } from "react-router-dom";
 const OnlinePresenceSection = () => {
   return (
     <div className=" w-full ">
@@ -24,9 +25,9 @@ const OnlinePresenceSection = () => {
           Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.
         </p>
        </div>
-        <button className="bg-[#1a1a4b] hover:bg-[#0f0f3a] text-white font-semibold px-8 py-3 rounded-full">
+        <Link to ="/product" className="bg-[#1a1a4b] hover:bg-[#0f0f3a] text-white font-semibold px-8 py-3 rounded-full">
           Discover Now
-        </button>
+        </Link>
     
       </div>
 

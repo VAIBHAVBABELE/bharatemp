@@ -14,7 +14,7 @@ const brands = [
 
 export default function B2BIndustriesSection() {
   return (
-    <section className="bg-white text-center mb-10">
+    <div className="w-full h-auto bg-white text-center mb-10 overflow-hidden">
       <Marquee pauseOnHover gradient={false} speed={100}>
         <div className="flex gap-8 items-center py-4 w-full">
           {brands.map((brand, index) => (
@@ -31,6 +31,6 @@ export default function B2BIndustriesSection() {
           ))}
         </div>
       </Marquee>
-    </section>
+    </div>
   );
 }

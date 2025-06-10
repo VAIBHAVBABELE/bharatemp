@@ -101,7 +101,7 @@ const Footer = () => {
                 {/* <li>Hours:</li>
                 <li>Mon-Fri — 10am to 8pm</li>
                 <li>Sat-Sun — 10am to 2pm</li> */}
-                
+                  <li>Stay updated with our latest , offers,<br/> products, and news –straight to your  <br/>inbox.</li>
                   <div className="flex items-center space-x-2 py-3">
                     <input
                       type="email"

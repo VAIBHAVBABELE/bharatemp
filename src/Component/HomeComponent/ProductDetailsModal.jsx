@@ -34,7 +34,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
           </button>
 
           {/* Tabs */}
-          <div className="flex gap-4 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 mb-8">
             {['Features', 'Specification', 'Images', 'Warranty'].map((tab) => (
               <button
                 key={tab}
@@ -82,7 +82,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                 <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Product Images</h2>
                 <div className="grid grid-cols-3 gap-4">
                   {product.product_image_sub?.map((img, index) => (
-                    <div key={index} className="aspect-square flex justify-center items-center w-[200px] h-[200px] rounded-lg overflow-hidden border border-gray-200">
+                    <div key={index} className="aspect-square flex justify-center items-centermd:w-[200px]  md:h-[200px]  rounded-lg overflow-hidden border border-gray-200">
                       <img
                         src={img}
                         alt={`${product.name} view ${index + 1}`}

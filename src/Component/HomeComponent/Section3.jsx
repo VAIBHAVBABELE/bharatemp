@@ -1,20 +1,20 @@
 import image7 from '../../assets/homepage7.png'
 import image8 from '../../assets/homepage8.png'
 import image9 from '../../assets/homepage9.png'
-
+import { Link } from 'react-router-dom';
 
 const PromoSection = () => {
     return (
         <div className=" w-full    py-10   flex flex-col lg:flex-row gap-6 ">
             {/* Left Main Card */}
-            <div className='md:w-1/2  w-full relative'>
+            <div className='lg:w-1/2  w-full relative'>
                 <div className="lg:col-span-1 bg-[#1e293b] rounded-2xl text-white flex  justify-between p-6 h-[390px] ">
                     <div className='md:w-1/2 w-full'>
                         <p className="text-[23.13px] mb-2">Rasberry Pie</p>
                         <h2 className="lg:text-[58.45px] md:text-[30px] text-2xl font-bold leading-tight mb-2">Case BB-3</h2>
-                        <button className="bg-[#F7941D] text-[#000000] px-2 py-2 my-2 rounded-full font-semibold mb-4">
+                        <Link to="/product" className="bg-[#F7941D] text-[#000000] px-2 py-2 my-2 rounded-full font-semibold mb-4">
                             Discover Now
-                        </button>
+                        </Link>
                         <p className="text-[12.49px] text-gray-300 py-2">BE THE FIRST TO OWN</p>
                         <p className="text-[17px] font-medium ">From</p>
                         <p className="text-[30px] font-medium"> ₹399</p>
@@ -29,16 +29,17 @@ const PromoSection = () => {
                 </div>
             </div>
             {/* Right Grid Cards */}
-            <div className='md:w-1/2 w-full'>
+          
+            <div className='lg:w-1/2 w-full'>
                 <div className=" grid md:grid-cols-2 grid-cols-1 gap-4 ">
                     {/* Card 1 */}
                     <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex   justify-between relative">
                         <div >
                             <p className="text-blue-900 font-bold lg:text-[34.83px] lg:py-2 pt-6 md:px-0 text-2xl">3d Printer</p>
                            <p className="text-sm text-[#f7941d] mb-2 py-2">Parts</p>
-                            <button className="bg-[#f7941d] text-white px-3  py-2 text-sm rounded-full">
+                            <Link to="/product" className="bg-[#f7941d] text-white px-3  py-2 text-sm rounded-full">
                                 Discover Now
-                            </button>
+                            </Link>
                        </div>
                         <img
                             src={ image8}
@@ -48,10 +49,10 @@ const PromoSection = () => {
                     {/* Card 2 */}
                     <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex items-center gap-6 h-[186px]  justify-between relative">
                         <div>
-                            <button className="bg-[#1E3473] text-white px-3 text-center text-[16px] py-2 rounded-full mb-1">
+                            <Link to="/product" className="bg-[#1E3473] text-white px-3 text-center text-[16px] py-2 rounded-full mb-1">
                                 Discover Now
-                            </button>
-                            <p className="text-sm text-[#f7941d] ">Parts</p>
+                            </Link>
+                            <p className="text-sm text-[#f7941d]  pt-4">Parts</p>
                             <p className="text-[#1E3473] font-bold md:text-[34.83px] text-2xl">Drone BB-3</p>
                         </div>
                         <img
@@ -64,9 +65,9 @@ const PromoSection = () => {
                     {/* Card 3 (repeated like Card 2) */}
                     <div className=" w-full bg-[#F6F6F6] rounded-2xl p-4 shadow-sm flex  items-center gap-6 h-[186px]  justify-between relative">
                         <div>
-                            <button className="bg-[#1E3473] text-white px-3 py-2 text-[16px] rounded-full mb-1">
+                            <Link to="/product" className="bg-[#1E3473] text-white px-3 py-2 text-[16px] rounded-full mb-1">
                                 Discover Now
-                            </button>
+                            </Link>
                             <p className="text-sm text-[#f7941d] py-2">Parts</p>
                             <p className="text-[#1E3473] font-bold md:text-[34.83px] py-2 text-2xl">Drone BB-3</p>
                         </div>
@@ -82,9 +83,9 @@ const PromoSection = () => {
                         <div >
                             <p className="text-blue-900 font-bold md:text-[34.83px] py-2 text-2xl">3d Printer</p>
                            <p className="text-sm text-[#f7941d] mb-2 py-2">Parts</p>
-                            <button className="bg-[#f7941d] text-white px-3  py-2 text-[16px] rounded-full">
+                            <Link tp="/product" className="bg-[#f7941d] text-white px-3  py-2 text-[16px] rounded-full">
                                 Discover Now
-                            </button>
+                            </Link>
                        </div>
                         <img
                             src={ image8}
