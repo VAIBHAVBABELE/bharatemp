@@ -44,8 +44,10 @@ import SubCategories from './pages/SubCategories'
 
 const App = () => {
   return (
+
     <CartProvider>
       <Router>
+        <div className="overflow-hidden">
         <Navbar />
         <Routes>
           {/* Route Definitions */}
@@ -96,6 +98,7 @@ const App = () => {
           <Route path="/warranty-policy" element={<WarrantyPolicy />} />
         </Routes>
         <Footer />
+        </div>
       </Router>
     </CartProvider>
   );

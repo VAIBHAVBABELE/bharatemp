@@ -189,7 +189,7 @@ const Navbar = () => {
       const recognition = new window.webkitSpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
-      
+
       recognition.onstart = () => {
         setIsListening(true);
       };
@@ -197,7 +197,7 @@ const Navbar = () => {
       recognition.onend = () => {
         setIsListening(false);
       };
-      
+
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setSearchQuery(transcript);
@@ -212,7 +212,7 @@ const Navbar = () => {
         console.error('Speech recognition error:', event.error);
         alert('Sorry, there was an error with voice recognition. Please try again.');
       };
-      
+
       recognition.start();
     } else {
       alert('Voice search is not supported in this browser');
@@ -244,7 +244,7 @@ const Navbar = () => {
           </div>
         </div> */}
         <div className=" flex flex-wrap   gap-4 items-center ">
-           <Link to="#" className="text-white  ">
+          <Link to="#" className="text-white  ">
             <img src={icon5} alt="Instagram" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
@@ -256,9 +256,9 @@ const Navbar = () => {
           <Link to="#" className="text-white  ">
             <img src={icon4} alt="Twitter" className="w-6 h-6" />
           </Link>
-         
 
-         
+
+
         </div>
       </div>
 
@@ -337,7 +337,7 @@ const Navbar = () => {
                 onClick={startVoiceSearch}
               >
                 <FaMicrophone className={`h-5 w-5 ${isListening ? 'text-[#F7941D]' : 'text-gray-600'}`} />
-                
+
                 {/* Listening Animation */}
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -442,7 +442,7 @@ const Navbar = () => {
                 All Categories
                 <FaChevronDown className="text-xs" />
               </Link>
-              
+
               {/* Categories Dropdown */}
               <div className="absolute -left-[200px] right-[400px] top-full mt-1 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-[1400px] duration-300 z-50">
                 <div className="w-full ">
@@ -465,13 +465,13 @@ const Navbar = () => {
                     <div className="w-3/4 p-6">
                       <div className="grid grid-cols-4 gap-4">
                         {subcategories[activeCategory]?.slice(0, 8).map((subcat, index) => (
-                          <Link 
+                          <Link
                             key={index}
-                            to={`/allproducts?category=${activeCategory}&subcategory=${subcat.name.toLowerCase()}`} 
+                            to={`/allproducts?category=${activeCategory}&subcategory=${subcat.name.toLowerCase()}`}
                             className="group"
                           >
                             <div className="relative overflow-hidden rounded-lg">
-                              <img 
+                              <img
                                 src={subcat.image}
                                 alt={subcat.name}
                                 className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
@@ -484,7 +484,7 @@ const Navbar = () => {
                           </Link>
                         ))}
                       </div>
-                      <Link 
+                      <Link
                         to={`/subcategories?category=${activeCategory}`}
                         className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors"
                       >
@@ -526,8 +526,8 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="flex px-4 lg:px-16 md:px-12">
-            <Link 
-              to="/track-order" 
+            <Link
+              to="/track-order"
               className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full transition-colors duration-300"
             >
               Track Order
@@ -572,8 +572,11 @@ const Navbar = () => {
                 ))}
               </div>
             ))}
-            <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
+            {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
               PCB
+            </Link> */}
+             <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+              B2B Enquiry
             </Link>
           </div>
         )}
