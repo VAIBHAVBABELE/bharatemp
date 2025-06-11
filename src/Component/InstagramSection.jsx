@@ -49,7 +49,7 @@ function InstagramSection() {
     );
  
     return (
-        <div className='w-full h-auto min-h-screen py-5 lg:py-20'>
+        <div className='w-full h-auto  py-5 lg:py-20'>
             <h1 className='text-2xl font-bold text-[#3e3e3e] text-center md:text-3xl lg:text-4xl'>
                 Our Instagram Page
             </h1>

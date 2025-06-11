@@ -60,7 +60,7 @@ const goToSection = (section) => {
     }, []);
  
     return (
-        <div className="w-full py-10 bg-white text-center">
+        <div className="w-full h-auto      border-4 border-red-400">
             <h2 className="text-2xl font-bold mb-2">Our Instagram Page</h2>
             <p className="text-gray-500 max-w-xl mx-auto mb-6">
                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
@@ -85,7 +85,7 @@ const goToSection = (section) => {
                                 key={idx}
                                 className="w-full md:w-1/4 px-2 flex-shrink-0"
                             >
-                                <div className="bg-gray-100 rounded-3xl overflow-hidden shadow w-full h-[418px] flex items-center justify-center">
+                                <div className="bg-gray-100 rounded-3xl overflow-hidden shadow w-full h-[418px] border-4 border-red-400 flex items-center justify-center">
                                     <img
                                         src={img}
                                         alt={`Post ${idx + 1}`}
