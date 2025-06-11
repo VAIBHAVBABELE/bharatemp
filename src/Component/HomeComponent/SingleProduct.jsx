@@ -20,14 +20,36 @@ import { toast } from "react-toastify";
 import Customers from "../B2bComponent/Customers";
 const backend = import.meta.env.VITE_BACKEND;
 
-// Bulk order pricing data
-const bulkPriceData = [
-  { range: "3-4", price: "₹50,080" },
-  { range: "1-2", price: "₹25,000" },
-  { range: "2-3", price: "₹35,040" },
-  { range: "4-5", price: "₹60,100" },
-  { range: "5-6", price: "₹75,150" },
-];
+// Function to calculate dynamic bulk prices based on product price
+const calculateBulkPrices = (basePrice) => {
+  return [
+    { 
+      range: "5-10", 
+      price: parseFloat((basePrice * 0.95).toFixed(2)), // 5% discount
+      key: "multiple_quantity_price_5_10" 
+    },
+    { 
+      range: "10-20", 
+      price: parseFloat((basePrice * 0.90).toFixed(2)), // 10% discount
+      key: "multiple_quantity_price_10_20" 
+    },
+    { 
+      range: "20-50", 
+      price: parseFloat((basePrice * 0.85).toFixed(2)), // 15% discount
+      key: "multiple_quantity_price_20_50" 
+    },
+    { 
+      range: "50-100", 
+      price: parseFloat((basePrice * 0.80).toFixed(2)), // 20% discount
+      key: "multiple_quantity_price_50_100" 
+    },
+    { 
+      range: "100+", 
+      price: parseFloat((basePrice * 0.75).toFixed(2)), // 25% discount
+      key: "multiple_quantity_price_100_plus" 
+    }
+  ];
+};
 
 export default function ProductCard() {
   const [product, setProduct] = useState(null);
@@ -44,8 +66,11 @@ export default function ProductCard() {
     phone: "",
   });
   const [selectedBulkRange, setSelectedBulkRange] = useState(null);
+  const [selectedBulkPrice, setSelectedBulkPrice] = useState(null);
+  const [bulkQuantity, setBulkQuantity] = useState(0);
   const [showCart, setShowCart] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [bulkPrices, setBulkPrices] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
@@ -92,6 +117,7 @@ export default function ProductCard() {
     }
   }, [id]);
 
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -131,7 +157,14 @@ export default function ProductCard() {
   // Handle adding to cart
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product);
+      const regularItem = {
+        ...product,
+        quantity: quantity,
+        price: product.discounted_single_product_price,
+        total: product.discounted_single_product_price * quantity,
+        isBulkOrder: false
+      };
+      addToCart(regularItem);
       setShowCart(true);
     }
   };
@@ -139,8 +172,14 @@ export default function ProductCard() {
   // Handle Buy Now button
   const handleBuyNow = () => {
     if (product) {
-      addToCart(product);
-      // Navigate to checkout page
+      const regularItem = {
+        ...product,
+        quantity: quantity,
+        price: product.discounted_single_product_price,
+        total: product.discounted_single_product_price * quantity,
+        isBulkOrder: false
+      };
+      addToCart(regularItem);
       navigate("/cart");
     }
   };
@@ -176,22 +215,79 @@ export default function ProductCard() {
     });
   };
 
-  const handleBulkRangeSelect = (range) => {
+  const handleBulkRangeSelect = (range, price) => {
     setSelectedBulkRange(range);
+    setSelectedBulkPrice(price);
+    // Set initial quantity to minimum of range
+    const minQuantity = parseInt(range.split('-')[0]);
+    setBulkQuantity(minQuantity);
   };
 
+  // Update bulk prices when product changes
+  useEffect(() => {
+    if (product && product.discounted_single_product_price) {
+      const prices = calculateBulkPrices(product.discounted_single_product_price);
+      setBulkPrices(prices);
+    }
+  }, [product]);
+
+
   const handleBulkAddToCart = () => {
-    if (selectedBulkRange) {
-      // Add bulk items to cart
-      setShowBulkOrder(false);
+    if (selectedBulkRange && selectedBulkPrice && product && bulkQuantity > 0) {
+      // Parse the range values
+      let minQty, maxQty;
+      if (selectedBulkRange.includes('+')) {
+        minQty = parseInt(selectedBulkRange.split('+')[0]);
+        maxQty = Infinity;
+      } else {
+        [minQty, maxQty] = selectedBulkRange.split('-').map(num => parseInt(num));
+      }
+
+      // Validate quantity
+      if (bulkQuantity >= minQty && (maxQty === Infinity || bulkQuantity <= maxQty)) {
+        const bulkItem = {
+          ...product,
+          quantity: bulkQuantity,
+          price: selectedBulkPrice,
+          totalPrice: selectedBulkPrice * bulkQuantity,
+        };
+        addToCart(bulkItem);
+        setShowBulkOrder(false);
+        setShowCart(true);
+      } else {
+        toast.error(`Please enter a quantity between ${minQty} and ${maxQty === Infinity ? '∞' : maxQty}`);
+      }
     }
   };
 
   const handleBulkBuyNow = () => {
-    if (selectedBulkRange) {
-      // Process bulk buy now
-      setShowBulkOrder(false);
-      navigate("/cart");
+    if (selectedBulkRange && selectedBulkPrice && product && bulkQuantity > 0) {
+      // Parse the range values
+      let minQty, maxQty;
+      if (selectedBulkRange.includes('+')) {
+        minQty = parseInt(selectedBulkRange.split('+')[0]);
+        maxQty = Infinity;
+      } else {
+        [minQty, maxQty] = selectedBulkRange.split('-').map(num => parseInt(num));
+      }
+
+      // Validate quantity
+      if (bulkQuantity >= minQty && (maxQty === Infinity || bulkQuantity <= maxQty)) {
+        const bulkItem = {
+          ...product,
+          quantity: bulkQuantity,
+          price: selectedBulkPrice,
+          total: selectedBulkPrice * bulkQuantity,
+          isBulkOrder: true,
+          bulkRange: selectedBulkRange,
+          originalPrice: product.discounted_single_product_price
+        };
+        addToCart(bulkItem);
+        setShowBulkOrder(false);
+        navigate('/cart');
+      } else {
+        toast.error(`Please enter a quantity between ${minQty} and ${maxQty === Infinity ? '∞' : maxQty}`);
+      }
     }
   };
 
@@ -500,26 +596,24 @@ export default function ProductCard() {
                     <FaTimes size={20} />
                   </button>
                 </div>
-                <p className="text-gray-600 text-sm">Order for Bulk Items</p>
+                <p className="text-gray-600 text-sm">Select quantity range for bulk pricing</p>
               </div>
 
               {/* Price Table Header */}
               <div className="px-6">
                 <div className="bg-[#1e3473] text-white px-6 py-2 grid grid-cols-4 text-sm rounded-xl">
-                  <span className="col-span-1 ">Select</span>
+                  <span className="col-span-1">Select</span>
                   <span className="col-span-1 text-center">Quantity</span>
-                  <span className="col-span-2 text-center">
-                    Discounted Price per piece
-                  </span>
+                  <span className="col-span-2 text-center">Price per unit</span>
                 </div>
               </div>
 
               {/* Price Table Body */}
               <div className="flex-1 overflow-y-auto py-2 px-6">
-                {bulkPriceData.map((item, index) => (
+                {bulkPrices.map((item, index) => (
                   <div
                     key={index}
-                    onClick={() => handleBulkRangeSelect(item.range)}
+                    onClick={() => handleBulkRangeSelect(item.range, item.price)}
                     className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${
                       selectedBulkRange === item.range
                         ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
@@ -535,7 +629,7 @@ export default function ProductCard() {
                         } flex items-center justify-center`}
                       >
                         {selectedBulkRange === item.range && (
-                          <div className="w-2 h-2 rounded-full  bg-white"></div>
+                          <div className="w-2 h-2 rounded-full bg-white"></div>
                         )}
                       </div>
                     </div>
@@ -543,15 +637,40 @@ export default function ProductCard() {
                       {item.range}
                     </span>
                     <span className="text-[#1e3473] col-span-2 text-center font-medium">
-                      {item.price}
+                      ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 ))}
+
+                {selectedBulkRange && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-gray-700 font-medium">Enter Quantity:</span>
+                      <input
+                        type="number"
+                        value={bulkQuantity}
+                        onChange={(e) => setBulkQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-24 px-3 py-1 border rounded-lg text-center"
+                        min={parseInt(selectedBulkRange.split('-')[0])}
+                        max={selectedBulkRange.includes('+') ? 999999 : parseInt(selectedBulkRange.split('-')[1])}
+                      />
+                    </div>
+                    <div className="text-right text-[#1e3473] font-bold">
+                      Total: ₹{(selectedBulkPrice * bulkQuantity).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="py-4 border-t border-gray-200">
                   <div className="flex justify-between gap-10">
                     <button
                       onClick={handleBulkAddToCart}
-                      className="flex-1 px-4 py-2 bg-[#f7941d] text-white rounded-xl font-medium hover:bg-[#e88a1a] transition-colors flex items-center justify-center gap-2"
+                      disabled={!selectedBulkRange || bulkQuantity === 0}
+                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
+                        selectedBulkRange && bulkQuantity > 0
+                          ? 'bg-[#f7941d] text-white hover:bg-[#e88a1a]'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      } transition-colors`}
                     >
                       <svg
                         className="w-5 h-5"
@@ -568,7 +687,12 @@ export default function ProductCard() {
                     </button>
                     <button
                       onClick={handleBulkBuyNow}
-                      className="flex-1 px-4 py-2 bg-[#1e3473] text-white rounded-xl font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
+                      disabled={!selectedBulkRange || bulkQuantity === 0}
+                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
+                        selectedBulkRange && bulkQuantity > 0
+                          ? 'bg-[#1e3473] text-white hover:bg-[#162554]'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      } transition-colors`}
                     >
                       <svg
                         className="w-5 h-5"

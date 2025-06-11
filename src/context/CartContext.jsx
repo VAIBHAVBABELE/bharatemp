@@ -18,7 +18,10 @@ const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
       const existingItemIndex = state.cartItems.findIndex(
-        (item) => item._id === action.payload._id
+        (item) => 
+          item._id === action.payload._id && 
+          item.isBulkOrder === action.payload.isBulkOrder &&
+          item.bulkRange === action.payload.bulkRange
       );
 
       if (existingItemIndex >= 0) {
@@ -26,7 +29,9 @@ const cartReducer = (state, action) => {
         const updatedCartItems = [...state.cartItems];
         updatedCartItems[existingItemIndex] = {
           ...updatedCartItems[existingItemIndex],
-          quantity: updatedCartItems[existingItemIndex].quantity + 1
+          quantity: action.payload.quantity || updatedCartItems[existingItemIndex].quantity + 1,
+          price: action.payload.price || updatedCartItems[existingItemIndex].price,
+          total: action.payload.total || (action.payload.price * action.payload.quantity)
         };
 
         return {
@@ -34,8 +39,15 @@ const cartReducer = (state, action) => {
           cartItems: updatedCartItems
         };
       } else {
-        // Add new item to cart
-        const newItem = { ...action.payload, quantity: 1 };
+        // Add new item to cart with all bulk order properties
+        const newItem = {
+          ...action.payload,
+          quantity: action.payload.quantity || 1,
+          price: action.payload.price || action.payload.discounted_single_product_price,
+          total: action.payload.total || (action.payload.price * action.payload.quantity),
+          isBulkOrder: action.payload.isBulkOrder || false,
+          bulkRange: action.payload.bulkRange || null
+        };
         return {
           ...state,
           cartItems: [...state.cartItems, newItem]
@@ -87,7 +99,8 @@ const cartReducer = (state, action) => {
     case 'CALCULATE_TOTALS':
       const { totalItems, totalAmount } = state.cartItems.reduce(
         (acc, item) => {
-          const itemPrice = item.new_price || item.price;
+          // Use the correct price based on whether it's a bulk order
+          const itemPrice = item.isBulkOrder ? item.price : (item.new_price || item.price);
           acc.totalItems += item.quantity;
           acc.totalAmount += itemPrice * item.quantity;
           return acc;

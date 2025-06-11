@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import image1 from '../../assets/elect.png'
 import image2 from '../../assets/rasperrybi.svg'
+import axios from 'axios';
+
+const backend = import.meta.env.VITE_BACKEND;
+
 const slides = [
   {
     id: 'raspberry1',
@@ -81,6 +85,7 @@ const slides = [
  
 export default function RaspberrySlider() {
   const [current, setCurrent] = useState(0);
+  const [featuredProduct, setFeaturedProduct] = useState(null);
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
  
@@ -90,52 +95,53 @@ export default function RaspberrySlider() {
     }, 2000); // Change every 5 seconds
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(`${backend}/product/684028fd67e4f0a208bc1de0`);
+        if (response.data) {
+          setFeaturedProduct(response.data.data.product);
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
+
+    fetchProduct();
+  }, []);
+
  
   const slide = slides[current];
 
   // Handle add to cart
-  const handleAddToCart = (e, product) => {
-    e.stopPropagation(); // Prevent propagation
-    addToCart({
-      id: product.id,
-      name: product.title,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.img,
-      reviews: product.reviews,
-      rating: product.rating
-    });
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    if (featuredProduct) {
+      addToCart({
+        id: featuredProduct._id,
+        name: featuredProduct.product_name,
+        price: featuredProduct.discounted_single_product_price,
+        originalPrice: featuredProduct.non_discounted_price,
+        image: featuredProduct.product_image_main,
+        reviews: featuredProduct.no_of_reviews,
+        rating: featuredProduct.review_stars
+      });
+    }
   };
 
   // Handle shop now / buy now
   const handleShopNow = (e) => {
     e.preventDefault();
-    // Add the current slide's product to cart
-    addToCart({
-      id: slide.product.id,
-      name: slide.product.title,
-      price: slide.product.price,
-      originalPrice: slide.product.originalPrice,
-      image: slide.product.img,
-      reviews: slide.product.reviews,
-      rating: slide.product.rating
-    });
-    // Navigate to cart
-    navigate('/cart');
+    navigate(`/product`);
   };
 
   // Handle view product details
-  const handleViewProduct = (product) => {
-    navigate(`/product/${product.id}`);
-    localStorage.setItem('selectedProduct', JSON.stringify({
-      id: product.id,
-      name: product.title,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.img,
-      reviews: product.reviews,
-      rating: product.rating
-    }));
+  const handleViewProduct = () => {
+    if (featuredProduct) {
+      navigate(`/product/${featuredProduct._id}`);
+      localStorage.setItem('selectedProduct', JSON.stringify(featuredProduct));
+    }
   };
  
   return (
@@ -149,7 +155,7 @@ export default function RaspberrySlider() {
             <p className="text-base font-medium mb-1">Starting From</p>
             <p className="text-4xl font-bold text-white mb-6">{slide.price}</p>
             <button 
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full w-36 text-sm"
+              className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full w-36 text-sm"
               onClick={handleShopNow}
             >
               Shop Now
@@ -164,76 +170,67 @@ export default function RaspberrySlider() {
  
         {/* Right Product Card */}
         <div className="w-[25%] h-full lg:flex items-center justify-center hidden ">
-          <div 
-            className="border border-gray-200 rounded-xl shadow-sm w-full p-4 cursor-pointer"
-            onClick={() => handleViewProduct(slide.product)}
-          >
-            <div className="flex justify-between">
-              <button className="w-[160px] border border-gray-300 rounded-3xl p-2 flex items-center justify-center gap-1 text-sm font-medium hover:bg-gray-50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                Add to Wishlist
-              </button>
-              <button 
-                className={`w-10 h-10 rounded-full flex items-center justify-center border ${isInCart(slide.product.id) ? 'bg-[#f7941d] border-[#f7941d] text-white' : 'border-gray-300 text-gray-600'} hover:bg-gray-50`}
-                onClick={(e) => handleAddToCart(e, slide.product)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-              </button>
-            </div>
-            <div className="relative flex justify-center items-center mb-6 py-4">
-              <img
-                src={slide.product.img}
-                alt="Product"
-                className="max-h-[120px] object-contain"
-              />
-            </div>
-            
-            <div className="flex flex-col">
-              <h3 className="font-medium text-lg ">Rasberry Pie 4<br />With Wifi</h3>
-              
-              <div className="flex items-center mb-3">
-                <div className="flex text-lg font-bold text-blue-600">
-                  {'★'.repeat(slide.product.rating)}
-                  {'☆'.repeat(5 - slide.product.rating)}
-                </div>
-                <span className="ml-2 text-gray-600 text-sm">({slide.product.reviews})</span>
+          {featuredProduct && (
+            <div 
+              className="border border-gray-200 rounded-xl shadow-sm w-full p-4 cursor-pointer hover:shadow-lg transition-all duration-300"
+              onClick={handleViewProduct}
+            >
+              <div className="flex justify-between">
+                <button className="w-[160px] border cursor-pointer border-gray-300 rounded-3xl p-2 flex items-center justify-center gap-1 text-sm font-medium hover:bg-gray-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                  Add to Wishlist
+                </button>
+                <button 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border ${isInCart(featuredProduct._id) ? 'bg-[#f7941d] cursor-pointer border-[#f7941d] text-white' : 'border-gray-300 text-gray-600'}`}
+                  onClick={handleAddToCart}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                </button>
+              </div>
+              <div className="relative flex justify-center items-center mb-6 py-4">
+                <img
+                  src={featuredProduct.product_image_main}
+                  alt={featuredProduct.product_name}
+                  className="max-h-[120px] object-contain"
+                />
               </div>
               
-              <div className="mb-3">
-                <span className="text-xl font-bold text-gray-900">
-                  ₹{slide.product.price.toLocaleString()}
-                </span>
-                <span className="text-sm line-through text-gray-400 ml-2">
-                  ₹{slide.product.originalPrice.toLocaleString()}
-                </span>
-              </div>
-              
-              <div className="mb-3">
-                <div className="w-full h-1 bg-gray-200 rounded-full mt-1">
-                  <div 
-                    className="h-1 bg-orange-500 rounded-full" 
-                    style={{ width: `${(slide.product.sold / slide.product.total) * 100}%` }}
-                  ></div>
+              <div className="flex flex-col">
+                <h3 className="font-medium text-lg text-[#1E3473]">{featuredProduct.product_name}</h3>
+                <p className="text-sm text-gray-500">{featuredProduct.brand_name}</p>
+                
+                <div className="flex items-center mb-3">
+                  <div className="flex text-lg font-bold text-blue-600">
+                    {'★'.repeat(Math.floor(featuredProduct.review_stars || 0))}
+                    {'☆'.repeat(5 - Math.floor(featuredProduct.review_stars || 0))}
+                  </div>
+                  <span className="ml-2 text-gray-600 text-sm">
+                    ({featuredProduct.no_of_reviews || 0})
+                  </span>
                 </div>
-                <div className="flex items-center mt-3">
-                  <span className="text-sm text-gray-600">Sold: {slide.product.sold} / {slide.product.total}</span>
+                
+                <div className="mb-3">
+                  <span className="text-xl font-bold text-gray-900">
+                    ₹{featuredProduct.discounted_single_product_price?.toLocaleString()}
+                  </span>
+                  <span className="text-sm line-through text-gray-400 ml-2">
+                    ₹{featuredProduct.non_discounted_price?.toLocaleString()}
+                  </span>
                 </div>
               </div>
-              
-              
             </div>
-          </div>
+          )}
         </div>
       </div>
      
       {/* Slider indicators */}
-      <div className="flex gap-2 mt-4">
+      {/* <div className="flex gap-2 mt-4">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -241,7 +238,7 @@ export default function RaspberrySlider() {
             className={`w-8 h-2 rounded-full ${index === current ? 'bg-[#002F6C]' : 'bg-gray-300'}`}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

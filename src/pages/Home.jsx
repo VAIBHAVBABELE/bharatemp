@@ -123,7 +123,7 @@ const ProductSlider = () => {
               >
                 <div className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between hover:shadow-lg transition-shadow duration-300">
                   <div>
-                    <h2 className="text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">{card.title}</h2>
+                    <h2 className="text-sm mt-4 lg:mt-0 lg:text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">{card.title}</h2>
                   </div>
                   <div className="">
                     <img

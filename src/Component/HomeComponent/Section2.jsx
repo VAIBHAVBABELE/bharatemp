@@ -215,7 +215,7 @@ export default function DronePartsCarousel({ products = [] }) {
             <>
               <button
                 onClick={prevSlide}
-                className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 border border-gray-200"
+                className="absolute cursor-pointer left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 border border-gray-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -235,7 +235,7 @@ export default function DronePartsCarousel({ products = [] }) {
 
               <button
                 onClick={nextSlide}
-                className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 border border-gray-200"
+                className="absolute  cursor-pointer right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 border border-gray-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

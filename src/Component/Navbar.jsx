@@ -94,14 +94,15 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [location, setLocation] = useState("Delhi, India");
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Development Board");
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
   const currentLocation = useLocation();
-  const [activeCategory, setActiveCategory] = useState("Development Board");
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -126,14 +127,14 @@ const Navbar = () => {
     }
   }, [currentLocation]);
 
-  const navItems = [
-    {
-      name: "Shop a brand",
-      key: "catalog",
-      items: ["Categories", "PDF Download"],
-      links: ["/categories", "/download-catalog"]
-    },
-  ];
+  // const navItems = [
+  //   {
+  //     name: "Shop a brand",
+  //     key: "catalog",
+  //     items: ["Categories", "PDF Download"],
+  //     links: ["/categories", "/download-catalog"]
+  //   },
+  // ];
 
   const locations = ["Mumbai, India", "Bengaluru, India", "Hyderabad, India"];
 
@@ -217,6 +218,11 @@ const Navbar = () => {
     } else {
       alert('Voice search is not supported in this browser');
     }
+  };
+
+  const handleSubcategoryClick = (category, subcategory) => {
+    navigate(`/allproducts?category=${category}&subcategory=${subcategory.toLowerCase()}`);
+    setShowCategoriesDropdown(false);
   };
 
   return (
@@ -437,66 +443,75 @@ const Navbar = () => {
             <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               All Products
             </Link>
-            <div className="relative group">
+            <div 
+              className="relative group"
+              onMouseEnter={() => setShowCategoriesDropdown(true)}
+              onMouseLeave={() => setShowCategoriesDropdown(false)}
+            >
               <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full flex items-center gap-1">
                 All Categories
                 <FaChevronDown className="text-xs" />
               </Link>
 
               {/* Categories Dropdown */}
-              <div className="absolute -left-[200px] right-[400px] top-full mt-1 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-[1400px] duration-300 z-50">
-                <div className="w-full ">
-                  <div className="flex">
-                    {/* Left Side - Category List */}
-                    <div className="w-1/4 bg-gray-50 p-4 border-r border-gray-200">
-                      {Object.keys(categories).map((category, index) => (
-                        <div
-                          key={index}
-                          onMouseEnter={() => setActiveCategory(category)}
-                          className="flex items-center justify-between py-3 px-4 hover:bg-gray-100 rounded-lg group cursor-pointer"
-                        >
-                          <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">{category}</span>
-                          <FaChevronRight className="text-gray-400 text-xs" />
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Right Side - Subcategories Grid */}
-                    <div className="w-3/4 p-6">
-                      <div className="grid grid-cols-4 gap-4">
-                        {subcategories[activeCategory]?.slice(0, 8).map((subcat, index) => (
-                          <Link
+              {showCategoriesDropdown && (
+                <div className="fixed left-0 right-0 top-[var(--navbar-height)] mt-0 bg-white shadow-lg w-screen z-50">
+                  <div className="max-w-[2000px] mx-auto px-4">
+                    <div className="flex">
+                      {/* Left Side - Category List */}
+                      <div className="w-1/4 bg-gray-50 p-4 border-r border-gray-200">
+                        {Object.keys(categories).map((category, index) => (
+                          <div
                             key={index}
-                            to={`/allproducts?category=${activeCategory}&subcategory=${subcat.name.toLowerCase()}`}
-                            className="group"
+                            onMouseEnter={() => setActiveCategory(category)}
+                            className="flex items-center justify-between py-3 px-4 hover:bg-gray-100 rounded-lg group cursor-pointer"
                           >
-                            <div className="relative overflow-hidden rounded-lg">
-                              <img
-                                src={subcat.image}
-                                alt={subcat.name}
-                                className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                                <h3 className="text-white font-medium text-sm">{subcat.name}</h3>
-                                <p className="text-gray-200 text-xs">{subcat.description}</p>
-                              </div>
-                            </div>
-                          </Link>
+                            <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">{category}</span>
+                            <FaChevronRight className="text-gray-400 text-xs" />
+                          </div>
                         ))}
                       </div>
-                      <Link
-                        to={`/subcategories?category=${activeCategory}`}
-                        className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors"
-                      >
-                        See All Categories
-                        <FaChevronRight className="ml-2 text-xs" />
-                      </Link>
+
+                      {/* Right Side - Subcategories Grid */}
+                      <div className="w-3/4 p-6">
+                        <div className="grid grid-cols-4 gap-4">
+                          {subcategories[activeCategory]?.slice(0, 8).map((subcat, index) => (
+                            <div
+                              key={index}
+                              onClick={() => handleSubcategoryClick(activeCategory, subcat.name)}
+                              className="group cursor-pointer"
+                            >
+                              <div className="relative overflow-hidden rounded-lg">
+                                <img
+                                  src={subcat.image}
+                                  alt={subcat.name}
+                                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                                  <h3 className="text-white font-medium text-sm">{subcat.name}</h3>
+                                  <p className="text-gray-200 text-xs">{subcat.description}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          onClick={() => {
+                            navigate(`/subcategories?category=${activeCategory}`);
+                            setShowCategoriesDropdown(false);
+                          }}
+                          className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors cursor-pointer"
+                        >
+                          See All Categories
+                          <FaChevronRight className="ml-2 text-xs" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
-            {navItems.map((item) => (
+            {/* {navItems.map((item) => (
               <div className="relative" key={item.key}>
                 <button
                   onClick={() => toggleDropdown(item.key)}
@@ -520,7 +535,7 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-            ))}
+            ))} */}
             <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               B2B Enquiry
             </Link>
@@ -554,13 +569,14 @@ const Navbar = () => {
                 <FaSearch size={15} />
               </button>
             </form>
+            <div className="flex flex-col gap-2 items-center">
             <Link to="/" className="block py-2 hover:text-[#F7941D]">
               HOME
             </Link>
               <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               All Products
             </Link>
-            {navItems.map((item) => (
+            {/* {navItems.map((item) => (
               <div key={item.key} className="py-1">
                 <p className="font-semibold text-gray-700">{item.name}</p>
                 {item.items.map((subItem, idx) => (
@@ -574,13 +590,15 @@ const Navbar = () => {
                   </Link>
                 ))}
               </div>
-            ))}
+            ))} */}
             {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
               PCB
             </Link> */}
              <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               B2B Enquiry
             </Link>
+            </div>
+           
           </div>
         )}
       </div>
