@@ -139,8 +139,8 @@ export default function RaspberrySlider() {
   };
  
   return (
-    <div className="flex flex-col items-center justify-center bg-white font-[outfit]">
-      <div className="w-full flex gap-10 lg:h-[406px] h-auto items-center">
+    <div className="flex flex-col items-center justify-center bg-white font-[outfit] ">
+      <div className="w-full flex gap-10 lg:h-[410px] h-auto items-center">
         {/* Left Slide */}
         <div className="w-full h-full bg-[#002F6C] rounded-xl p-4 text-white flex flex-col relative">
           <div className='px-6 pt-2'>

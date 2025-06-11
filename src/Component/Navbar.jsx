@@ -557,6 +557,9 @@ const Navbar = () => {
             <Link to="/" className="block py-2 hover:text-[#F7941D]">
               HOME
             </Link>
+              <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+              All Products
+            </Link>
             {navItems.map((item) => (
               <div key={item.key} className="py-1">
                 <p className="font-semibold text-gray-700">{item.name}</p>

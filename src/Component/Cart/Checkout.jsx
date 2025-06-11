@@ -129,7 +129,7 @@ const Checkout = () => {
   const calculateTotalAmount = () => {
     return cartItems.reduce((sum, item) => {
       const price = Number(item.discounted_single_product_price || 0);
-      return sum + (price * item.quantity);
+      return sum + price * item.quantity;
     }, 0);
   };
 
@@ -137,7 +137,7 @@ const Checkout = () => {
   const calculateTotalMRP = () => {
     return cartItems.reduce((sum, item) => {
       const mrp = Number(item.discounted_single_product_price || 0);
-      return sum + (mrp * item.quantity);
+      return sum + mrp * item.quantity;
     }, 0);
   };
 
@@ -149,9 +149,12 @@ const Checkout = () => {
   const platformFee = 5;
   const shippingFee = 5;
   const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
-  
+
   // Calculate final total using only discounted price
-  const finalTotal = Math.max(0, totalAmount + platformFee + shippingFee - codeDiscount);
+  const finalTotal = Math.max(
+    0,
+    totalAmount + platformFee + shippingFee - codeDiscount
+  );
 
   // Delivery date calculation
   const getDeliveryDates = () => {
@@ -226,46 +229,39 @@ const Checkout = () => {
   };
 
   // Update user address on API
-  const updateUserAddress = async (address) => {
+  const updateUserAddress = async (address, index) => {
     if (!userId || !token) {
-      return;
+      return false;
     }
 
     try {
       const fullAddress = `${address.address}, ${address.city}, ${address.postalCode}`;
       
-      // Get existing addresses
-      const currentAddresses = userData?.address || [];
-      let updatedAddresses;
-
-      if (editingAddressId !== null) {
-        // If editing, replace the address at that index
-        updatedAddresses = currentAddresses.map((addr, index) => 
-          index === editingAddressId ? fullAddress : addr
-        );
-      } else {
-        // If adding new, append to existing addresses
-        updatedAddresses = [...currentAddresses, fullAddress];
-      }
-
       const response = await axios.post(
-        `${backend}/user/${userId}/update`,
+        `${backend}/user/${userId}/update-address`,
         {
           user: {
-            address: updatedAddresses,
-          },
+            address_index: index,
+            address_value: fullAddress
+          }
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          },
+            'Content-Type': 'application/json'
+          }
         }
       );
 
-      toast.success("Address updated successfully");
+      if (response.data.status === "Success") {
+        toast.success("Address updated successfully");
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error("Error updating address:", error);
-      toast.error("Failed to update address");
+      toast.error(error.response?.data?.message || "Failed to update address");
+      return false;
     }
   };
 
@@ -293,10 +289,16 @@ const Checkout = () => {
             const postalCode = postalCodeMatch ? postalCodeMatch[0] : "";
 
             // Remove postal code from the string for further processing
-            let remainingAddress = addr.replace(postalCodeMatch ? postalCodeMatch[0] : "", "");
-            
+            let remainingAddress = addr.replace(
+              postalCodeMatch ? postalCodeMatch[0] : "",
+              ""
+            );
+
             // Split remaining address by commas
-            const parts = remainingAddress.split(",").map(part => part.trim()).filter(Boolean);
+            const parts = remainingAddress
+              .split(",")
+              .map((part) => part.trim())
+              .filter(Boolean);
 
             // Initialize address components
             let streetAddress = "";
@@ -384,7 +386,7 @@ const Checkout = () => {
     setErrors({});
 
     // Update user address in API
-    updateUserAddress(addressToAdd);
+    updateUserAddress(addressToAdd, newId - 1);
   };
 
   // Start editing an address
@@ -426,7 +428,7 @@ const Checkout = () => {
       ? (userData.firstName + " " + userData.lastName).trim()
       : "User";
 
-    const updatedAddresses = addresses.map((addr) => {
+    const updatedAddresses = addresses.map((addr, index) => {
       if (addr.id === editingAddressId) {
         const updatedAddress = {
           ...addr,
@@ -439,7 +441,7 @@ const Checkout = () => {
         };
 
         // Update user address in API
-        updateUserAddress(updatedAddress);
+        updateUserAddress(updatedAddress, index);
 
         return updatedAddress;
       }
@@ -455,37 +457,36 @@ const Checkout = () => {
       postalCode: "",
     });
     setErrors({});
+
+    // Update userData state
+    setUserData(prev => ({
+      ...prev,
+      address: updatedAddresses.map(addr => addr.fullAddress)
+    }));
   };
 
   // Handle removing an address
   const handleRemoveAddress = async (id) => {
     try {
-      const updatedAddresses = addresses.filter((addr) => addr.id !== id);
-      setAddresses(updatedAddresses);
-      
-      if (id === selectedAddressId) {
-        setSelectedAddressId(
-          updatedAddresses.length > 0 ? updatedAddresses[0].id : null
-        );
-      }
+      const indexToRemove = addresses.findIndex(addr => addr.id === id);
+      if (indexToRemove === -1) return;
 
-      // Update the address array in the backend
-      const addressStrings = updatedAddresses.map(addr => addr.fullAddress);
-      await axios.post(
-        `${backend}/user/${userId}/update`,
-        {
-          user: {
-            address: addressStrings,
-          },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      // Update in backend first - send empty string to remove the address
+      const success = await updateUserAddress({ address: "", city: "", postalCode: "" }, indexToRemove);
+
+      if (success) {
+        const updatedAddresses = addresses.filter(addr => addr.id !== id);
+        setAddresses(updatedAddresses);
+        if (id === selectedAddressId) {
+          setSelectedAddressId(updatedAddresses.length > 0 ? updatedAddresses[0].id : null);
         }
-      );
 
-      toast.success("Address removed successfully");
+        // Update userData state
+        setUserData(prev => ({
+          ...prev,
+          address: updatedAddresses.map(addr => addr.fullAddress)
+        }));
+      }
     } catch (error) {
       console.error("Error removing address:", error);
       toast.error("Failed to remove address");
@@ -497,7 +498,7 @@ const Checkout = () => {
     setSelectedAddressId(id);
     const selectedAddr = addresses.find((addr) => addr.id === id);
     if (selectedAddr) {
-      updateUserAddress(selectedAddr);
+      updateUserAddress(selectedAddr, selectedAddr.id - 1);
     }
   };
 
@@ -510,12 +511,12 @@ const Checkout = () => {
 
     try {
       setProcessingPayment(true);
-      
+
       // Get the selected address details
       const selectedAddr = addresses.find(
         (addr) => addr.id === selectedAddressId
       );
-      
+
       // Use default postal code if not available
       const postalCode = selectedAddr.postalCode || "000000";
 
@@ -551,7 +552,6 @@ const Checkout = () => {
         expectedDelivery: expectedDelivery,
       };
 
-
       // Create the order
       const orderResponse = await axios.post(
         `${backend}/order/new`,
@@ -565,7 +565,6 @@ const Checkout = () => {
         }
       );
 
-
       if (
         !orderResponse.data ||
         !orderResponse.data.data ||
@@ -577,14 +576,13 @@ const Checkout = () => {
       const createdOrderId = orderResponse.data.data.order._id;
 
       // Initiate PhonePe payment with the newly created orderId
-      const FRONTEND_URL =  "https://www.bharatronix.com/thankyou/";
+      const FRONTEND_URL = "https://www.bharatronix.com/thankyou/";
 
       const paymentData = {
         orderId: createdOrderId, // Use the orderId directly instead of from state
         userId: userId,
         FRONTEND_URL: FRONTEND_URL,
       };
-
 
       const paymentResponse = await axios.post(
         `${backend}/payment/create-payment`,
@@ -597,15 +595,12 @@ const Checkout = () => {
         }
       );
 
-      if (
-        paymentResponse.data.data.response.phonepeResponse.redirectUrl
-      ) {
+      if (paymentResponse.data.data.response.phonepeResponse.redirectUrl) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
         window.location.href =
           paymentResponse.data.data.response.phonepeResponse.redirectUrl;
-          ;
       } else {
         throw new Error("Invalid payment response");
       }

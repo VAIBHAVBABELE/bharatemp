@@ -39,7 +39,7 @@ const OrderModal = ({ order, onClose }) => {
             <div className="flex justify-between items-center">
               <h4 className="font-medium">Order #{order._id.slice(-6)}</h4>
               <span className="font-bold text-lg text-[#F7941D]">
-                ₹{order.totalPrice.toFixed(2)}
+                ₹{order.totalPrice?.toFixed(2)}
               </span>
             </div>
             <p className="text-sm text-gray-600">
@@ -66,7 +66,7 @@ const OrderModal = ({ order, onClose }) => {
             <h4 className="font-medium mb-2">Delivery Information</h4>
             <div className="bg-gray-50 p-4 rounded-lg space-y-1">
               <p className="text-sm">Expected Delivery: {formatDate(order.expectedDelivery)}</p>
-              <p className="text-sm">Shipping Cost: ₹{order.shippingCost.toFixed(2)}</p>
+              <p className="text-sm">Shipping Cost: ₹{order.shippingCost?.toFixed(2)}</p>
             </div>
           </div>
 
@@ -76,17 +76,18 @@ const OrderModal = ({ order, onClose }) => {
             <div className="space-y-3">
               {order.products.map((product) => (
                 <div key={product._id} className="bg-gray-50 p-4 rounded-lg space-y-1">
-                  <p className="text-sm font-medium">Product ID: {product.product_id}</p>
+                  <p className="text-sm font-medium">Product Name: {product.name}</p>
                   <p className="text-sm">Quantity: {product.quantity}</p>
-                  <p className="text-sm">Warranty Until: {formatDate(product.warranty_expiry_date)}</p>
-                  <p className="text-sm">Total Warranty: {product.total_warranty} months</p>
+                  <p className="text-sm">Price: ₹{product.price?.toFixed(2)}</p>
+                  <p className="text-sm">Warranty Until: {formatDate(product.warrantyExpiryDate)}</p>
+                  <p className="text-sm">Total Warranty: {product.warrantyMonths} months</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Return Request Button */}
-          {order.status === 'Delivered' && !order.return_request && (
+          {order.status === 'Delivered' && !order.returnRequest && (
             <div className="pt-4 border-t">
               <button className="w-full bg-[#F7941D] text-white py-2 rounded-lg hover:bg-[#e38616] transition-colors">
                 Request Return
@@ -150,7 +151,7 @@ const Orders = () => {
 
         if (response.data && response.data.status === "Success") {
           const sortedOrders = response.data.data.sort((a, b) => 
-            new Date(b.created_at) - new Date(a.created_at)
+            new Date(b.createdAt) - new Date(a.createdAt)
           );
           setOrders(sortedOrders);
         }
@@ -186,15 +187,15 @@ const Orders = () => {
             <div
               key={order._id}
               onClick={() => setSelectedOrder(order)}
-              className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow"
+              className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:shadow-md transition"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-medium">Order #{order._id.slice(-6)}</h3>
-                  <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
+                  <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
                 </div>
                 <span className="font-bold text-[#F7941D]">
-                  ₹{order.totalPrice.toFixed(2)}
+                  ₹{order.totalPrice?.toFixed(2)}
                 </span>
               </div>
               
@@ -475,7 +476,7 @@ const ProfilePage = () => {
   // Toggle edit mode
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
-    };
+  };
 
   const renderSection = () => {
     switch (activeSection) {
