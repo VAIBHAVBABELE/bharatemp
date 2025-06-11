@@ -114,7 +114,7 @@ const ProductSlider = () => {
       <div className="px-4 md:px-10 pt-6">
         {/* top section */}
         <div className=" py-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
             {cardData.map((card, index) => (
               <Link
                 to={`/allproducts?category=${encodeURIComponent(card.category)}`}
@@ -124,7 +124,6 @@ const ProductSlider = () => {
                 <div className="bg-[#F5F5F5] border-1 border-[#E0E0E0] rounded-2xl shadow px-3 flex flex-col md:flex-row items-center justify-between hover:shadow-lg transition-shadow duration-300">
                   <div>
                     <h2 className="text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">{card.title}</h2>
-                    <p className="text-sm text-gray-500">{card.version}</p>
                   </div>
                   <div className="">
                     <img
