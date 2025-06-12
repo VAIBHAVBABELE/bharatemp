@@ -18,6 +18,7 @@ import SideCart from "./SideCart";
 import ProductDetailsModal from "./ProductDetailsModal";
 import { toast } from "react-toastify";
 import Customers from "../B2bComponent/Customers";
+import LoadingSpinner from "../../utils/LoadingSpinner";
 const backend = import.meta.env.VITE_BACKEND;
 
 // Function to calculate dynamic bulk prices based on product price
@@ -294,7 +295,7 @@ export default function ProductCard() {
   if (loading) {
     return (
       <div className="p-10 flex flex-col justify-center items-center h-screen">
-        <FaSpinner className="text-[#1e3473] text-4xl animate-spin mb-4" />
+          <LoadingSpinner/>
         <div className="text-gray-700 font-semibold">
           Loading product details...
         </div>

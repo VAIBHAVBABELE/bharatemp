@@ -27,7 +27,7 @@ import InstagramSection from "../Component/InstagramSection";
 import { fetchProducts } from "../utils/api";
 import Customers from '../Component/B2bComponent/Customers.jsx'
 import Marquee from "../Component/HomeComponent/Marquee.jsx";
-
+import LoadingSpinner from "../utils/LoadingSpinner.jsx"
 const ProductSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -246,7 +246,9 @@ const ProductSlider = () => {
 
         {loading ? (
           <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3473]"></div>
+            <div className="">
+              <LoadingSpinner/>
+            </div>
           </div>
         ) : error ? (
           <div className="text-center py-10 text-red-500">{error}</div>
