@@ -110,7 +110,7 @@ const ProductSlider = ({ products = [] }) => {
   };
 
   return (
-    <div className="h-auto xl:h-[500px]  py-10 ">
+    <div className="h-auto xl:h-[500px]   ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
         <div className="flex   space-x-6">
@@ -138,12 +138,12 @@ const ProductSlider = ({ products = [] }) => {
       </div>
 
       {/* Products Grid */}
-      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-5 gap-2 pb-4 scrollbar-hide">
+      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-5 gap-8 pb-4 scrollbar-hide">
         {filteredProducts.map((product, index) => (
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[320px] hover:h-[360px] h-[310px] cursor-pointer"
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[330px] hover:h-[380px] h-[320px] cursor-pointer"
           >
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">
@@ -155,7 +155,7 @@ const ProductSlider = ({ products = [] }) => {
               <img
                 src={product.product_image_main}
                 alt={product.brand_name}
-                className="w-full h-28 object-contain mb-4"
+                className="w-full h-32 object-contain mb-4"
               />
 
               <h2 className="text-[16px] font-bold text-[#1E3473] group-hover:block hidden mb-4">

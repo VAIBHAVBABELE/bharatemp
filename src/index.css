@@ -3,4 +3,23 @@
 body {
   font-family: "Outfit", sans-serif;
 }
- 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes moveGradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+/* Add this class for reusability */
+.animated-border-gradient {
+  background: linear-gradient(90deg, #1E3473, #F7941D, #1E3473);
+  background-size: 200% 100%;
+  animation: moveGradient 2s linear infinite;
+}
