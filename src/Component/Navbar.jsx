@@ -20,11 +20,14 @@ import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import icon3 from './../assets/Facebook.svg'
-import icon4 from './../assets/Twitter.svg'
-import icon5 from './../assets/Instagram.svg'
+import { FaSquareXTwitter } from "react-icons/fa6";
+import { FaInstagramSquare } from "react-icons/fa";
 import icon6 from './../assets/YouTube.svg'
 import top1 from '../assets/generator.png'
 import top2 from '../assets/top1.png'
+import axios from 'axios';
+
+const backend = import.meta.env.VITE_BACKEND;
 
 const subcategories = {
   "Development Board": [
@@ -100,6 +103,9 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Development Board");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
   const currentLocation = useLocation();
@@ -126,6 +132,25 @@ const Navbar = () => {
       setSearchQuery(query);
     }
   }, [currentLocation]);
+
+  // Fetch products when component mounts
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.post(`${backend}/product/list`, {
+          pageNum: 1,
+          pageSize: 50,
+          filters: {},
+        });
+        if (response.data.status === "Success") {
+          setProducts(response.data.data.productList);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // const navItems = [
   //   {
@@ -155,10 +180,93 @@ const Navbar = () => {
     }
   };
 
-  // Handle search input change
+  // Handle search input change with suggestions
   const handleSearchInputChange = (e) => {
-    setSearchQuery(e.target.value);
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (value.trim()) {
+      const query = value.toLowerCase();
+      
+      // Get unique categories and brands that match the query
+      const matchingCategories = [...new Set(products
+        .map(p => p.category_name)
+        .filter(category => category && category.toLowerCase().includes(query))
+      )];
+
+      const matchingBrands = [...new Set(products
+        .map(p => p.brand_name)
+        .filter(brand => brand && brand.toLowerCase().includes(query))
+      )];
+
+      // Create suggestions array with categories and brands first
+      const categorySuggestions = matchingCategories.map(category => ({
+        type: 'category',
+        name: category,
+        displayText: `${category}`,
+      }));
+
+      const brandSuggestions = matchingBrands.map(brand => ({
+        type: 'brand',
+        name: brand,
+        displayText: `${brand}`,
+      }));
+
+      // Get product suggestions
+      const productSuggestions = products
+        .filter(p => 
+          p.product_name && p.product_name.toLowerCase().includes(query)
+        )
+        .slice(0, 4) // Limit to 4 product suggestions
+        .map(p => ({
+          type: 'product',
+          name: p.product_name,
+          category: p.category_name,
+          brand: p.brand_name,
+          id: p._id,
+        }));
+
+      // Combine all suggestions
+      const allSuggestions = [
+        ...categorySuggestions,
+        ...brandSuggestions,
+        ...productSuggestions
+      ].slice(0, 8); // Limit total suggestions to 8
+
+      setSuggestions(allSuggestions);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
   };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion) => {
+    if (suggestion.type === 'product') {
+      navigate(`/product/${suggestion.id}`);
+    } else if (suggestion.type === 'category') {
+      navigate(`/product?category=${encodeURIComponent(suggestion.name)}`);
+    } else if (suggestion.type === 'brand') {
+      navigate(`/product?brand=${encodeURIComponent(suggestion.name)}`);
+    }
+    setSearchQuery(suggestion.name);
+    setShowSuggestions(false);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.search-container')) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Handle keypress in search input
   const handleKeyPress = (e) => {
@@ -251,7 +359,7 @@ const Navbar = () => {
         </div> */}
         <div className=" flex flex-wrap   gap-4 items-center ">
           <Link to="#" className="text-white  ">
-            <img src={icon5} alt="Instagram" className="w-6 h-6" />
+           <FaInstagramSquare  alt="Instagram" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
             <img src={icon3} alt="Facebook" className="w-6 h-6" />
@@ -260,7 +368,7 @@ const Navbar = () => {
             <img src={icon6} alt="YouTube" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <img src={icon4} alt="Twitter" className="w-6 h-6" />
+            <FaSquareXTwitter  alt="Twitter" className="w-6 h-6" />
           </Link>
 
 
@@ -318,23 +426,68 @@ const Navbar = () => {
           <div className="hidden lg:flex flex-1 items-center justify-center max-w-[650px] w-full mx-4">
             {/* Search Bar and Voice Button Container */}
             <div className="flex items-center gap-2 w-full">
-              {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2">
-                <input
-                  type="text"
-                  placeholder="Search by name, category, brand..."
-                  className="flex-1 bg-transparent text-sm outline-none"
-                  value={searchQuery}
-                  onChange={handleSearchInputChange}
-                  onKeyPress={handleKeyPress}
-                />
-                <button
-                  type="submit"
-                  className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
-                >
-                  <FaSearch size={15} className="text-white" />
-                </button>
-              </form>
+              {/* Search Bar with Suggestions */}
+              <div className="relative flex-1 search-container">
+                <form onSubmit={handleSearch} className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2">
+                  <input
+                    type="text"
+                    placeholder="Search by name, category, brand..."
+                    className="flex-1 bg-transparent text-sm outline-none"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
+                  >
+                    <FaSearch size={15} className="text-white" />
+                  </button>
+                </form>
+
+                {/* Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{suggestion.icon}</span>
+                          <div className="flex flex-col">
+                            {suggestion.type === 'product' ? (
+                              <>
+                                <span className="text-gray-900 font-medium">{suggestion.name}</span>
+                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                  {suggestion.category && (
+                                    <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                                      {suggestion.category}
+                                    </span>
+                                  )}
+                                  {suggestion.brand && (
+                                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                      {suggestion.brand}
+                                    </span>
+                                  )}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-gray-900 font-medium">{suggestion.displayText}</span>
+                                <span className="text-xs text-gray-500">
+                                  {suggestion.type === 'category' ? 'Category' : 'Brand'}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Voice Search Button */}
               <button
@@ -343,8 +496,6 @@ const Navbar = () => {
                 onClick={startVoiceSearch}
               >
                 <FaMicrophone className={`h-5 w-5 ${isListening ? 'text-[#F7941D]' : 'text-gray-600'}`} />
-
-                {/* Listening Animation */}
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>

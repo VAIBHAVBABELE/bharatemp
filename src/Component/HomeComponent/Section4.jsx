@@ -80,7 +80,7 @@ const ProductSlider = () => {
   const filteredProducts = getFilteredProducts();
 
   return (
-    <div className="h-auto ">
+    <div className="h-auto  ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
         <div className="flex   space-x-6">
@@ -107,7 +107,7 @@ const ProductSlider = () => {
       </div>
 
       {/* Products Grid */}
-      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-6  gap-2   pb-4 scrollbar-hide">
+      <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-6  gap-6   pb-6 scrollbar-hide">
         {filteredProducts.map((product, index) => (
           <div
             key={index}
@@ -120,7 +120,7 @@ const ProductSlider = () => {
               <img
                 src={product.image}
                 alt={product.title}
-                className="w-full h-24 object-contain mb-4"
+                className="w-full h-32 object-contain mb-4"
               />
               <div className="flex items-center flex-wrap gap-2 mb-2">
                 <span className="bg-[#f7941d] text-white md:text-[14px]  lg:text-[10px] font-semibold px-3 py-1 rounded-full">

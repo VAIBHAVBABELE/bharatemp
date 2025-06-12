@@ -4,8 +4,6 @@ import footerbg from '../assets/footerbg.png';
 import logobottom from '../assets/footerlogo.svg';
 import { Link } from 'react-router-dom';
 import icon1 from './../assets/Facebook.svg'
-import icon2 from './../assets/Twitter.svg'
-import icon3 from './../assets/Instagram.svg'
 import icon4 from './../assets/Pinterest.svg'
 import icon5 from './../assets/YouTube.svg'
 import img1 from './../assets/gpay.svg'
@@ -14,14 +12,15 @@ import img3 from './../assets/master.svg'
 import img4 from './../assets/visa.svg'
 import { FaCheck } from 'react-icons/fa';
 import { FaLinkedinIn } from "react-icons/fa6";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaSquareXTwitter } from "react-icons/fa6";
+import { FaInstagramSquare } from "react-icons/fa";
 const Footer = () => {
   return (
-    <div className="relative w-full h-auto  flex flex-col bg-[#1e3473] overflow-hidden md:px-8 lg:px-0">
+    <div className="relative w-full h-auto  flex flex-col bg-[#1e3473] overflow-hidden md:px-8 lg:px-8">
       {/* <p className='w-full border-b border-dashed  border-white mt-10'></p> */}
       <div className="flex flex-col md:flex-row md:justify-between mt-10  w-full h-auto">
         {/* Left side - 40% */}
-        <div className="w-full lg:w-[40%] flex flex-col text-white z-10 px-4 md:px-10 py-2 md:py-8">
+        <div className="w-full lg:w-[30%] flex flex-col text-white z-10 px-4 md:px-10 py-2 md:py-8">
           <img
             src={logobottom}
             alt="logobottom"
@@ -36,10 +35,10 @@ const Footer = () => {
               <img src={icon1} alt="Facebook" className="w-6 h-6" />
             </Link>
             <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
-              <FaXTwitter  alt="Twitter" className="w-6 h-6" />
+              <FaSquareXTwitter   alt="Twitter" className="w-6 h-6" />
             </Link>
             <Link to="https://www.instagram.com/bharatronix?igsh=ZTY0enIzZHBhdHBy" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
-              <img src={icon3} alt="Instagram" className="w-6 h-6" />
+             <FaInstagramSquare  alt="Instagram" className="w-6 h-6" />
             </Link>
             <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
               <img src={icon4} alt="Pinterest" className="w-6 h-6" />
@@ -55,12 +54,12 @@ const Footer = () => {
 
         {/* Right side - 60% with background image */}
         <div
-          className="w-full lg:w-[60%] px-10 md:px-6 py-6 md:py-8 text-white"
+          className="w-full lg:w-[70%] px-10 md:px-6 py-6 md:py-8 text-white"
         >
-          <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2  gap-4 ">
+          <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2 ">
             {/* Column 1 */}
             <div className="mb-4 md:mb-0">
-              <h3 className="mb-2 text-xs md:text-lg lg:text-base">Services </h3>
+              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">Services </h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
                 <li >B2B</li>
                 <li>Manufacturing </li>
@@ -71,7 +70,7 @@ const Footer = () => {
 
             {/* Column 2 */}
             <div className="mb-4 md:mb-0">
-              <h3 className="mb-2 text-xs md:text-sm lg:text-base">ABOUT</h3>
+              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">ABOUT</h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
                 <li>Reviews</li>
                 <li>Careers</li>
@@ -83,7 +82,7 @@ const Footer = () => {
 
             {/* Column 3 */}
             <div className="mb-4 md:mb-0">
-              <h3 className="mb-2 text-xs md:text-sm lg:text-base">POLICIES</h3>
+              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">POLICIES</h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
                 <li><Link to="/orders-and-payment-policy" className="hover:text-[#F7941D]">Orders & Payment</Link></li>
                 <li><Link to="/cancellation-policy" className="hover:text-[#F7941D]">Cancellation</Link></li>
@@ -95,13 +94,15 @@ const Footer = () => {
 
             {/* Column 4 */}
             <div className="col-span-2 sm:col-span-1 md:col-auto">
-              <h3 className="mb-2 text-xs md:text-sm lg:text-base">CONTACT CS</h3>
+              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">CONTACT US</h3>
               <ul className="space-y-2 md:space-y-2 text-xs md:text-[12px] lg:text-[18px]">
                 <li>Email: support@Bharatronix.com</li>
                 {/* <li>Hours:</li>
                 <li>Mon-Fri — 10am to 8pm</li>
                 <li>Sat-Sun — 10am to 2pm</li> */}
-                  <li>Stay updated with our latest , offers,<br/> products, and news –straight to your  <br/>inbox.</li>
+                <h3 className="mb-2 text-xs md:text-[20px] font-semibold">Newsletter:-
+                </h3>
+                  <li>Stay updated with our latest , offers, products, and news –straight to your  inbox.</li>
                   <div className="flex items-center space-x-2 py-3">
                     <input
                       type="email"
