@@ -1,9 +1,15 @@
 import React from "react";
+import logo2 from "../assets/logo2.svg";
 
 const LoadingSpinner = () => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-200/80 bg-opacity-100 z-[1000]">
-      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    <div className="w-full h-full flex items-center justify-center">
+      <img
+        src={logo2}
+        alt="Loading..."
+        className="w-16 h-16 animate-spin"
+        style={{ animationDuration: '1.5s' }}
+      />
     </div>
   );
 };
