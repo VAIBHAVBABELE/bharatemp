@@ -10,6 +10,7 @@ import InstagramSection from "../Component/InstagramSection";
 import { fetchProducts } from "../utils/api";
 import Product from '../Component/Subcategorycomponent/Product'
 import Section from '../Component/Subcategorycomponent/Section.jsx';
+import logo2 from "../assets/logo2.svg";
 
 const ProductSlider = () => {
   const [products, setProducts] = useState([]);
@@ -103,7 +104,12 @@ const ProductSlider = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3473]"></div>
+          <img 
+            src={logo2} 
+            alt="Loading..." 
+            className="w-16 h-16 animate-spin"
+            style={{ animationDuration: '1.5s' }}
+          />
         </div>
       ) : error ? (
         <div className="text-center py-10 text-red-500">{error}</div>

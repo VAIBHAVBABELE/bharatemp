@@ -139,7 +139,7 @@ const ProductSlider = ({ products = [] }) => {
 
       {/* Products Grid */}
       <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-5 gap-8 pb-4 scrollbar-hide">
-        {filteredProducts.map((product, index) => (
+        {filteredProducts.slice(0,5).map((product, index) => (
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}

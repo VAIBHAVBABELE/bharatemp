@@ -7,9 +7,9 @@ import { IoFilter } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { useCart } from "../../context/CartContext";
 import axios from "axios";
-import { FaSpinner } from "react-icons/fa";
 import { toast , ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo2 from "../../assets/logo2.svg";
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -588,7 +588,12 @@ const Product = () => {
               {loading ? (
                 <div className="col-span-full flex justify-center items-center py-20">
                   <div className="flex flex-col items-center">
-                    <FaSpinner className="text-[#1e3473] text-4xl animate-spin mb-4" />
+                    <img 
+                      src={logo2} 
+                      alt="Loading..." 
+                      className="w-16 h-16 animate-spin mb-4"
+                      style={{ animationDuration: '1.5s' }}
+                    />
                     <p className="text-gray-600 text-lg">Loading products...</p>
                   </div>
                 </div>
