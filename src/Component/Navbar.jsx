@@ -19,10 +19,10 @@ import icon2 from "../assets/icon2.png";
 import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import icon3 from './../assets/Facebook.svg'
-import { FaSquareXTwitter } from "react-icons/fa6";
-import { FaInstagramSquare } from "react-icons/fa";
-import icon6 from './../assets/YouTube.svg'
+import { SlSocialFacebook } from "react-icons/sl";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { FiYoutube } from "react-icons/fi";
 import top1 from '../assets/generator.png'
 import top2 from '../assets/top1.png'
 import axios from 'axios';
@@ -359,16 +359,16 @@ const Navbar = () => {
         </div> */}
         <div className=" flex flex-wrap   gap-4 items-center ">
           <Link to="#" className="text-white  ">
-           <FaInstagramSquare  alt="Instagram" className="w-6 h-6" />
+           <FaInstagram  alt="Instagram" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <img src={icon3} alt="Facebook" className="w-6 h-6" />
+           <SlSocialFacebook   alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <img src={icon6} alt="YouTube" className="w-6 h-6" />
+            <FiYoutube   alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <FaSquareXTwitter  alt="Twitter" className="w-6 h-6" />
+            <FaXTwitter alt="Twitter" className="w-6 h-6" />
           </Link>
 
 

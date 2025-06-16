@@ -32,7 +32,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
 
           {/* Tabs */}
           <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-4 mb-8">
-            {['Features', 'Specification', 'Images', 'Warranty'].map((tab) => (
+            {['Features', 'Specification', 'Vedio', 'Warranty'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}

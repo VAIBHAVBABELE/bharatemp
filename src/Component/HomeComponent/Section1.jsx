@@ -20,7 +20,7 @@ const fallbackImages = [
   fallbackImage6,
 ];
 
-const tabs = ["Trending Product ", "Offer", "New Arrivals"];
+const tabs = ["You may also like  ", "Offer", "Recommended for you "];
 
 // Fallback products in case API fails or props are not passed
 const fallbackProducts = [
@@ -52,7 +52,7 @@ const fallbackProducts = [
 ];
 
 const ProductSlider = ({ products = [] }) => {
-  const [activeTab, setActiveTab] = useState("Trending Product");
+  const [activeTab, setActiveTab] = useState("You may also like ");
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
@@ -80,7 +80,7 @@ const ProductSlider = ({ products = [] }) => {
         )
         .slice(0, 4);
     }
-    if (activeTab === "New Arrivals") {
+    if (activeTab === "Recommended for you ") {
       // Filter products with high ratings
       return allProducts.sort((a, b) => b.rating - a.rating).slice(0, 3);
     }
