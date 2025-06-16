@@ -8,6 +8,7 @@ import LoadingSpinner from '../../../utils/LoadingSpinner';
 import { toast } from 'react-toastify';
 import { useAdminRouteProtection } from '../../../utils/AuthUtils';
 import UnauthorizedPopup from '../../../utils/UnAuthorizedPopup';
+import logo2 from "../../../assets/logo2.svg";
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -197,7 +198,12 @@ function Invoice() {
                                             }`}
                                     >
                                         {downloadingId === invoice._id ? (
-                                            <span className="animate-spin">⏳</span>
+                                            <img 
+                                                src={logo2} 
+                                                alt="Downloading..." 
+                                                className="w-5 h-5 animate-spin"
+                                                style={{ animationDuration: '1.5s' }}
+                                            />
                                         ) : (
                                             <FaFileDownload />
                                         )}

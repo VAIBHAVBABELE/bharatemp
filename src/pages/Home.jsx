@@ -123,16 +123,16 @@ const ProductSlider = () => {
               >
                 <div className="relative overflow-hidden rounded-2xl">
                   {/* Spinning gradient border */}
-                  <div 
+                  {/* <div 
                     className="absolute inset-[-8px] bg-gradient-to-r from-[#1E3473] via-[#F7941D] to-[#1E3473]"
                     style={{
                       backgroundSize: '200% 100%',
                       animation: 'moveGradient 2s linear infinite'
                     }}
-                  />
+                  /> */}
                   
                   {/* Main content */}
-                  <div className="relative m-[2px] bg-[#F5F5F5] rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
+                  <div className="relative m-[2px] bg-[#F5F5F5] border-1 border-[#E0E0E0]  rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
                     <div>
                       <h2 className="text-sm mt-4 lg:mt-0 lg:text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">
                         {card.title}
@@ -148,7 +148,7 @@ const ProductSlider = () => {
                   </div>
 
                   {/* Add the keyframes style */}
-                  <style jsx>{`
+                  {/* <style jsx>{`
                     @keyframes moveGradient {
                       0% {
                         background-position: 0% 0%;
@@ -157,7 +157,7 @@ const ProductSlider = () => {
                         background-position: 200% 0%;
                       }
                     }
-                  `}</style>
+                  `}</style> */}
                 </div>
               </Link>
             ))}
