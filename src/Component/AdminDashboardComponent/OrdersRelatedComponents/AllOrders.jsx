@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaClock, FaCheckCircle, FaTimesCircle, FaChevronLeft, FaChevronRight, FaTruck , FaBox} from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import logo2 from "../../../assets/logo2.svg";
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -256,9 +257,14 @@ const AllOrders = () => {
                                 {loading ? (
                                     <tr>
                                         <td colSpan="13" className="px-6 py-8 text-center">
-                                            <div className="flex justify-center items-center space-x-2 text-gray-500">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                                <span>Loading orders...</span>
+                                            <div className="flex justify-center items-center space-x-4">
+                                                <img 
+                                                    src={logo2} 
+                                                    alt="Loading..." 
+                                                    className="w-12 h-12 animate-spin"
+                                                    style={{ animationDuration: '1.5s' }}
+                                                />
+                                                <span className="text-gray-500">Loading orders...</span>
                                             </div>
                                         </td>
                                     </tr>

@@ -61,6 +61,9 @@ export default function ProductCard() {
   const [showBulkOrder, setShowBulkOrder] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [zipcode, setZipcode] = useState("");
+  const [deliveryStatus, setDeliveryStatus] = useState(null);
+  const [checkingDelivery, setCheckingDelivery] = useState(false);
   const [bulkOrderForm, setBulkOrderForm] = useState({
     name: "",
     email: "",
@@ -166,6 +169,7 @@ export default function ProductCard() {
         isBulkOrder: false
       };
       addToCart(regularItem);
+      toast.success(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart`);
       setShowCart(true);
     }
   };
@@ -289,6 +293,33 @@ export default function ProductCard() {
       } else {
         toast.error(`Please enter a quantity between ${minQty} and ${maxQty === Infinity ? '∞' : maxQty}`);
       }
+    }
+  };
+
+  // Add this new function to check delivery availability
+  const checkDeliveryAvailability = async () => {
+    if (!zipcode || zipcode.length !== 6) {
+      toast.error("Please enter a valid 6-digit zipcode");
+      return;
+    }
+
+    setCheckingDelivery(true);
+    try {
+      // Replace this with your actual API endpoint
+      const response = await axios.get(`${backend}/check-delivery/${zipcode}`);
+      if (response.data.available) {
+        setDeliveryStatus(true);
+        toast.success("Delivery available in your area!");
+      } else {
+        setDeliveryStatus(false);
+        toast.error("Sorry, delivery not available in your area");
+      }
+    } catch (error) {
+      console.error("Error checking delivery:", error);
+      toast.error("Error checking delivery availability");
+      setDeliveryStatus(false);
+    } finally {
+      setCheckingDelivery(false);
     }
   };
 
@@ -439,42 +470,138 @@ export default function ProductCard() {
           </div>
 
           {/* Quantity Controls */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleAddToCart}
-              className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
-            >
-              Add to Cart
-            </button>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleAddToCart}
+                className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
+              >
+                Add to Cart
+              </button>
 
-            <button
-              onClick={handleBulkOrderClick}
-              className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
-            >
-              Bulk Orders
-            </button>
+              <button
+                onClick={handleBulkOrderClick}
+                className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
+              >
+                Bulk Orders
+              </button>
+            </div>
+
+            {/* Add Quantity Selector */}
+            <div className="flex items-center gap-6 mt-2">
+              <div className="flex items-center bg-white rounded-lg shadow-sm border-2 border-[#1e3473]">
+                <button
+                  onClick={decrementQuantity}
+                  disabled={quantity <= 1}
+                  className={`px-4 py-2 text-xl font-bold transition-colors ${
+                    quantity <= 1 
+                      ? 'text-gray-300 cursor-not-allowed' 
+                      : 'text-[#1e3473] hover:bg-[#1e3473] hover:text-white'
+                  }`}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value > 0) {
+                      setQuantity(value);
+                    }
+                  }}
+                  className="w-20 text-center py-2 text-lg font-bold border-x-2 border-[#1e3473] focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  onClick={incrementQuantity}
+                  className="px-4 py-2 text-xl font-bold text-[#1e3473] hover:bg-[#1e3473] hover:text-white transition-colors"
+                >
+                  +
+                </button>
+              </div>
+             
+            </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-5 items-center">
-            <button
-              onClick={handleBuyNow}
-              className="w-[200px] bg-[#1e3473] text-white py-3 rounded-2xl cursor-pointer font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
-            >
-              <svg
-                className="w-6 h-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-5 items-center">
+              <button
+                onClick={handleBuyNow}
+                className="w-[200px] bg-[#1e3473] text-white py-3 rounded-2xl cursor-pointer font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
               >
-                <path
-                  d="M4 11h16M4 11a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7z"
-                  strokeWidth="2"
-                />
-                <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
-              </svg>
-              Buy Now
-            </button>
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M4 11h16M4 11a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7z"
+                    strokeWidth="2"
+                  />
+                  <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
+                </svg>
+                Buy Now
+              </button>
+
+              {/* Add Zipcode Check Section */}
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={zipcode}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setZipcode(value);
+                      if (value.length !== 6) {
+                        setDeliveryStatus(null);
+                      }
+                    }}
+                    placeholder="Enter ZIP code"
+                    className="w-[150px] px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:border-[#1e3473] text-sm"
+                  />
+                  {deliveryStatus !== null && (
+                    <div className="absolute -bottom-6 left-0 text-xs">
+                      {deliveryStatus ? (
+                        <span className="text-green-600 flex items-center gap-1">
+                          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Delivery Available
+                        </span>
+                      ) : (
+                        <span className="text-red-600 flex items-center gap-1">
+                          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          </svg>
+                          Delivery Not Available
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={checkDeliveryAvailability}
+                  disabled={zipcode.length !== 6 || checkingDelivery}
+                  className={`px-4 py-3 rounded-2xl font-medium flex items-center gap-2 ${
+                    zipcode.length === 6 && !checkingDelivery
+                      ? 'bg-[#f7941d] text-white hover:bg-[#e88a1a]'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  } transition-colors`}
+                >
+                  {checkingDelivery ? (
+                    <>
+                      <FaSpinner className="animate-spin" />
+                      Checking...
+                    </>
+                  ) : (
+                    'Check Delivery'
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Features */}
@@ -512,7 +639,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Transparent</span>
-                <span>Customer service</span>
+                <span>100% Genuine Products </span>
               </div>
             </div>
 
@@ -524,7 +651,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Shipping</span>
-                <span>Free, fast and reliable in India</span>
+                <span>One Day delivery </span>
               </div>
             </div>
 
@@ -536,7 +663,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Secure</span>
-                <span>Certified marketplace</span>
+                <span>24*7 Technical support </span>
               </div>
             </div>
           </div>

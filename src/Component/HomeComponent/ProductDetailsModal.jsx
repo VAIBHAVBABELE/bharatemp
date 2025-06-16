@@ -6,6 +6,17 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
 
   if (!isOpen) return null;
 
+  // Function to get YouTube video ID from URL
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Get video ID from product's video URL (you'll need to add this to your product data)
+  const videoId = getYouTubeVideoId(product?.product_video_url);
+
   return (
     <>
       {/* Backdrop */}
@@ -32,7 +43,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
 
           {/* Tabs */}
           <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-4 mb-8">
-            {['Features', 'Specification', 'Images', 'Warranty'].map((tab) => (
+            {['Features', 'Specification', 'Video', 'Warranty'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -74,20 +85,28 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
               </div>
             )}
 
-            {activeTab === 'Images' && (
+            {activeTab === 'Video' && (
               <div>
-                <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Product Images</h2>
-                <div className="grid grid-cols-3 gap-4">
-                  {product?.product_image_sub?.map((img, index) => (
-                    <div key={index} className="aspect-square flex justify-center items-center rounded-lg overflow-hidden border border-gray-200">
-                      <img
-                        src={img}
-                        alt={`${product.name} view ${index + 1}`}
-                        className="w-[90%] h-[90%] object-contain"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <h2 className="text-2xl font-bold text-[#2F294D] mb-6">Product Video</h2>
+                {videoId ? (
+                  <div className="relative w-full pt-[56.25%] rounded-xl overflow-hidden">
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="Product Video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 p-8 rounded-xl text-center">
+                    <p className="text-gray-600">No video available for this product.</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Please check back later for product demonstrations and tutorials.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

@@ -19,14 +19,14 @@ import icon2 from "../assets/icon2.png";
 import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import icon3 from './../assets/Facebook.svg'
-import { FaSquareXTwitter } from "react-icons/fa6";
-import { FaInstagramSquare } from "react-icons/fa";
-import icon6 from './../assets/YouTube.svg'
+import { SlSocialFacebook } from "react-icons/sl";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { FiYoutube } from "react-icons/fi";
 import top1 from '../assets/generator.png'
 import top2 from '../assets/top1.png'
 import axios from 'axios';
-
+import trackorder from "../assets/trackorder.png"
 const backend = import.meta.env.VITE_BACKEND;
 
 const subcategories = {
@@ -152,14 +152,14 @@ const Navbar = () => {
     fetchProducts();
   }, []);
 
-  // const navItems = [
-  //   {
-  //     name: "Shop a brand",
-  //     key: "catalog",
-  //     items: ["Categories", "PDF Download"],
-  //     links: ["/categories", "/download-catalog"]
-  //   },
-  // ];
+  const navItems = [
+    {
+      name: "Shop a brand",
+      key: "catalog",
+      items: ["Categories", "PDF Download"],
+      links: ["/categories", "/download-catalog"]
+    },
+  ];
 
   const locations = ["Mumbai, India", "Bengaluru, India", "Hyderabad, India"];
 
@@ -359,16 +359,16 @@ const Navbar = () => {
         </div> */}
         <div className=" flex flex-wrap   gap-4 items-center ">
           <Link to="#" className="text-white  ">
-           <FaInstagramSquare  alt="Instagram" className="w-6 h-6" />
+           <FaInstagram  alt="Instagram" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <img src={icon3} alt="Facebook" className="w-6 h-6" />
+           <SlSocialFacebook   alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <img src={icon6} alt="YouTube" className="w-6 h-6" />
+            <FiYoutube   alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-            <FaSquareXTwitter  alt="Twitter" className="w-6 h-6" />
+            <FaXTwitter alt="Twitter" className="w-6 h-6" />
           </Link>
 
 
@@ -382,8 +382,8 @@ const Navbar = () => {
           {/* Logo and Location Section */}
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 w-38 md:w-40">
-              <img src={logo} alt="Logo" className="w-full" />
+            <Link to="/" className="flex items-center gap-3 w-56 md:w-48">
+              <img src={logo} alt="Logo" className="w-80" />
             </Link>
 
             {/* Location Selector */}
@@ -662,7 +662,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            {/* {navItems.map((item) => (
+            {navItems.map((item) => (
               <div className="relative" key={item.key}>
                 <button
                   onClick={() => toggleDropdown(item.key)}
@@ -686,17 +686,18 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-            ))} */}
+            ))}
             <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               B2B Enquiry
             </Link>
           </div>
           <div className="flex px-4 lg:px-16 md:px-12">
+           
             <Link
               to="/track-order"
-              className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full transition-colors duration-300"
+              className=" text-blue-900 px-3 py-1 flex items-center rounded-full gap-3 transition-colors duration-300"
             >
-              Track Order
+               <img src={trackorder} alt="Logo" className="w-6 h-6 " /> Track Order
             </Link>
           </div>
         </div>
@@ -727,7 +728,7 @@ const Navbar = () => {
               <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               All Products
             </Link>
-            {/* {navItems.map((item) => (
+            {navItems.map((item) => (
               <div key={item.key} className="py-1">
                 <p className="font-semibold text-gray-700">{item.name}</p>
                 {item.items.map((subItem, idx) => (
@@ -741,7 +742,7 @@ const Navbar = () => {
                   </Link>
                 ))}
               </div>
-            ))} */}
+            ))}
             {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
               PCB
             </Link> */}
