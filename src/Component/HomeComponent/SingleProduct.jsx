@@ -512,7 +512,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Transparent</span>
-                <span>Customer service</span>
+                <span>100% Genuine Products </span>
               </div>
             </div>
 
@@ -524,7 +524,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Shipping</span>
-                <span>Free, fast and reliable in India</span>
+                <span>One Day delivery </span>
               </div>
             </div>
 
@@ -536,7 +536,7 @@ export default function ProductCard() {
               />
               <div className="flex flex-col">
                 <span className="font-medium">Secure</span>
-                <span>Certified marketplace</span>
+                <span>24*7 Technical support </span>
               </div>
             </div>
           </div>
