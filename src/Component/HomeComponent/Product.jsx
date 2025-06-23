@@ -119,11 +119,11 @@ const Product = () => {
 
   // Filter states
   const [priceRangeFilter, setPriceRangeFilter] = useState({
-    min: 100,
+    min: 1,
     max: 50000,
   });
   const [tempPriceRange, setTempPriceRange] = useState({
-    min: 100,
+    min: 1,
     max: 50000,
   }); // Temporary state for slider before Apply
   const [priceCheckboxFilters, setPriceCheckboxFilters] = useState([]);
@@ -134,7 +134,7 @@ const Product = () => {
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const location = useLocation();
 
-  const min = 100;
+  const min = 1;
   const max = 50000;
 
   const navigate = useNavigate();
@@ -617,7 +617,7 @@ const Product = () => {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`font-medium relative ${activeTab === tab
+                      className={`font-medium cursor-pointer relative ${activeTab === tab
                           ? "text-gray-900 font-semibold"
                           : "text-gray-500"
                         }`}

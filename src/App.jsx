@@ -41,6 +41,8 @@ import ReturnPolicy from './pages/ReturnPolicy'
 import WarrantyPolicy from './pages/WarrantyPolicy'
 import Subcategory  from './pages/Subcategory.jsx'
 import SubCategories from './pages/SubCategories'
+import Contact from './pages/Contact'
+import ComingSoon from './pages/ComingSoon'
 
 const App = () => {
   return (
@@ -69,6 +71,8 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
           
           {/* dashboard */}
           <Route path='/admin-login' element={<AdminLogin />} />

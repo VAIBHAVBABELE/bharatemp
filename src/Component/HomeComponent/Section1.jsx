@@ -113,12 +113,12 @@ const ProductSlider = ({ products = [] }) => {
     <div className="h-auto xl:h-[500px]   ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
-        <div className="flex   space-x-6">
+        <div className="flex space-x-6">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 font-medium lg:text-[20px] md:text-[13px]  text-[10px] relative ${
+              className={`pb-2 font-medium cursor-pointer lg:text-[20px] md:text-[13px]  text-[13px] relative ${
                 activeTab === tab ? "text-[#333333]  " : "text-gray-500 "
               }`}
             >
@@ -143,7 +143,7 @@ const ProductSlider = ({ products = [] }) => {
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[330px] hover:h-[380px] h-[320px] cursor-pointer"
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[330px] hover:h-[380px] h-[350px] cursor-pointer"
           >
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">
