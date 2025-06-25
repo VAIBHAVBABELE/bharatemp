@@ -19,36 +19,37 @@ import ProductDetailsModal from "./ProductDetailsModal";
 import { toast } from "react-toastify";
 import Customers from "../B2bComponent/Customers";
 import LoadingSpinner from "../../utils/LoadingSpinner";
+import { jwtDecode } from "jwt-decode";
 const backend = import.meta.env.VITE_BACKEND;
 
 // Function to calculate dynamic bulk prices based on product price
 const calculateBulkPrices = (basePrice) => {
   return [
-    { 
-      range: "5-10", 
+    {
+      range: "5-10",
       price: parseFloat((basePrice * 0.95).toFixed(2)), // 5% discount
-      key: "multiple_quantity_price_5_10" 
+      key: "multiple_quantity_price_5_10",
     },
-    { 
-      range: "10-20", 
-      price: parseFloat((basePrice * 0.90).toFixed(2)), // 10% discount
-      key: "multiple_quantity_price_10_20" 
+    {
+      range: "10-20",
+      price: parseFloat((basePrice * 0.9).toFixed(2)), // 10% discount
+      key: "multiple_quantity_price_10_20",
     },
-    { 
-      range: "20-50", 
+    {
+      range: "20-50",
       price: parseFloat((basePrice * 0.85).toFixed(2)), // 15% discount
-      key: "multiple_quantity_price_20_50" 
+      key: "multiple_quantity_price_20_50",
     },
-    { 
-      range: "50-100", 
-      price: parseFloat((basePrice * 0.80).toFixed(2)), // 20% discount
-      key: "multiple_quantity_price_50_100" 
+    {
+      range: "50-100",
+      price: parseFloat((basePrice * 0.8).toFixed(2)), // 20% discount
+      key: "multiple_quantity_price_50_100",
     },
-    { 
-      range: "100+", 
+    {
+      range: "100+",
       price: parseFloat((basePrice * 0.75).toFixed(2)), // 25% discount
-      key: "multiple_quantity_price_100_plus" 
-    }
+      key: "multiple_quantity_price_100_plus",
+    },
   ];
 };
 
@@ -121,7 +122,6 @@ export default function ProductCard() {
     }
   }, [id]);
 
-
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -166,30 +166,176 @@ export default function ProductCard() {
         quantity: quantity,
         price: product.discounted_single_product_price,
         total: product.discounted_single_product_price * quantity,
-        isBulkOrder: false
+        isBulkOrder: false,
       };
       addToCart(regularItem);
-      toast.success(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart`);
+      toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
       setShowCart(true);
     }
   };
 
   // Handle Buy Now button
-  const handleBuyNow = () => {
-    if (product) {
-      const regularItem = {
-        ...product,
+  const handleBuyNow = async () => {
+    if (!product) return;
+
+    // Check if product is in stock
+    if (!product.product_instock) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    // Check if requested quantity is available
+    if (product.no_of_product_instock && quantity > product.no_of_product_instock) {
+      toast.error(`Only ${product.no_of_product_instock} items available in stock`);
+      return;
+    }
+
+    try {
+      // Get token from localStorage
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) {
+        toast.error("Please login to continue");
+        navigate("/login");
+        return;
+      }
+
+      // Parse token if stored as JSON string
+      const parsedToken = storedToken.startsWith('"')
+        ? JSON.parse(storedToken)
+        : storedToken;
+
+      const decoded = jwtDecode(parsedToken);
+      const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
+
+      if (!userId) {
+        toast.error("Authentication failed");
+        navigate("/login");
+        return;
+      }
+
+      // Get user details
+      const userResponse = await axios.get(`${backend}/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${parsedToken}`,
+        },
+      });
+
+      if (!userResponse.data || !userResponse.data.data || !userResponse.data.data.user) {
+        throw new Error("Failed to fetch user details");
+      }
+
+      const userData = userResponse.data.data.user;
+
+      // Calculate expected delivery date (3-4 days from now)
+      const expectedDelivery = new Date();
+      expectedDelivery.setDate(expectedDelivery.getDate() + 4);
+
+      // Prepare order item
+      const orderItem = {
+        product_id: product._id,
         quantity: quantity,
-        price: product.discounted_single_product_price,
-        total: product.discounted_single_product_price * quantity,
-        isBulkOrder: false
+        product_name: product.product_name,
+        product_sku: product.SKU,
+        product_price: product.discounted_single_product_price,
+        product_tax_rate: "0",
+        product_hsn_code: "0",
+        product_discount: "0",
+        product_img_url: product.product_image_main,
       };
-      addToCart(regularItem);
-      navigate("/cart");
+  
+
+      // Calculate total price
+      const shippingFee = 5;
+      const codeDiscount = 15;
+      const totalPrice = Math.max(
+        0,
+        (product.discounted_single_product_price * quantity) + shippingFee - codeDiscount
+      );
+
+      // Prepare order data
+      const orderData = {
+        user_id: userId,
+        products: [orderItem],
+        totalPrice: totalPrice,
+        shippingAddress: userData.address?.[0] || "",
+        shippingCost: shippingFee,
+        email: userData.email,
+        pincode: userData.address?.[0]?.match(/\b\d{6}\b/)?.[0] || "000000",
+        name:  userData ? `${userData.name}` : "",
+        city: userData.address?.[0]?.split(",").slice(-2, -1)[0]?.trim() || "City",
+        expectedDelivery: expectedDelivery,
+      };
+
+
+      // Create the order
+      const orderResponse = await axios.post(
+        `${backend}/order/new`,
+        {
+          order: orderData,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${parsedToken}`,
+          },
+        }
+      );
+
+
+      if (
+        !orderResponse.data ||
+        !orderResponse.data.data ||
+        !orderResponse.data.data.order._id
+      ) {
+        throw new Error("Failed to create order");
+      }
+
+      const createdOrderId = orderResponse.data.data.order._id;
+
+
+      // Initiate Cashfree payment
+      const FRONTEND_URL = window.location.origin + "/payment-status/";
+
+      const paymentData = {
+        orderId: createdOrderId,
+        userId: userId,
+        FRONTEND_URL: FRONTEND_URL
+      };
+
+      const paymentResponse = await axios.post(
+        `${backend}/payment/create-cashfree-payment`,
+        paymentData,
+        {
+          headers: {
+            Authorization: `Bearer ${parsedToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+
+      if (paymentResponse.data?.data?.response?.cashfreeResponse?.paymentLink) {
+        // Redirect to Cashfree payment page
+        window.location.href = paymentResponse.data.data.response.cashfreeResponse.paymentLink;
+      } else {
+        throw new Error("Invalid payment response");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      let errorMessage = "Failed to process payment";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage);
     }
   };
 
   const incrementQuantity = () => {
+    if (product.no_of_product_instock && quantity >= product.no_of_product_instock) {
+      toast.error(`Only ${product.no_of_product_instock} items available in stock`);
+      return;
+    }
     setQuantity((prev) => prev + 1);
   };
 
@@ -223,33 +369,41 @@ export default function ProductCard() {
   const handleBulkRangeSelect = (range, price) => {
     setSelectedBulkRange(range);
     setSelectedBulkPrice(price);
-    // Set initial quantity to minimum of range
-    const minQuantity = parseInt(range.split('-')[0]);
-    setBulkQuantity(minQuantity);
+    // Set initial quantity to MAXIMUM of range
+    const maxQuantity = range.includes("+")
+      ? range.split("+")[0] // For "100+", use 100 as the initial value
+      : range.split("-")[1]; // For "10-100", use 100
+    setBulkQuantity(parseInt(maxQuantity));
   };
 
   // Update bulk prices when product changes
   useEffect(() => {
     if (product && product.discounted_single_product_price) {
-      const prices = calculateBulkPrices(product.discounted_single_product_price);
+      const prices = calculateBulkPrices(
+        product.discounted_single_product_price
+      );
       setBulkPrices(prices);
     }
   }, [product]);
-
 
   const handleBulkAddToCart = () => {
     if (selectedBulkRange && selectedBulkPrice && product && bulkQuantity > 0) {
       // Parse the range values
       let minQty, maxQty;
-      if (selectedBulkRange.includes('+')) {
-        minQty = parseInt(selectedBulkRange.split('+')[0]);
+      if (selectedBulkRange.includes("+")) {
+        minQty = parseInt(selectedBulkRange.split("+")[0]);
         maxQty = Infinity;
       } else {
-        [minQty, maxQty] = selectedBulkRange.split('-').map(num => parseInt(num));
+        [minQty, maxQty] = selectedBulkRange
+          .split("-")
+          .map((num) => parseInt(num));
       }
 
       // Validate quantity
-      if (bulkQuantity >= minQty && (maxQty === Infinity || bulkQuantity <= maxQty)) {
+      if (
+        bulkQuantity >= minQty &&
+        (maxQty === Infinity || bulkQuantity <= maxQty)
+      ) {
         const bulkItem = {
           ...product,
           quantity: bulkQuantity,
@@ -260,7 +414,11 @@ export default function ProductCard() {
         setShowBulkOrder(false);
         setShowCart(true);
       } else {
-        toast.error(`Please enter a quantity between ${minQty} and ${maxQty === Infinity ? '∞' : maxQty}`);
+        toast.error(
+          `Please enter a quantity between ${minQty} and ${
+            maxQty === Infinity ? "∞" : maxQty
+          }`
+        );
       }
     }
   };
@@ -269,15 +427,20 @@ export default function ProductCard() {
     if (selectedBulkRange && selectedBulkPrice && product && bulkQuantity > 0) {
       // Parse the range values
       let minQty, maxQty;
-      if (selectedBulkRange.includes('+')) {
-        minQty = parseInt(selectedBulkRange.split('+')[0]);
+      if (selectedBulkRange.includes("+")) {
+        minQty = parseInt(selectedBulkRange.split("+")[0]);
         maxQty = Infinity;
       } else {
-        [minQty, maxQty] = selectedBulkRange.split('-').map(num => parseInt(num));
+        [minQty, maxQty] = selectedBulkRange
+          .split("-")
+          .map((num) => parseInt(num));
       }
 
       // Validate quantity
-      if (bulkQuantity >= minQty && (maxQty === Infinity || bulkQuantity <= maxQty)) {
+      if (
+        bulkQuantity >= minQty &&
+        (maxQty === Infinity || bulkQuantity <= maxQty)
+      ) {
         const bulkItem = {
           ...product,
           quantity: bulkQuantity,
@@ -285,13 +448,17 @@ export default function ProductCard() {
           total: selectedBulkPrice * bulkQuantity,
           isBulkOrder: true,
           bulkRange: selectedBulkRange,
-          originalPrice: product.discounted_single_product_price
+          originalPrice: product.discounted_single_product_price,
         };
         addToCart(bulkItem);
         setShowBulkOrder(false);
-        navigate('/cart');
+        navigate("/cart");
       } else {
-        toast.error(`Please enter a quantity between ${minQty} and ${maxQty === Infinity ? '∞' : maxQty}`);
+        toast.error(
+          `Please enter a quantity between ${minQty} and ${
+            maxQty === Infinity ? "∞" : maxQty
+          }`
+        );
       }
     }
   };
@@ -326,7 +493,7 @@ export default function ProductCard() {
   if (loading) {
     return (
       <div className="p-10 flex flex-col justify-center items-center h-screen">
-          <LoadingSpinner/>
+        <LoadingSpinner />
         <div className="text-gray-700 font-semibold">
           Loading product details...
         </div>
@@ -488,18 +655,18 @@ export default function ProductCard() {
             </div>
 
             {/* Add Quantity Selector */}
-            <div className="flex items-center gap-6 mt-2">
-              <div className="flex items-center bg-white rounded-lg shadow-sm border-2 border-[#1e3473]">
+            <div className="flex items-center gap-4 mt-2">
+              <div className="flex items-center ">
                 <button
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
-                  className={`px-4 py-2 text-xl font-bold transition-colors ${
-                    quantity <= 1 
-                      ? 'text-gray-300 cursor-not-allowed' 
-                      : 'text-[#1e3473] hover:bg-[#1e3473] hover:text-white'
+                  className={`w-10 h-10 flex border border-gray-300 items-center justify-center rounded-full text-xl font-bold transition-colors ${
+                    quantity <= 1
+                      ? "text-gray-300 bg-gray-100 cursor-not-allowed"
+                      : "text-[#1e3473] bg-white hover:bg-[#f7e3c1] cursor-pointer"
                   }`}
                 >
-                  -
+                  −
                 </button>
                 <input
                   type="number"
@@ -511,16 +678,15 @@ export default function ProductCard() {
                       setQuantity(value);
                     }
                   }}
-                  className="w-20 text-center py-2 text-lg font-bold border-x-2 border-[#1e3473] focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-12 mx-2 text-center py-1 text-lg font-bold bg-transparent border-none focus:outline-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <button
                   onClick={incrementQuantity}
-                  className="px-4 py-2 text-xl font-bold text-[#1e3473] hover:bg-[#1e3473] hover:text-white transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-xl font-bold text-[#1e3473] border border-gray-300 bg-white hover:bg-[#f7e3c1] cursor-pointer transition-colors"
                 >
                   +
                 </button>
               </div>
-             
             </div>
           </div>
 
@@ -553,7 +719,9 @@ export default function ProductCard() {
                     type="text"
                     value={zipcode}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      const value = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 6);
                       setZipcode(value);
                       if (value.length !== 6) {
                         setDeliveryStatus(null);
@@ -566,15 +734,31 @@ export default function ProductCard() {
                     <div className="absolute -bottom-6 left-0 text-xs">
                       {deliveryStatus ? (
                         <span className="text-green-600 flex items-center gap-1">
-                          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           Delivery Available
                         </span>
                       ) : (
                         <span className="text-red-600 flex items-center gap-1">
-                          <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           Delivery Not Available
                         </span>
@@ -587,8 +771,8 @@ export default function ProductCard() {
                   disabled={zipcode.length !== 6 || checkingDelivery}
                   className={`px-4 py-3 rounded-2xl font-medium flex items-center gap-2 ${
                     zipcode.length === 6 && !checkingDelivery
-                      ? 'bg-[#f7941d] text-white hover:bg-[#e88a1a]'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   } transition-colors`}
                 >
                   {checkingDelivery ? (
@@ -597,7 +781,7 @@ export default function ProductCard() {
                       Checking...
                     </>
                   ) : (
-                    'Check Delivery'
+                    "Check Delivery"
                   )}
                 </button>
               </div>
@@ -606,27 +790,37 @@ export default function ProductCard() {
 
           {/* Features */}
           <div className="space-y-3">
-            {[
-              "Wifi Integrated",
-              "Integrated Wi-Fi module",
-              "Low-power consumption design",
-              "Enhanced thermal management system",
-            ].map((feature, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-[#1e3473]"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-gray-700">{feature}</span>
-              </div>
-            ))}
+            {product.product_overview ? (
+              product.product_overview
+                .split("\n")
+                .filter((line) => line.trim() !== "")
+                .map((feature, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    {" "}
+                    {/* Changed to items-start */}
+                    <div className="flex-shrink-0 pt-0.5">
+                      {" "}
+                      {/* Wrapper for SVG to prevent shrinking */}
+                      <svg
+                        className="w-5 h-5 text-[#1e3473] flex-shrink-0"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700 flex-1 break-words">
+                      {feature.trim()}
+                    </span>
+                  </div>
+                ))
+            ) : (
+              <p className="text-gray-500">No overview available</p>
+            )}
           </div>
 
           {/* Service Info */}
@@ -724,7 +918,9 @@ export default function ProductCard() {
                     <FaTimes size={20} />
                   </button>
                 </div>
-                <p className="text-gray-600 text-sm">Select quantity range for bulk pricing</p>
+                <p className="text-gray-600 text-sm">
+                  Select quantity range for bulk pricing
+                </p>
               </div>
 
               {/* Price Table Header */}
@@ -741,7 +937,9 @@ export default function ProductCard() {
                 {bulkPrices.map((item, index) => (
                   <div
                     key={index}
-                    onClick={() => handleBulkRangeSelect(item.range, item.price)}
+                    onClick={() =>
+                      handleBulkRangeSelect(item.range, item.price)
+                    }
                     className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${
                       selectedBulkRange === item.range
                         ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
@@ -765,7 +963,10 @@ export default function ProductCard() {
                       {item.range}
                     </span>
                     <span className="text-[#1e3473] col-span-2 text-center font-medium">
-                      ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      ₹
+                      {item.price.toLocaleString("en-IN", {
+                        maximumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                 ))}
@@ -773,18 +974,32 @@ export default function ProductCard() {
                 {selectedBulkRange && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-xl">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-700 font-medium">Enter Quantity:</span>
+                      <span className="text-gray-700 font-medium">
+                        Enter Quantity:
+                      </span>
                       <input
                         type="number"
                         value={bulkQuantity}
-                        onChange={(e) => setBulkQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                        onChange={(e) =>
+                          setBulkQuantity(
+                            Math.max(0, parseInt(e.target.value) || 0)
+                          )
+                        }
                         className="w-24 px-3 py-1 border rounded-lg text-center"
-                        min={parseInt(selectedBulkRange.split('-')[0])}
-                        max={selectedBulkRange.includes('+') ? 999999 : parseInt(selectedBulkRange.split('-')[1])}
+                        min={parseInt(selectedBulkRange.split("-")[0])}
+                        max={
+                          selectedBulkRange.includes("+")
+                            ? 999999
+                            : parseInt(selectedBulkRange.split("-")[1])
+                        }
                       />
                     </div>
                     <div className="text-right text-[#1e3473] font-bold">
-                      Total: ₹{(selectedBulkPrice * bulkQuantity).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      Total: ₹
+                      {(selectedBulkPrice * bulkQuantity).toLocaleString(
+                        "en-IN",
+                        { maximumFractionDigits: 2 }
+                      )}
                     </div>
                   </div>
                 )}
@@ -796,8 +1011,8 @@ export default function ProductCard() {
                       disabled={!selectedBulkRange || bulkQuantity === 0}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
                         selectedBulkRange && bulkQuantity > 0
-                          ? 'bg-[#f7941d] text-white hover:bg-[#e88a1a]'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       } transition-colors`}
                     >
                       <svg
@@ -818,8 +1033,8 @@ export default function ProductCard() {
                       disabled={!selectedBulkRange || bulkQuantity === 0}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
                         selectedBulkRange && bulkQuantity > 0
-                          ? 'bg-[#1e3473] text-white hover:bg-[#162554]'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? "bg-[#1e3473] text-white hover:bg-[#162554]"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       } transition-colors`}
                     >
                       <svg

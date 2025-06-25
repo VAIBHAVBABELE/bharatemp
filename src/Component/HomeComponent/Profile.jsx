@@ -20,16 +20,23 @@ const OrderModal = ({ order, onClose }) => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  // Calculate total price from products
+  const calculateTotalPrice = () => {
+    return order.products.reduce((total, product) => {
+      return total + (product.product_id.discounted_single_product_price * product.quantity);
+    }, 0);
+  };
+
   return (
-    <div className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4 shadow-2xl">
+      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
           <h3 className="text-xl font-semibold">Order Details</h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <FaTimes />
+            <FaTimes size={30} />
           </button>
         </div>
         
@@ -39,7 +46,7 @@ const OrderModal = ({ order, onClose }) => {
             <div className="flex justify-between items-center">
               <h4 className="font-medium">Order #{order._id.slice(-6)}</h4>
               <span className="font-bold text-lg text-[#F7941D]">
-                ₹{order.totalPrice?.toFixed(2)}
+                ₹{calculateTotalPrice().toFixed(2)}
               </span>
             </div>
             <p className="text-sm text-gray-600">
@@ -54,10 +61,11 @@ const OrderModal = ({ order, onClose }) => {
           <div>
             <h4 className="font-medium mb-2">Shipping Details</h4>
             <div className="bg-gray-50 p-4 rounded-lg space-y-1">
-              <p className="text-sm">{order.name}</p>
-              <p className="text-sm">{order.email}</p>
-              <p className="text-sm">{order.shippingAddress}</p>
-              <p className="text-sm">{order.city}, {order.pincode}</p>
+              <p className="text-sm"><span className="font-medium">Name:</span> {order.name}</p>
+              <p className="text-sm"><span className="font-medium">Email:</span> {order.email}</p>
+              <p className="text-sm"><span className="font-medium">Address:</span> {order.shippingAddress}</p>
+              <p className="text-sm"><span className="font-medium">City:</span> {order.city}</p>
+              <p className="text-sm"><span className="font-medium">Pincode:</span> {order.pincode}</p>
             </div>
           </div>
 
@@ -65,29 +73,37 @@ const OrderModal = ({ order, onClose }) => {
           <div>
             <h4 className="font-medium mb-2">Delivery Information</h4>
             <div className="bg-gray-50 p-4 rounded-lg space-y-1">
-              <p className="text-sm">Expected Delivery: {formatDate(order.expectedDelivery)}</p>
-              <p className="text-sm">Shipping Cost: ₹{order.shippingCost?.toFixed(2)}</p>
+              <p className="text-sm"><span className="font-medium">Expected Delivery:</span> {formatDate(order.expectedDelivery)}</p>
+              <p className="text-sm"><span className="font-medium">Shipping Cost:</span> ₹{order.shippingCost}</p>
             </div>
           </div>
 
           {/* Products */}
           <div>
             <h4 className="font-medium mb-2">Products</h4>
-            <div className="space-y-3">
-              {order.products.map((product) => (
-                <div key={product._id} className="bg-gray-50 p-4 rounded-lg space-y-1">
-                  <p className="text-sm font-medium">Product Name: {product.name}</p>
-                  <p className="text-sm">Quantity: {product.quantity}</p>
-                  <p className="text-sm">Price: ₹{product.price?.toFixed(2)}</p>
-                  <p className="text-sm">Warranty Until: {formatDate(product.warrantyExpiryDate)}</p>
-                  <p className="text-sm">Total Warranty: {product.warrantyMonths} months</p>
+            <div className="space-y-4">
+              {order.products.map((item) => (
+                <div key={item._id} className="bg-gray-50 p-4 rounded-lg flex gap-4">
+                  <div className="w-24 h-24 flex-shrink-0">
+                    <img
+                      src={item.product_id.product_image_main}
+                      alt={item.product_id.product_name}
+                      className="w-full h-full object-contain rounded"
+                    />
+                  </div>
+                  <div className="flex-grow space-y-2">
+                    <h5 className="font-medium">{item.product_id.product_name}</h5>
+                    <p className="text-sm"><span className="font-medium">SKU:</span> {item.product_id.SKU}</p>
+                    <p className="text-sm"><span className="font-medium">Quantity:</span> {item.quantity}</p>
+                    <p className="text-sm"><span className="font-medium">Price:</span> ₹{item.product_id.discounted_single_product_price}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Return Request Button */}
-          {order.status === 'Delivered' && !order.returnRequest && (
+          {order.status === 'Delivered' && !order.return_request && (
             <div className="pt-4 border-t">
               <button className="w-full bg-[#F7941D] text-white py-2 rounded-lg hover:bg-[#e38616] transition-colors">
                 Request Return
@@ -165,6 +181,7 @@ const Orders = () => {
 
     fetchOrders();
   }, []);
+
 
   if (loading) {
     return (

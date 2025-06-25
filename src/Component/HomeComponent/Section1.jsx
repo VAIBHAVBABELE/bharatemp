@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IoBagOutline } from "react-icons/io5";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Added useLocation
 import { useCart } from "../../context/CartContext";
 
 import fallbackImage1 from "../../assets/homepage1.png";
@@ -20,7 +20,7 @@ const fallbackImages = [
   fallbackImage6,
 ];
 
-const tabs = ["You may also like  ", "Offer", "Recommended for you "];
+
 
 // Fallback products in case API fails or props are not passed
 const fallbackProducts = [
@@ -52,10 +52,21 @@ const fallbackProducts = [
 ];
 
 const ProductSlider = ({ products = [] }) => {
-  const [activeTab, setActiveTab] = useState("You may also like ");
+  const location = useLocation(); // Get current route location
+  const [activeTab, setActiveTab] = useState("You may also like");
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
+  const getTabs = () => {
+    if (location.pathname === "/") {
+      return ["Trending Products", "Offers", "New Arrivals"];
+    } else if (location.pathname.includes("/product")) {
+      return ["You may also like", "Offer", "Recommended for you"];
+    }
+    return ["You may also like", "Offer", "Recommended for you"]; // Default
+  };
+  
+  const tabs = getTabs();
   // Use passed products or fallback to default if empty
   const allProducts =
     products.length > 0
@@ -72,7 +83,7 @@ const ProductSlider = ({ products = [] }) => {
 
   // Filter products based on active tab
   const getFilteredProducts = () => {
-    if (activeTab === "offers") {
+    if (activeTab === "Offers" || activeTab === "Offer") {
       // Filter products with a discount (oldPrice > price)
       return allProducts
         .filter(
@@ -80,7 +91,7 @@ const ProductSlider = ({ products = [] }) => {
         )
         .slice(0, 4);
     }
-    if (activeTab === "Recommended for you ") {
+    if (activeTab === "Recommended for you" || activeTab === "New Arrivals") {
       // Filter products with high ratings
       return allProducts.sort((a, b) => b.rating - a.rating).slice(0, 3);
     }
@@ -113,12 +124,12 @@ const ProductSlider = ({ products = [] }) => {
     <div className="h-auto xl:h-[500px]   ">
       {/* Tabs */}
       <div className="border-b border-[#797979] flex items-center justify-between mb-4 ">
-        <div className="flex   space-x-6">
+        <div className="flex space-x-6">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 font-medium lg:text-[20px] md:text-[13px]  text-[10px] relative ${
+              className={`pb-2 font-medium cursor-pointer lg:text-[20px] md:text-[13px]  text-[13px] relative ${
                 activeTab === tab ? "text-[#333333]  " : "text-gray-500 "
               }`}
             >
@@ -143,7 +154,7 @@ const ProductSlider = ({ products = [] }) => {
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
-            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[330px] hover:h-[380px] h-[320px] cursor-pointer"
+            className="group border rounded-2xl shadow-sm hover:shadow-lg transition-all scale-100 border-[#f3f3f3] hover:border-2 hover:border-[#c2c2c2] duration-700 lg:h-[330px] hover:h-[380px] h-[350px] cursor-pointer"
           >
             <div className="p-4 flex flex-col items-start relative">
               <p className="text-[14px] font-semibold text-[#D9D3D3] mb-1 group-hover:hidden  block">

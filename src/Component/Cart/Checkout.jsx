@@ -101,6 +101,8 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const access = import.meta.env.VITE_ACCESS_TOKEN;
+  const secret = import.meta.env.VITE_SECRET_KEY;
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -121,6 +123,7 @@ const Checkout = () => {
     postalCode: "",
   });
 
+  
   // Get selected address
   const selectedAddress =
     addresses.find((addr) => addr.id === selectedAddressId) || addresses[0];
@@ -146,14 +149,13 @@ const Checkout = () => {
 
   // Calculate pricing
   const codeDiscount = 15;
-  const platformFee = 5;
   const shippingFee = 5;
   const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
 
   // Calculate final total using only discounted price
   const finalTotal = Math.max(
     0,
-    totalAmount + platformFee + shippingFee - codeDiscount
+    totalAmount + shippingFee - codeDiscount
   );
 
   // Delivery date calculation
@@ -502,6 +504,17 @@ const Checkout = () => {
     }
   };
 
+  function randomOrderId() {
+    var chars = "0123456789";
+    var string_length = 6;
+    var randomstring = "";
+    for (var i = 0; i < string_length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
+    return randomstring;
+  }
+
   // Update the handlePayment function to create order and initiate payment
   const handlePayment = async () => {
     if (addresses.length === 0 || !selectedAddressId) {
@@ -530,12 +543,17 @@ const Checkout = () => {
         const warrantyExpiry = new Date();
         warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
 
+
         return {
           product_id: item._id,
           quantity: item.quantity,
-          warranty_expiry_date: warrantyExpiry,
-          extended_warranty: 0, // Default to 0 as it's not implemented yet
-          total_warranty: 12, // 12 months default warranty
+          product_name: item.product_name,
+          product_sku: item.SKU,
+          product_price: item.discounted_single_product_price,
+          product_tax_rate: "0",
+          product_hsn_code: "0",
+          product_discount: "0",
+          product_img_url: item.product_image_main,
         };
       });
 
@@ -548,7 +566,7 @@ const Checkout = () => {
         email: userData?.email,
         pincode: postalCode,
         name: userData ? `${userData.name}` : "",
-        city: selectedAddr.city || "City", // Provide default if missing
+        city: selectedAddr.city || "City", 
         expectedDelivery: expectedDelivery,
       };
 
@@ -565,6 +583,8 @@ const Checkout = () => {
         }
       );
 
+      
+
       if (
         !orderResponse.data ||
         !orderResponse.data.data ||
@@ -576,16 +596,17 @@ const Checkout = () => {
       const createdOrderId = orderResponse.data.data.order._id;
 
       // Initiate PhonePe payment with the newly created orderId
-      const FRONTEND_URL = "https://www.bharatronix.com/thankyou/";
+      const FRONTEND_URL = window.location.origin;
 
       const paymentData = {
-        orderId: createdOrderId, // Use the orderId directly instead of from state
+        orderId: createdOrderId, 
         userId: userId,
-        FRONTEND_URL: FRONTEND_URL,
+        MUID: "T" + Date.now(),
+        FRONTEND_URL: FRONTEND_URL
       };
 
       const paymentResponse = await axios.post(
-        `${backend}/payment/create-payment`,
+        `${backend}/payment/create-phonepe-payment`,
         paymentData,
         {
           headers: {
@@ -595,12 +616,11 @@ const Checkout = () => {
         }
       );
 
-      if (paymentResponse.data.data.response.phonepeResponse.redirectUrl) {
+      if (paymentResponse.data?.data?.response?.phonepeResponse?.instrumentResponse?.redirectInfo?.url) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
-        window.location.href =
-          paymentResponse.data.data.response.phonepeResponse.redirectUrl;
+        window.location.href = paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
       } else {
         throw new Error("Invalid payment response");
       }
@@ -849,15 +869,7 @@ const Checkout = () => {
                 <span className="text-gray-600">Code Discount</span>
                 <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
-                <div className="flex items-center">
-                  <span className="text-gray-600">Platform fees</span>
-                  <button className="ml-2 text-blue-700 text-sm font-medium">
-                    Know more
-                  </button>
-                </div>
-                <span className="font-medium">₹{platformFee.toFixed(2)}</span>
-              </div>
+              
               <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>

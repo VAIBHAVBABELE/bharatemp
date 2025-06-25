@@ -48,12 +48,11 @@ const Cart = () => {
 
   // Calculate the discount (difference between MRP and discounted price)
   const codeDiscount = 15;
-  const platformFee = 5;
   const shippingFee = 5;
   const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
   
   // Calculate final total using only discounted price
-  const finalTotal = Math.max(0, totalAmount + platformFee + shippingFee - codeDiscount);
+  const finalTotal = Math.max(0, totalAmount  + shippingFee - codeDiscount);
 
   // Check if user is logged in
   useEffect(() => {
@@ -206,13 +205,6 @@ const Cart = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Code Discount</span>
                 <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex items-center">
-                  <span className="text-gray-600">Platform fees</span>
-                  <button className="ml-2 text-blue-700 text-sm font-medium">Know more</button>
-                </div>
-                <span className="font-medium">₹{platformFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <div className="flex items-center">

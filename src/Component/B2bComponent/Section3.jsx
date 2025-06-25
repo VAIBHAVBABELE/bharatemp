@@ -1,4 +1,7 @@
 import map from '../../assets/map.png'
+import { FaCloud, FaRobot, FaPlusCircle, FaWind, FaHelicopter } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+
 const OnlinePresenceSection = () => {
   return (
     <div className="bg-[#1E3473] lg:h-[488px] h-auto text-white rounded-xl p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
@@ -16,19 +19,16 @@ const OnlinePresenceSection = () => {
         <h2 className="md:text-2xl lg:text-3xl  xl:text-[57px] font-bold">Our Online presence</h2>
        <div className='w-full md:w-[75%] text-[#E1E3EB] md:text-[19px] text-[12px]'>
         <p className=" ">
-          Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. 
-          Velit officia consequat duis enim velit mollit. 
+        Over 10,000 pincodes reached and counting! We collaborate with India’s finest courier services to bring you fast, seamless deliveries wherever you are.  
         </p>
-        <p className=" ">
-          Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non 
-          deserunt ullamco est sit aliqua dolor do amet sint. Velit officia 
-          consequat duis enim velit mollit.
-        </p>
+    
        </div>
-        <button className="bg-[#F7941D]  text-white font-semibold py-3 px-8 rounded-full mt-4">
+        <Link to="/allproducts" className="bg-[#F7941D]  text-white font-semibold py-3 px-8 rounded-full mt-4">
           Shop Now
-        </button>
+        </Link>
       </div>
+
+
     </div>
   );
 };

@@ -8,7 +8,7 @@ import {
   FaChevronDown,
   FaBolt,
   FaMicrophone,
-  FaChevronRight
+  FaChevronRight,
 } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import location1 from "../assets/location.png";
@@ -23,73 +23,265 @@ import { SlSocialFacebook } from "react-icons/sl";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FiYoutube } from "react-icons/fi";
-import top1 from '../assets/generator.png'
-import top2 from '../assets/top1.png'
-import axios from 'axios';
-import trackorder from "../assets/trackorder.png"
+import top1 from "../assets/generator.png";
+import top2 from "../assets/top1.png";
+import axios from "axios";
+import trackorder from "../assets/trackorder.png";
 const backend = import.meta.env.VITE_BACKEND;
 
 const subcategories = {
   "Development Board": [
-    { name: "Arduino", description: "Boards & Accessories", image: "https://picsum.photos/300/200?random=1" },
-    { name: "Raspberry Pi", description: "Boards & Kits", image: "https://picsum.photos/300/200?random=2" },
-    { name: "ESP32", description: "WiFi & Bluetooth", image: "https://picsum.photos/300/200?random=3" },
-    { name: "ESP8266", description: "IoT Development", image: "https://picsum.photos/300/200?random=4" },
-    { name: "STM32", description: "ARM Controllers", image: "https://picsum.photos/300/200?random=5" },
-    { name: "Teensy", description: "USB Development", image: "https://picsum.photos/300/200?random=6" },
-    { name: "BeagleBone", description: "Linux Boards", image: "https://picsum.photos/300/200?random=7" },
-    { name: "FPGA", description: "Programmable Logic", image: "https://picsum.photos/300/200?random=8" }
+    {
+      name: "Arduino",
+      description: "Boards & Accessories",
+      image: "https://picsum.photos/300/200?random=1",
+    },
+    {
+      name: "Raspberry Pi",
+      description: "Boards & Kits",
+      image: "https://picsum.photos/300/200?random=2",
+    },
+    {
+      name: "ESP32",
+      description: "WiFi & Bluetooth",
+      image: "https://picsum.photos/300/200?random=3",
+    },
+    {
+      name: "ESP8266",
+      description: "IoT Development",
+      image: "https://picsum.photos/300/200?random=4",
+    },
+    {
+      name: "STM32",
+      description: "ARM Controllers",
+      image: "https://picsum.photos/300/200?random=5",
+    },
+    {
+      name: "Teensy",
+      description: "USB Development",
+      image: "https://picsum.photos/300/200?random=6",
+    },
+    {
+      name: "BeagleBone",
+      description: "Linux Boards",
+      image: "https://picsum.photos/300/200?random=7",
+    },
+    {
+      name: "FPGA",
+      description: "Programmable Logic",
+      image: "https://picsum.photos/300/200?random=8",
+    },
   ],
-  "Sensors": [
-    { name: "Temperature", description: "Heat & Cold Detection", image: "https://picsum.photos/300/200?random=11" },
-    { name: "Pressure", description: "Force & Weight", image: "https://picsum.photos/300/200?random=12" },
-    { name: "Motion", description: "Movement Detection", image: "https://picsum.photos/300/200?random=13" },
-    { name: "Gas", description: "Air Quality", image: "https://picsum.photos/300/200?random=14" },
-    { name: "Humidity", description: "Moisture Sensing", image: "https://picsum.photos/300/200?random=15" },
-    { name: "Light", description: "Luminosity Detection", image: "https://picsum.photos/300/200?random=16" },
-    { name: "Sound", description: "Audio Sensing", image: "https://picsum.photos/300/200?random=17" },
-    { name: "Distance", description: "Range Finding", image: "https://picsum.photos/300/200?random=18" }
+  Sensors: [
+    {
+      name: "Temperature",
+      description: "Heat & Cold Detection",
+      image: "https://picsum.photos/300/200?random=11",
+    },
+    {
+      name: "Pressure",
+      description: "Force & Weight",
+      image: "https://picsum.photos/300/200?random=12",
+    },
+    {
+      name: "Motion",
+      description: "Movement Detection",
+      image: "https://picsum.photos/300/200?random=13",
+    },
+    {
+      name: "Gas",
+      description: "Air Quality",
+      image: "https://picsum.photos/300/200?random=14",
+    },
+    {
+      name: "Humidity",
+      description: "Moisture Sensing",
+      image: "https://picsum.photos/300/200?random=15",
+    },
+    {
+      name: "Light",
+      description: "Luminosity Detection",
+      image: "https://picsum.photos/300/200?random=16",
+    },
+    {
+      name: "Sound",
+      description: "Audio Sensing",
+      image: "https://picsum.photos/300/200?random=17",
+    },
+    {
+      name: "Distance",
+      description: "Range Finding",
+      image: "https://picsum.photos/300/200?random=18",
+    },
   ],
   "Motors and Drivers": [
-    { name: "DC Motors", description: "Various Sizes", image: "https://picsum.photos/300/200?random=21" },
-    { name: "Stepper Motors", description: "Precise Control", image: "https://picsum.photos/300/200?random=22" },
-    { name: "Servo Motors", description: "Robotics & RC", image: "https://picsum.photos/300/200?random=23" },
-    { name: "Motor Drivers", description: "Control Boards", image: "https://picsum.photos/300/200?random=24" },
-    { name: "Encoders", description: "Position Feedback", image: "https://picsum.photos/300/200?random=25" },
-    { name: "Gearboxes", description: "Speed Reduction", image: "https://picsum.photos/300/200?random=26" },
-    { name: "Linear Actuators", description: "Linear Motion", image: "https://picsum.photos/300/200?random=27" },
-    { name: "Motor Controllers", description: "Speed Control", image: "https://picsum.photos/300/200?random=28" }
+    {
+      name: "DC Motors",
+      description: "Various Sizes",
+      image: "https://picsum.photos/300/200?random=21",
+    },
+    {
+      name: "Stepper Motors",
+      description: "Precise Control",
+      image: "https://picsum.photos/300/200?random=22",
+    },
+    {
+      name: "Servo Motors",
+      description: "Robotics & RC",
+      image: "https://picsum.photos/300/200?random=23",
+    },
+    {
+      name: "Motor Drivers",
+      description: "Control Boards",
+      image: "https://picsum.photos/300/200?random=24",
+    },
+    {
+      name: "Encoders",
+      description: "Position Feedback",
+      image: "https://picsum.photos/300/200?random=25",
+    },
+    {
+      name: "Gearboxes",
+      description: "Speed Reduction",
+      image: "https://picsum.photos/300/200?random=26",
+    },
+    {
+      name: "Linear Actuators",
+      description: "Linear Motion",
+      image: "https://picsum.photos/300/200?random=27",
+    },
+    {
+      name: "Motor Controllers",
+      description: "Speed Control",
+      image: "https://picsum.photos/300/200?random=28",
+    },
   ],
-  "Battery": [
-    { name: "LiPo", description: "High Performance", image: "https://picsum.photos/300/200?random=31" },
-    { name: "Li-ion", description: "Rechargeable", image: "https://picsum.photos/300/200?random=32" },
-    { name: "NiMH", description: "Long Lasting", image: "https://picsum.photos/300/200?random=33" },
-    { name: "Battery Holders", description: "Storage Solutions", image: "https://picsum.photos/300/200?random=34" },
-    { name: "Chargers", description: "Smart Charging", image: "https://picsum.photos/300/200?random=35" },
-    { name: "Power Banks", description: "Portable Power", image: "https://picsum.photos/300/200?random=36" },
-    { name: "Battery Monitors", description: "Voltage Display", image: "https://picsum.photos/300/200?random=37" },
-    { name: "Protection Circuits", description: "Safety First", image: "https://picsum.photos/300/200?random=38" }
+  Battery: [
+    {
+      name: "LiPo",
+      description: "High Performance",
+      image: "https://picsum.photos/300/200?random=31",
+    },
+    {
+      name: "Li-ion",
+      description: "Rechargeable",
+      image: "https://picsum.photos/300/200?random=32",
+    },
+    {
+      name: "NiMH",
+      description: "Long Lasting",
+      image: "https://picsum.photos/300/200?random=33",
+    },
+    {
+      name: "Battery Holders",
+      description: "Storage Solutions",
+      image: "https://picsum.photos/300/200?random=34",
+    },
+    {
+      name: "Chargers",
+      description: "Smart Charging",
+      image: "https://picsum.photos/300/200?random=35",
+    },
+    {
+      name: "Power Banks",
+      description: "Portable Power",
+      image: "https://picsum.photos/300/200?random=36",
+    },
+    {
+      name: "Battery Monitors",
+      description: "Voltage Display",
+      image: "https://picsum.photos/300/200?random=37",
+    },
+    {
+      name: "Protection Circuits",
+      description: "Safety First",
+      image: "https://picsum.photos/300/200?random=38",
+    },
   ],
   "3D Printer": [
-    { name: "Filaments", description: "PLA, ABS & More", image: "https://picsum.photos/300/200?random=41" },
-    { name: "Hot Ends", description: "Print Heads", image: "https://picsum.photos/300/200?random=42" },
-    { name: "Extruders", description: "Feed Systems", image: "https://picsum.photos/300/200?random=43" },
-    { name: "Control Boards", description: "Printer Brains", image: "https://picsum.photos/300/200?random=44" },
-    { name: "Stepper Motors", description: "Axis Control", image: "https://picsum.photos/300/200?random=45" },
-    { name: "Linear Rails", description: "Smooth Motion", image: "https://picsum.photos/300/200?random=46" },
-    { name: "Build Plates", description: "Print Surfaces", image: "https://picsum.photos/300/200?random=47" },
-    { name: "Nozzles", description: "Various Sizes", image: "https://picsum.photos/300/200?random=48" }
+    {
+      name: "Filaments",
+      description: "PLA, ABS & More",
+      image: "https://picsum.photos/300/200?random=41",
+    },
+    {
+      name: "Hot Ends",
+      description: "Print Heads",
+      image: "https://picsum.photos/300/200?random=42",
+    },
+    {
+      name: "Extruders",
+      description: "Feed Systems",
+      image: "https://picsum.photos/300/200?random=43",
+    },
+    {
+      name: "Control Boards",
+      description: "Printer Brains",
+      image: "https://picsum.photos/300/200?random=44",
+    },
+    {
+      name: "Stepper Motors",
+      description: "Axis Control",
+      image: "https://picsum.photos/300/200?random=45",
+    },
+    {
+      name: "Linear Rails",
+      description: "Smooth Motion",
+      image: "https://picsum.photos/300/200?random=46",
+    },
+    {
+      name: "Build Plates",
+      description: "Print Surfaces",
+      image: "https://picsum.photos/300/200?random=47",
+    },
+    {
+      name: "Nozzles",
+      description: "Various Sizes",
+      image: "https://picsum.photos/300/200?random=48",
+    },
   ],
   "Drone Parts": [
-    { name: "ESC", description: "Speed Controls", image: "https://picsum.photos/300/200?random=51" },
-    { name: "Flight Controllers", description: "Brain Units", image: "https://picsum.photos/300/200?random=52" },
-    { name: "Props", description: "Propellers", image: "https://picsum.photos/300/200?random=53" },
-    { name: "Frames", description: "Drone Bodies", image: "https://picsum.photos/300/200?random=54" },
-    { name: "Motors", description: "Brushless Motors", image: "https://picsum.photos/300/200?random=55" },
-    { name: "Batteries", description: "Flight Power", image: "https://picsum.photos/300/200?random=56" },
-    { name: "FPV Cameras", description: "Live View", image: "https://picsum.photos/300/200?random=57" },
-    { name: "Radio Systems", description: "Control Link", image: "https://picsum.photos/300/200?random=58" }
-  ]
+    {
+      name: "ESC",
+      description: "Speed Controls",
+      image: "https://picsum.photos/300/200?random=51",
+    },
+    {
+      name: "Flight Controllers",
+      description: "Brain Units",
+      image: "https://picsum.photos/300/200?random=52",
+    },
+    {
+      name: "Props",
+      description: "Propellers",
+      image: "https://picsum.photos/300/200?random=53",
+    },
+    {
+      name: "Frames",
+      description: "Drone Bodies",
+      image: "https://picsum.photos/300/200?random=54",
+    },
+    {
+      name: "Motors",
+      description: "Brushless Motors",
+      image: "https://picsum.photos/300/200?random=55",
+    },
+    {
+      name: "Batteries",
+      description: "Flight Power",
+      image: "https://picsum.photos/300/200?random=56",
+    },
+    {
+      name: "FPV Cameras",
+      description: "Live View",
+      image: "https://picsum.photos/300/200?random=57",
+    },
+    {
+      name: "Radio Systems",
+      description: "Control Link",
+      image: "https://picsum.photos/300/200?random=58",
+    },
+  ],
 };
 
 const Navbar = () => {
@@ -111,14 +303,14 @@ const Navbar = () => {
   const currentLocation = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
         setUser(decoded);
       } catch (error) {
-        console.error('Error decoding token:', error);
-        localStorage.removeItem('token');
+        console.error("Error decoding token:", error);
+        localStorage.removeItem("token");
         setUser(null);
       }
     }
@@ -127,7 +319,7 @@ const Navbar = () => {
   // Extract search query from URL when page loads or changes
   useEffect(() => {
     const params = new URLSearchParams(currentLocation.search);
-    const query = params.get('search');
+    const query = params.get("search");
     if (query) {
       setSearchQuery(query);
     }
@@ -154,10 +346,10 @@ const Navbar = () => {
 
   const navItems = [
     {
-      name: "Shop a brand",
+      name: "Shop by brand",
       key: "catalog",
-      items: ["Categories", "PDF Download"],
-      links: ["/categories", "/download-catalog"]
+      items: ["Categories"],
+      links: ["/categories"],
     },
   ];
 
@@ -187,39 +379,47 @@ const Navbar = () => {
 
     if (value.trim()) {
       const query = value.toLowerCase();
-      
-      // Get unique categories and brands that match the query
-      const matchingCategories = [...new Set(products
-        .map(p => p.category_name)
-        .filter(category => category && category.toLowerCase().includes(query))
-      )];
 
-      const matchingBrands = [...new Set(products
-        .map(p => p.brand_name)
-        .filter(brand => brand && brand.toLowerCase().includes(query))
-      )];
+      // Get unique categories and brands that match the query
+      const matchingCategories = [
+        ...new Set(
+          products
+            .map((p) => p.category_name)
+            .filter(
+              (category) => category && category.toLowerCase().includes(query)
+            )
+        ),
+      ];
+
+      const matchingBrands = [
+        ...new Set(
+          products
+            .map((p) => p.brand_name)
+            .filter((brand) => brand && brand.toLowerCase().includes(query))
+        ),
+      ];
 
       // Create suggestions array with categories and brands first
-      const categorySuggestions = matchingCategories.map(category => ({
-        type: 'category',
+      const categorySuggestions = matchingCategories.map((category) => ({
+        type: "category",
         name: category,
         displayText: `${category}`,
       }));
 
-      const brandSuggestions = matchingBrands.map(brand => ({
-        type: 'brand',
+      const brandSuggestions = matchingBrands.map((brand) => ({
+        type: "brand",
         name: brand,
         displayText: `${brand}`,
       }));
 
       // Get product suggestions
       const productSuggestions = products
-        .filter(p => 
-          p.product_name && p.product_name.toLowerCase().includes(query)
+        .filter(
+          (p) => p.product_name && p.product_name.toLowerCase().includes(query)
         )
         .slice(0, 4) // Limit to 4 product suggestions
-        .map(p => ({
-          type: 'product',
+        .map((p) => ({
+          type: "product",
           name: p.product_name,
           category: p.category_name,
           brand: p.brand_name,
@@ -230,7 +430,7 @@ const Navbar = () => {
       const allSuggestions = [
         ...categorySuggestions,
         ...brandSuggestions,
-        ...productSuggestions
+        ...productSuggestions,
       ].slice(0, 8); // Limit total suggestions to 8
 
       setSuggestions(allSuggestions);
@@ -243,11 +443,11 @@ const Navbar = () => {
 
   // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
-    if (suggestion.type === 'product') {
+    if (suggestion.type === "product") {
       navigate(`/product/${suggestion.id}`);
-    } else if (suggestion.type === 'category') {
+    } else if (suggestion.type === "category") {
       navigate(`/product?category=${encodeURIComponent(suggestion.name)}`);
-    } else if (suggestion.type === 'brand') {
+    } else if (suggestion.type === "brand") {
       navigate(`/product?brand=${encodeURIComponent(suggestion.name)}`);
     }
     setSearchQuery(suggestion.name);
@@ -257,44 +457,100 @@ const Navbar = () => {
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.search-container')) {
+      if (!event.target.closest(".search-container")) {
         setShowSuggestions(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".dropdown-container")) {
+        setOpenDropdown("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close location dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".location-dropdown-container")) {
+        setShowLocationDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".profile-dropdown-container")) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close categories dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".categories-dropdown-container")) {
+        setShowCategoriesDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   // Handle keypress in search input
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch(e);
     }
   };
 
   const categoryImages = {
     "Development Board": top1,
-    "Sensors": top2,
+    Sensors: top2,
     "Motors and Drivers": top2,
-    "Battery": top2,
+    Battery: top2,
     "3D Printer": top2,
-    "Drone Parts": top2
+    "Drone Parts": top2,
   };
 
   const categories = {
     "Development Board": {},
-    "Sensors": {},
+    Sensors: {},
     "Motors and Drivers": {},
-    "Battery": {},
+    Battery: {},
     "3D Printer": {},
-    "Drone Parts": {}
+    "Drone Parts": {},
   };
 
   const startVoiceSearch = () => {
-    if ('webkitSpeechRecognition' in window) {
+    if ("webkitSpeechRecognition" in window) {
       const recognition = new window.webkitSpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -318,18 +574,22 @@ const Navbar = () => {
 
       recognition.onerror = (event) => {
         setIsListening(false);
-        console.error('Speech recognition error:', event.error);
-        alert('Sorry, there was an error with voice recognition. Please try again.');
+        console.error("Speech recognition error:", event.error);
+        alert(
+          "Sorry, there was an error with voice recognition. Please try again."
+        );
       };
 
       recognition.start();
     } else {
-      alert('Voice search is not supported in this browser');
+      alert("Voice search is not supported in this browser");
     }
   };
 
   const handleSubcategoryClick = (category, subcategory) => {
-    navigate(`/allproducts?category=${category}&subcategory=${subcategory.toLowerCase()}`);
+    navigate(
+      `/allproducts?category=${category}&subcategory=${subcategory.toLowerCase()}`
+    );
     setShowCategoriesDropdown(false);
   };
 
@@ -338,41 +598,38 @@ const Navbar = () => {
       {/* Top Blue Bar */}
       <div className="bg-[#1E3473] text-white text-sm px-4 md:px-12 lg:px-16 py-2 flex justify-between items-center font-[Outfit]">
         <div className="space-x-8 text-[15px] hidden md:flex">
-          <Link to="/store-location" className="hover:text-[#F7941D]">Support@bharatronix.com</Link>
+          <a
+            href="https://mail.google.com/mail/?extsrc=mailto&url=mailto%3Asupport%40bharatronix.com%3Fsubject%3DSupport%2520Request%26body%3DHello%2520Bharatronix%2520Team%252C%250A%250AI%2527d%2520like%2520to%2520request%2520support%2520regarding%253A%250A%250A%250AThanks%252C%250A%255BYour%2520Name%255D"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#F7941D]"
+          >
+            Support@bharatronix.com
+          </a>
           {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
           <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
-          <Link to="#" className="hover:text-[#F7941D]">+91 79827 48787</Link>
+          <Link to="tel:+917982748787" className="hover:text-[#F7941D]">
+            +91 79827 48787
+          </Link>
         </div>
         <div className="hidden lg:flex items-center text-[15px] gap-2">
-          <FaBolt className="text-[#F7941D] w-5 h-5" />
+          <FaBolt className="text-[#F7941D] w-5 h-5 rotate-20" />
           <span>24 hours Express delivery</span>
         </div>
-        {/* <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <FaGlobeAmericas />
-            <FaChevronDown />
-          </div>
-          <div className="flex items-center gap-1">
-            <span>USD</span>
-            <FaChevronDown />
-          </div>
-        </div> */}
-        <div className=" flex flex-wrap   gap-4 items-center ">
-          <Link to="#" className="text-white  ">
-           <FaInstagram  alt="Instagram" className="w-6 h-6" />
+
+        <div className=" flex flex-wrap pl-40 gap-4 items-center ">
+          <Link to="https://www.instagram.com/bharatronix/?hl=en" className="text-white  ">
+            <FaInstagram alt="Instagram" className="w-6 h-6" />
           </Link>
           <Link to="#" className="text-white  ">
-           <SlSocialFacebook   alt=" Facebook" className="w-6 h-6" />
+            <SlSocialFacebook alt=" Facebook" className="w-6 h-6" />
           </Link>
-          <Link to="#" className="text-white  ">
-            <FiYoutube   alt=" Facebook" className="w-6 h-6" />
+          <Link to="https://www.youtube.com/@BharatroniX2024" className="text-white  ">
+            <FiYoutube alt=" Facebook" className="w-6 h-6" />
           </Link>
-          <Link to="#" className="text-white  ">
+          <Link to="https://x.com/bharatroni68370" className="text-white  ">
             <FaXTwitter alt="Twitter" className="w-6 h-6" />
           </Link>
-
-
-
         </div>
       </div>
 
@@ -387,7 +644,7 @@ const Navbar = () => {
             </Link>
 
             {/* Location Selector */}
-            <div className="relative hidden lg:block">
+            <div className="relative hidden lg:block location-dropdown-container">
               <div
                 onClick={() => setShowLocationDropdown((prev) => !prev)}
                 className="cursor-pointer flex items-start gap-2"
@@ -428,7 +685,10 @@ const Navbar = () => {
             <div className="flex items-center gap-2 w-full">
               {/* Search Bar with Suggestions */}
               <div className="relative flex-1 search-container">
-                <form onSubmit={handleSearch} className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2"
+                >
                   <input
                     type="text"
                     placeholder="Search by name, category, brand..."
@@ -457,9 +717,11 @@ const Navbar = () => {
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{suggestion.icon}</span>
                           <div className="flex flex-col">
-                            {suggestion.type === 'product' ? (
+                            {suggestion.type === "product" ? (
                               <>
-                                <span className="text-gray-900 font-medium">{suggestion.name}</span>
+                                <span className="text-gray-900 font-medium">
+                                  {suggestion.name}
+                                </span>
                                 <div className="flex items-center gap-2 text-xs text-gray-500">
                                   {suggestion.category && (
                                     <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
@@ -475,9 +737,13 @@ const Navbar = () => {
                               </>
                             ) : (
                               <>
-                                <span className="text-gray-900 font-medium">{suggestion.displayText}</span>
+                                <span className="text-gray-900 font-medium">
+                                  {suggestion.displayText}
+                                </span>
                                 <span className="text-xs text-gray-500">
-                                  {suggestion.type === 'category' ? 'Category' : 'Brand'}
+                                  {suggestion.type === "category"
+                                    ? "Category"
+                                    : "Brand"}
                                 </span>
                               </>
                             )}
@@ -492,10 +758,16 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${isListening ? 'ring-2 ring-[#F7941D]' : ''}`}
+                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
+                  isListening ? "ring-2 ring-[#F7941D]" : ""
+                }`}
                 onClick={startVoiceSearch}
               >
-                <FaMicrophone className={`h-5 w-5 ${isListening ? 'text-[#F7941D]' : 'text-gray-600'}`} />
+                <FaMicrophone
+                  className={`h-5 w-5 ${
+                    isListening ? "text-[#F7941D]" : "text-gray-600"
+                  }`}
+                />
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>
@@ -513,7 +785,7 @@ const Navbar = () => {
               {/* Shopping Bag Icon */}
               <div
                 className="bg-gray-100 p-3 rounded-full relative cursor-pointer"
-                onClick={() => navigate('/cart')}
+                onClick={() => navigate("/cart")}
               >
                 <img src={icon1} className="w-5 h-5" alt="Cart" />
                 {uniqueItems > 0 && (
@@ -528,7 +800,7 @@ const Navbar = () => {
 
               {/* User Icon or Auth Buttons */}
               {user ? (
-                <div className="relative">
+                <div className="relative profile-dropdown-container">
                   <div
                     className="bg-gray-100 p-3 rounded-full cursor-pointer"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -539,7 +811,7 @@ const Navbar = () => {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                       <button
                         onClick={() => {
-                          navigate('/profile');
+                          navigate("/profile");
                           setShowProfileDropdown(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -548,9 +820,9 @@ const Navbar = () => {
                       </button>
                       <button
                         onClick={() => {
-                          localStorage.removeItem('token');
+                          localStorage.removeItem("token");
                           setUser(null);
-                          window.location.href = '/';
+                          window.location.href = "/";
                           setShowProfileDropdown(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -563,13 +835,13 @@ const Navbar = () => {
               ) : (
                 <div className="hidden md:flex items-center gap-2">
                   <button
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate("/login")}
                     className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
                   >
                     Login
                   </button>
                   <button
-                    onClick={() => navigate('/signup')}
+                    onClick={() => navigate("/signup")}
                     className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
                   >
                     Sign Up
@@ -577,7 +849,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            <div className="lg:hidden">
+            <div className="md:hidden">
               <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
               </button>
@@ -588,18 +860,24 @@ const Navbar = () => {
         {/* Bottom Nav */}
         <div className="bg-white hidden md:flex md:justify-between md:items-center">
           <div className="px-4 py-1 flex items-center space-x-4 text-sm font-medium whitespace-nowrap lg:px-16 md:px-12">
-            <Link to="/" className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+            <Link
+              to="/"
+              className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+            >
               HOME
             </Link>
-            <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+            {/* <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
               All Products
-            </Link>
-            <div 
-              className="relative group"
+            </Link> */}
+            <div
+              className="relative group categories-dropdown-container"
               onMouseEnter={() => setShowCategoriesDropdown(true)}
               onMouseLeave={() => setShowCategoriesDropdown(false)}
             >
-              <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full flex items-center gap-1">
+              <Link
+                to="/product"
+                className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full flex items-center gap-1"
+              >
                 All Categories
                 <FaChevronDown className="text-xs" />
               </Link>
@@ -617,7 +895,9 @@ const Navbar = () => {
                             onMouseEnter={() => setActiveCategory(category)}
                             className="flex items-center justify-between py-3 px-4 hover:bg-gray-100 rounded-lg group cursor-pointer"
                           >
-                            <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">{category}</span>
+                            <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">
+                              {category}
+                            </span>
                             <FaChevronRight className="text-gray-400 text-xs" />
                           </div>
                         ))}
@@ -626,29 +906,42 @@ const Navbar = () => {
                       {/* Right Side - Subcategories Grid */}
                       <div className="w-3/4 p-6">
                         <div className="grid grid-cols-4 gap-4">
-                          {subcategories[activeCategory]?.slice(0, 8).map((subcat, index) => (
-                            <div
-                              key={index}
-                              onClick={() => handleSubcategoryClick(activeCategory, subcat.name)}
-                              className="group cursor-pointer"
-                            >
-                              <div className="relative overflow-hidden rounded-lg">
-                                <img
-                                  src={subcat.image}
-                                  alt={subcat.name}
-                                  className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                                  <h3 className="text-white font-medium text-sm">{subcat.name}</h3>
-                                  <p className="text-gray-200 text-xs">{subcat.description}</p>
+                          {subcategories[activeCategory]
+                            ?.slice(0, 8)
+                            .map((subcat, index) => (
+                              <div
+                                key={index}
+                                onClick={() =>
+                                  handleSubcategoryClick(
+                                    activeCategory,
+                                    subcat.name
+                                  )
+                                }
+                                className="group cursor-pointer"
+                              >
+                                <div className="relative overflow-hidden rounded-lg">
+                                  <img
+                                    src={subcat.image}
+                                    alt={subcat.name}
+                                    className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                                    <h3 className="text-white font-medium text-sm">
+                                      {subcat.name}
+                                    </h3>
+                                    <p className="text-gray-200 text-xs">
+                                      {subcat.description}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                         <div
                           onClick={() => {
-                            navigate(`/subcategories?category=${activeCategory}`);
+                            navigate(
+                              `/subcategories?category=${activeCategory}`
+                            );
                             setShowCategoriesDropdown(false);
                           }}
                           className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors cursor-pointer"
@@ -663,7 +956,7 @@ const Navbar = () => {
               )}
             </div>
             {navItems.map((item) => (
-              <div className="relative" key={item.key}>
+              <div className="relative dropdown-container" key={item.key}>
                 <button
                   onClick={() => toggleDropdown(item.key)}
                   className="flex items-center gap-1 text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
@@ -687,70 +980,159 @@ const Navbar = () => {
                 )}
               </div>
             ))}
-            <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+            <Link
+              to="/b2bpage"
+              className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+            >
               B2B Enquiry
             </Link>
           </div>
-          <div className="flex px-4 lg:px-16 md:px-12">
-           
+          <div className="flex pr-4 lg:pr-16 md:pr-8">
             <Link
               to="/track-order"
               className=" text-blue-900 px-3 py-1 flex items-center rounded-full gap-3 transition-colors duration-300"
             >
-               <img src={trackorder} alt="Logo" className="w-6 h-6 " /> Track Order
+              <img src={trackorder} alt="Logo" className="w-6 h-6 " /> Track
+              Order
             </Link>
           </div>
         </div>
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden px-4 py-4 space-y-3 text-sm bg-white shadow-md">
-            <form onSubmit={handleSearch} className="flex items-center">
-              <input
-                type="text"
-                placeholder="Search by name, category, brand..."
-                className="w-full border border-gray-300 px-3 py-2 rounded-l-md"
-                value={searchQuery}
-                onChange={handleSearchInputChange}
-                onKeyPress={handleKeyPress}
-              />
-              <button
-                type="submit"
-                className="bg-[#F7941D] px-3 py-2 rounded-r-md text-white"
-              >
-                <FaSearch size={15} />
-              </button>
-            </form>
-            <div className="flex flex-col gap-2 items-center">
-            <Link to="/" className="block py-2 hover:text-[#F7941D]">
-              HOME
-            </Link>
-              <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
-              All Products
-            </Link>
-            {navItems.map((item) => (
-              <div key={item.key} className="py-1">
-                <p className="font-semibold text-gray-700">{item.name}</p>
-                {item.items.map((subItem, idx) => (
-                  <Link
-                    to={item.links[idx]}
-                    key={idx}
-                    className="block pl-4 py-1 text-gray-600 hover:text-[#F7941D]"
-                    onClick={() => setMobileMenuOpen(false)}
+          <div className="md:hidden px-4 py-4 space-y-3 text-sm bg-white shadow-md">
+            {/* Mobile Search Bar Section */}
+            <div className="flex items-center gap-2 w-full">
+              {/* Search Bar with Suggestions */}
+              <div className="relative flex-1 search-container">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2"
+                >
+                  <input
+                    type="text"
+                    placeholder="Search by name, category, brand..."
+                    className="flex-1 bg-transparent text-sm outline-none"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
                   >
-                    {subItem}
-                  </Link>
-                ))}
+                    <FaSearch size={15} className="text-white" />
+                  </button>
+                </form>
+
+                {/* Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{suggestion.icon}</span>
+                          <div className="flex flex-col">
+                            {suggestion.type === "product" ? (
+                              <>
+                                <span className="text-gray-900 font-medium">
+                                  {suggestion.name}
+                                </span>
+                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                  {suggestion.category && (
+                                    <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                                      {suggestion.category}
+                                    </span>
+                                  )}
+                                  {suggestion.brand && (
+                                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                      {suggestion.brand}
+                                    </span>
+                                  )}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-gray-900 font-medium">
+                                  {suggestion.displayText}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {suggestion.type === "category"
+                                    ? "Category"
+                                    : "Brand"}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
-            {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
+
+              {/* Voice Search Button */}
+              <button
+                type="button"
+                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
+                  isListening ? "ring-2 ring-[#F7941D]" : ""
+                }`}
+                onClick={startVoiceSearch}
+              >
+                <FaMicrophone
+                  className={`h-5 w-5 ${
+                    isListening ? "text-[#F7941D]" : "text-gray-600"
+                  }`}
+                />
+                {isListening && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>
+                    <div className="absolute w-3/4 h-3/4 rounded-full animate-ping bg-[#F7941D] opacity-10 delay-150"></div>
+                    <div className="absolute w-1/2 h-1/2 rounded-full animate-ping bg-[#F7941D] opacity-5 delay-300"></div>
+                  </div>
+                )}
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2 items-center text-center">
+              <Link
+                to="/"
+                className="block py-2 font-bold hover:text-[#F7941D]"
+              >
+                HOME
+              </Link>
+              {/* <Link to="/product" className="block py-2 text-gray-600 hover:text-[#F7941D]">
+              All Products
+            </Link> */}
+              {navItems.map((item) => (
+                <div key={item.key} className="py-1">
+                  <p className="font-semibold text-gray-700">{item.name}</p>
+                  {item.items.map((subItem, idx) => (
+                    <Link
+                      to={item.links[idx]}
+                      key={idx}
+                      className="block py-1 text-gray-600 hover:text-[#F7941D]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {subItem}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+              {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
               PCB
             </Link> */}
-             <Link to="/b2bpage" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
-              B2B Enquiry
-            </Link>
+              <Link
+                to="/b2bpage"
+                className="block py-2 text-gray-600 hover:text-[#F7941D]"
+              >
+                B2B Enquiry
+              </Link>
             </div>
-           
           </div>
         )}
       </div>

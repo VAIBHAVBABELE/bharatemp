@@ -15,7 +15,6 @@ const SideCart = ({ isOpen, onClose }) => {
     const summary = {
       totalMRP: 0,
       codeDiscount: 15.00,
-      platformFees: 5.00,
       shippingFees: 5.00,
       discountOnMRP: 0,
       total: 0
@@ -31,7 +30,6 @@ const SideCart = ({ isOpen, onClose }) => {
     summary.total = (
       summary.totalMRP -
       summary.codeDiscount +
-      summary.platformFees +
       summary.shippingFees -
       summary.discountOnMRP
     ).toFixed(2);
@@ -124,13 +122,6 @@ const SideCart = ({ isOpen, onClose }) => {
                   <div className="flex justify-between text-gray-600">
                     <span>Code Discount</span>
                     <span>- ₹{summary.codeDiscount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <span>Platform fees</span>
-                      <Link to="#" className="text-[#1e3473] text-sm">Know more</Link>
-                    </div>
-                    <span>₹{summary.platformFees.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <div className="flex items-center gap-2">

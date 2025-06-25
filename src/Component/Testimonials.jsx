@@ -6,12 +6,76 @@ import person3 from "../assets/per3.png";
 
  
 const users = [
-    { id: 1, name: "Shruti Jain", designation: "CEO", rating: 4, title: "CEO, Mars Furniture", quote: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.", image: person1 },
-    { id: 2, name: "Vansh Tyagi", designation: "Manager", rating: 5, title: "Senior Mart", quote: "Doloremque laudantium, totam rem aperiam.", image: person2 },
-    { id: 3, name: "Ruhi Singh", designation: "Developer", rating: 3, title: "Junior Mart", quote: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.", image: person3},
-    { id: 4, name: "Amit Kapoor", designation: "Product Lead", rating: 5, title: "Tech Venture", quote: "Et harum quidem rerum facilis est et expedita distinctio.", image: person1 },
-    { id: 5, name: "Sneha Iyer", designation: "Designer", rating: 4, title: "Design Co.", quote: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit.", image: person2},
-    { id: 6, name: "Rohan Mehta", designation: "Marketing Head", rating: 5, title: "MarketFlow", quote: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet.", image: person3 },
+    {
+        id: 1,
+        name: "Rajeev Sinha",
+        designation: "Startup Founder",
+        location: "Delhi",
+        rating: 5,
+        title: "Startup Founder, Delhi",
+        quote: "We sourced a range of development boards and IoT sensors from Bharatronix, and the quality exceeded our expectations. The delivery was prompt, and their support team is very responsive. Highly recommended for tech entrepreneurs!",
+        image: person1
+    },
+    {
+        id: 2,
+        name: "Sneha Arora",
+        designation: "Robotics Educator",
+        location: "Pune",
+        rating: 5,
+        title: "Robotics Educator, Pune",
+        quote: "Bharatronix is my go-to supplier for electronic components. Their Arduino kits are well-organized and beginner-friendly, making it easy for my students to grasp practical concepts.",
+        image: person2
+    },
+    {
+        id: 3,
+        name: "Ankit Mehta",
+        designation: "Embedded Engineer",
+        location: "Bangalore",
+        rating: 5,
+        title: "Embedded Engineer, Bangalore",
+        quote: "I’ve been ordering Raspberry Pi accessories and microcontrollers for months now. Bharatronix consistently delivers quality products with great packaging and reliable support.",
+        image: person3
+    },
+    {
+        id: 4,
+        name: "Divya Sharma",
+        designation: "College Student",
+        location: "Jaipur",
+        rating: 5,
+        title: "College Student, Jaipur",
+        quote: "As a B.Tech student working on my final-year project, Bharatronix helped me get all the necessary modules at affordable rates. Their tutorials and quick delivery made my life easier.",
+        image: person1
+    },
+    {
+        id: 5,
+        name: "Karan Patel",
+        designation: "Hobbyist",
+        location: "Ahmedabad",
+        rating: 5,
+        title: "Hobbyist, Ahmedabad",
+        quote: "Excellent collection of sensors and modules! I appreciate the fast shipping and the informative product descriptions. Great for DIY projects.",
+        image: person2
+    },
+    {
+        id: 6,
+        name: "Dr. Pooja Menon",
+        designation: "STEM Trainer",
+        location: "Kochi",
+        rating: 5,
+        title: "STEM Trainer, Kochi",
+        quote: "Our STEM lab needed bulk kits for an upcoming bootcamp. Bharatronix not only delivered everything on time but also gave us educational discounts. Very professional and helpful.",
+        image: person3
+    },
+    {
+        id: 7,
+        name: "Mohit Verma",
+        designation: "IoT Developer",
+        location: "Hyderabad",
+        rating: 5,
+        title: "IoT Developer, Hyderabad",
+        quote: "Finding authentic and affordable components online is always a challenge—but Bharatronix has changed that for me. Whether it's NodeMCU boards or sensor kits, the quality is top-notch, and everything arrives exactly as described. I also appreciate their proactive customer support during bulk orders.",
+        image: person1
+    }
 ];
  
 function Testimonials() {

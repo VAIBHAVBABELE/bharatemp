@@ -119,11 +119,11 @@ const Product = () => {
 
   // Filter states
   const [priceRangeFilter, setPriceRangeFilter] = useState({
-    min: 100,
+    min: 1,
     max: 50000,
   });
   const [tempPriceRange, setTempPriceRange] = useState({
-    min: 100,
+    min: 1,
     max: 50000,
   }); // Temporary state for slider before Apply
   const [priceCheckboxFilters, setPriceCheckboxFilters] = useState([]);
@@ -134,7 +134,7 @@ const Product = () => {
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const location = useLocation();
 
-  const min = 100;
+  const min = 1;
   const max = 50000;
 
   const navigate = useNavigate();
@@ -393,6 +393,23 @@ const Product = () => {
     setCategoryFilters([]);
     setBrandFilters([]);
   };
+  const clearPriceRangeFilter = () => {
+    setPriceRangeFilter({ min: min, max: max });
+    setTempPriceRange({ min: min, max: max });
+    setSliderValue(max);
+  };
+
+  const clearPriceCheckboxFilters = () => {
+    setPriceCheckboxFilters([]);
+  };
+
+  const clearCategoryFilters = () => {
+    setCategoryFilters([]);
+  };
+
+  const clearBrandFilters = () => {
+    setBrandFilters([]);
+  };
 
   // Calculate slider percentage for display
   const percentage = ((sliderValue - min) / (max - min)) * 100;
@@ -517,15 +534,24 @@ const Product = () => {
                       </span>
                     )}
                   </p>
+                  <div className="flex gap-1 items-center">
                   <button
                     onClick={handleApply}
                     className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${priceRangeFilter.max !== sliderValue
                         ? "bg-[#f7941d] hover:bg-orange-600"
-                        : "bg-blue-900 hover:bg-blue-800"
+                        : "bg-[#1e3473] hover:bg-blue-800"
                       }`}
                   >
                     Apply
                   </button>
+                  <button
+                      onClick={clearPriceRangeFilter}
+                      className="text-xs  bg-[#1e3473] text-white rounded-3xl cursor-pointer px-4 py-1 hover:underline"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  
                 </div>
               </div>
 
@@ -552,6 +578,14 @@ const Product = () => {
                     </li>
                   ))}
                 </ul>
+               
+                    <button
+                      onClick={clearPriceCheckboxFilters}
+                      className="text-xs mt-4 bg-[#1e3473] text-white rounded-3xl cursor-pointer px-8 py-2 hover:underline"
+                    >
+                      Clear
+                    </button>
+                
               </div>
 
               {/* Filter by Categories */}
@@ -577,6 +611,12 @@ const Product = () => {
                     </li>
                   ))}
                 </ul>
+                <button
+                      onClick={clearCategoryFilters}
+                      className="text-xs mt-4 bg-[#1e3473] text-white rounded-3xl cursor-pointer px-8 py-2 hover:underline"
+                    >
+                      Clear
+                    </button>
               </div>
 
               {/* Filter by Brand */}
@@ -606,6 +646,12 @@ const Product = () => {
                     </div>
                   ))}
                 </div>
+                <button
+                      onClick={clearBrandFilters}
+                      className="text-xs mt-4 bg-[#1e3473] text-white rounded-3xl cursor-pointer px-8 py-2 hover:underline"
+                    >
+                      Clear
+                    </button>
               </div>
             </div>
 
@@ -617,7 +663,7 @@ const Product = () => {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`font-medium relative ${activeTab === tab
+                      className={`font-medium cursor-pointer relative ${activeTab === tab
                           ? "text-gray-900 font-semibold"
                           : "text-gray-500"
                         }`}

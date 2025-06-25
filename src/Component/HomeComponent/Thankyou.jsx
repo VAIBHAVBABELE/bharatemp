@@ -9,7 +9,7 @@ const OrderSuccess = () => {
   const [verificationStatus, setVerificationStatus] = useState("verifying"); // verifying, success, failed
   const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams(); // Get ID from URL path
+  const { id } = useParams(); // Get single ID from URL path
   const backend = import.meta.env.VITE_BACKEND;
 
   useEffect(() => {
@@ -19,11 +19,10 @@ const OrderSuccess = () => {
 
   const verifyPayment = async () => {
     try {
-      // Get payment ID from URL path
-      const paymentId = id;      
-      if (!paymentId) {
+      // Check if we have the ID
+      if (!id) {
         setVerificationStatus("failed");
-        toast.error("Payment verification failed: No payment ID found");
+        toast.error("Payment verification failed: Missing payment details");
         return;
       }
 
@@ -39,11 +38,12 @@ const OrderSuccess = () => {
       // Parse token if stored as JSON string
       const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
 
-      // Verify payment
+      // Verify payment using PhonePe endpoint - using same ID for both fields
       const response = await axios.post(
-        `${backend}/payment/verify-payment`,
+        `${backend}/payment/verify-phonepe-payment`,
         {
-          paymentId: paymentId
+          paymentId: id,
+          merchantTransactionId: id // Using same ID for both fields
         },
         {
           headers: {

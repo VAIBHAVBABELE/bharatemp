@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
@@ -17,7 +17,12 @@ import icon4 from "../assets/icon4.png";
 import image10 from "../assets/homepage10.png";
 import blue from "../assets/green.png";
 import top1 from '../assets/generator.png'
-import top2 from '../assets/top1.png'
+import battery from '../assets/battery.gif'
+import drone from "../assets/drone.gif"
+import sensor from "../assets/sensor.gif"
+import motors from "../assets/motors.gif"
+import board from "../assets/board.gif"
+import printer from "../assets/printer.gif"
 import cart1 from '../assets/Cart4.png';
 import cart2 from '../assets/cart5.png';
 import cart3 from '../assets/cart6.png';
@@ -32,6 +37,7 @@ const ProductSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const reviewsRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -53,39 +59,49 @@ const ProductSlider = () => {
     getProducts();
   }, []);
 
+  // Expose scroll function for footer
+  useEffect(() => {
+    window.scrollToReviews = () => {
+      if (reviewsRef.current) {
+        reviewsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    return () => { delete window.scrollToReviews; };
+  }, []);
+
   const cardData = [
     {
-      image: top1,
+      image: board,
       title: 'Development Board',
       version: 'Arduino, ESP32, RPi',
       category: 'Development Board'
     },
     {
-      image: top2,
+      image: sensor,
       title: 'Sensors',
       version: 'Temperature, Pressure, Motion',
       category: 'Sensors'
     },
     {
-      image: top2,
+      image: motors,
       title: 'Motors and Drivers',
       version: 'DC, Stepper, Servo',
       category: 'Motors and Drivers'
     },
     {
-      image: top2,
+      image: battery,
       title: 'Battery',
       version: 'LiPo, Li-ion, NiMH',
       category: 'Battery'
     },
     {
-      image: top2,
+      image: printer,
       title: '3D Printer',
       version: 'Parts & Accessories',
       category: '3D Printer'
     },
     {
-      image: top2,
+      image: drone,
       title: 'Drone Parts',
       version: 'ESC, Flight Controllers, Props',
       category: 'Drone Parts'
@@ -105,7 +121,7 @@ const ProductSlider = () => {
     {
       img: cart3,
       title: '24×7 Technical support available',
-      subtitle: 'We’re always here – round-the-clock technical assistance.',
+      subtitle: 'We are always here – round-the-clock technical assistance.'
     },
   ];
 
@@ -132,17 +148,17 @@ const ProductSlider = () => {
                   /> */}
                   
                   {/* Main content */}
-                  <div className="relative m-[2px] bg-[#F5F5F5] border-1 border-[#E0E0E0]  rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
+                  <div className="relative m-[2px] bg-[#fff] border-1 border-[#E0E0E0]  rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
                     <div>
                       <h2 className="text-sm mt-4 lg:mt-0 lg:text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">
                         {card.title}
                       </h2>
                     </div>
-                    <div>
+                    <div className="flex items-center justify-center w-20 h-20 ">
                       <img
                         src={card.image}
                         alt={card.title}
-                        className="w-20 h-20 object-cover mb-2"
+                        className="w-16 h-16 object-cover"
                       />
                     </div>
                   </div>
@@ -165,68 +181,79 @@ const ProductSlider = () => {
         </div>
 
 
-        <div className="bg-[#000127] w-full xl:h-[750px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
+        <div className="bg-[#000127] w-full xl:h-[500px] h-auto lg:px-20 md:px-12 px-4 rounded-2xl py-10 flex flex-col lg:flex-row gap-8 relative overflow-hidden">
           {/* Left: Text Section */}
-          <div className="flex-1 md:w-1/2 w-full lg:text-left  pt-50">
-            <h2 className="md:text-[33.12px] text-[20px] text-[#FFFFFF] font-semibold">
+          <div className=" lg:w-1/2 w-full lg:text-left flex flex-col justify-center">
+            <h2 className="md:text-[32px] text-[20px] text-[#FFFFFF] font-semibold mb-2">
               Rasberry Pie
             </h2>
-            <h1 className="lg:text-[83.69px] text-[40px]  font-bold leading-20 text-[#FFFFFF] ">
+            <h1 className="lg:text-[72px] text-[36px] font-bold leading-tight text-[#FFFFFF] mb-2">
               Model 5
             </h1>
-            <p className="text-[#999999] text-[16.99px] lg:pt-12 pt-6">
+            <p className="text-[#999999] text-[16px] lg:pt-8 pt-4 mb-1">
               BE THE FIRST TO OWN
             </p>
-            <p className="text-[23px] text-[#FFFFFF] mt-2">From </p>
-            <div className="flex  gap-10 items-center leading-3  ">
-              <span className="  text-[39.75px] text-[#FFFFFF] ">₹399</span>
-              <Link to ="/product" className="mt-4 bg-[#1e3473] hover:bg-orange-600 text-white py-4 px-6 rounded-full text-[12px] lg:text-[19.54px] font-medium">
+            <p className="text-[20px] text-[#FFFFFF] mt-1 mb-2">From</p>
+            <div className="flex gap-6 items-center mb-6">
+              <span className="text-[36px] text-[#FFFFFF] font-bold">₹399</span>
+              <Link
+                to="/product"
+                className="bg-[#1e3473] hover:bg-orange-600 text-white py-3 px-6 rounded-full text-[14px] lg:text-[18px] font-medium transition-colors duration-200"
+              >
                 Discover Now
               </Link>
             </div>
             {/* Icons */}
-            <div className=" w-full flex flex-col xl:flex-row   gap-6 pt-6  ">
-              <div className="flex items-center gap-2 font-[outfit]">
-                <img src={vector1} className="text-xl text-[#FFFFFF]" />
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+              <div className="flex items-center gap-3 font-[outfit]">
+                <img src={vector1} className="w-8 h-8" alt="100% Original" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">100% Original Products</h3>
-                  <p className="text-[#FFFFFF] text-[11px]">Shop worry-free with 100% original products</p>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">100% Original Products</h3>
+                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                    Shop worry-free with 100% original products
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 font-[outfit] ">
-                <img src={vector2} className="text-xl text-[#FFFFFF]" />
+              <div className="flex items-center gap-3 font-[outfit]">
+                <img src={vector2} className="w-8 h-8" alt="Secure Payment" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">Secure Payment</h3>
-                  <p className="text-[#FFFFFF] text-[11px]">Secure and seamless payments, every time</p>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">Secure Payment</h3>
+                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                    Secure and seamless payments, every time
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 font-[outfit]">
-                <img src={vector3} className="text-xl text-[#FFFFFF]" />
+              <div className="flex items-center gap-3 font-[outfit]">
+                <img src={vector3} className="w-8 h-8" alt="24x7 Support" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14.42px] font-semibold">24×7 Technical support</h3>
-                  <p className="text-[#FFFFFF] text-[11px]">We're always here – round-the-clock technical assistance</p>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">24×7 Technical support</h3>
+                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                    We're always here – round-the-clock technical assistance
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right: Image Section */}
-          <div className="absolute right-0 bottom-0 hidden lg:block">
-            <div className="  relative lg:w-[550px] md:w-[350px] w-[150px]  ">
+          <div className="absolute right-0 bottom-0 hidden lg:flex h-full items-end">
+            <div className="relative lg:w-[680px] w-[320px] h-full flex items-end">
               <img
                 src={image7}
-                className=" object-contain rounded-2xl relative z-40"
+                className="object-contain rounded-2xl relative z-40 w-full h-auto"
+                alt="Raspberry Pi Model 5"
               />
               <img
                 src={blue}
-                className="absolute -top-48 -left-44 w-full h-[480px] z-10 "
+                className="absolute top-0 right-60 w-full h-[800px] z-10"
+                alt=""
               />
             </div>
           </div>
         </div>
 
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  py-6 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  py-8 ">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -255,7 +282,10 @@ const ProductSlider = () => {
         ) : (
           <>
           <Section3 />
-           <Section1 products={products} />
+          <div className="pt-10">
+          <Section1 products={products} />
+
+          </div>
           <InstagramSection />
            <Section5 />
            
@@ -265,7 +295,9 @@ const ProductSlider = () => {
            
             
             {/* <Testimonials/> */}
-            <Customers />
+            <div ref={reviewsRef} id="customer-feedback-section">
+              <Customers />
+            </div>
 
           </>
         )}
