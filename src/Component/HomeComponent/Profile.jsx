@@ -182,7 +182,6 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
-  console.log("orders", orders);
 
   if (loading) {
     return (

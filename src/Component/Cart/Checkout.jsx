@@ -543,7 +543,6 @@ const Checkout = () => {
         const warrantyExpiry = new Date();
         warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
 
-        console.log("item",item)
 
         return {
           product_id: item._id,
@@ -584,7 +583,6 @@ const Checkout = () => {
         }
       );
 
-      console.log("orderResponse",orderResponse)
       
 
       if (

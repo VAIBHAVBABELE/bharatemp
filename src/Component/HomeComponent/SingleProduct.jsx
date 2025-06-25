@@ -266,7 +266,6 @@ export default function ProductCard() {
         expectedDelivery: expectedDelivery,
       };
 
-      console.log("orderData", orderData);
 
       // Create the order
       const orderResponse = await axios.post(
@@ -281,7 +280,6 @@ export default function ProductCard() {
         }
       );
 
-      console.log("orderResponse", orderResponse);
 
       if (
         !orderResponse.data ||
@@ -293,7 +291,6 @@ export default function ProductCard() {
 
       const createdOrderId = orderResponse.data.data.order._id;
 
-      console.log("createdOrderId", createdOrderId);
 
       // Initiate Cashfree payment
       const FRONTEND_URL = window.location.origin + "/payment-status/";
@@ -315,7 +312,6 @@ export default function ProductCard() {
         }
       );
 
-      console.log("paymentResponse", paymentResponse);
 
       if (paymentResponse.data?.data?.response?.cashfreeResponse?.paymentLink) {
         // Redirect to Cashfree payment page

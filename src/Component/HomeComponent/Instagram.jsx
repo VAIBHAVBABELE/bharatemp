@@ -16,7 +16,6 @@ const Instagram = () => {
         const fetchReels = async () => {
             try {
                 const response = await fetch(`${backend}/news/instagram-reels`);
-                console.log(response);
                 if (!response.ok) throw new Error('Failed to fetch reels');
                 const data = await response.json();
                 setReels(data);
