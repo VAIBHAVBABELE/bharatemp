@@ -3,6 +3,7 @@ import { IoBagOutline } from "react-icons/io5";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // Added useLocation
 import { useCart } from "../../context/CartContext";
+import { handleBuyNow } from "../../utils/paymentUtils";
 
 import fallbackImage1 from "../../assets/homepage1.png";
 import fallbackImage2 from "../../assets/homepage2.png";
@@ -19,8 +20,6 @@ const fallbackImages = [
   fallbackImage5,
   fallbackImage6,
 ];
-
-
 
 // Fallback products in case API fails or props are not passed
 const fallbackProducts = [
@@ -54,6 +53,7 @@ const fallbackProducts = [
 const ProductSlider = ({ products = [] }) => {
   const location = useLocation(); // Get current route location
   const [activeTab, setActiveTab] = useState("You may also like");
+  const [loadingBuyNow, setLoadingBuyNow] = useState({});
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
@@ -65,7 +65,7 @@ const ProductSlider = ({ products = [] }) => {
     }
     return ["You may also like", "Offer", "Recommended for you"]; // Default
   };
-  
+
   const tabs = getTabs();
   // Use passed products or fallback to default if empty
   const allProducts =
@@ -108,12 +108,18 @@ const ProductSlider = ({ products = [] }) => {
   };
 
   // Handle buy now - adds to cart and navigates to cart page
-  const handleBuyNow = (e, product) => {
+  const handleBuyNowClick = (e, product) => {
     e.stopPropagation(); // Prevent the card click event
-    addToCart(product);
-    navigate("/cart");
+    handleBuyNow({
+      product,
+      quantity: 1,
+      navigate,
+      setLoadingBuyNow: (loading) => {
+        setLoadingBuyNow(prev => ({ ...prev, [product._id]: loading }));
+      },
+      customShippingFee: 5,
+    });
   };
-
   // Handle product click to view product details
   const handleProductClick = (product) => {
     navigate(`/product/${product._id}`);
@@ -150,7 +156,7 @@ const ProductSlider = ({ products = [] }) => {
 
       {/* Products Grid */}
       <div className=" w-full grid  grid-cols-1 md:grid-cols-2  lg:grid-cols-3  xl:grid-cols-5 gap-8 pb-4 scrollbar-hide">
-        {filteredProducts.slice(0,5).map((product, index) => (
+        {filteredProducts.slice(0, 5).map((product, index) => (
           <div
             key={product._id || index}
             onClick={() => handleProductClick(product)}
@@ -207,12 +213,12 @@ const ProductSlider = ({ products = [] }) => {
                 </div>
               </h2>
               <div className="flex items-center flex-wrap gap-2 mb-2">
-                <span
-                  className="bg-[#f7941d] text-white lg:text-[12px] font-semibold px-3 py-1 rounded-full cursor-pointer"
-                  onClick={(e) => handleBuyNow(e, product)}
+                <button
+                  className="bg-[#f7941d] cursor-pointer text-white font-medium py-1 px-4 rounded-2xl text-sm"
+                  onClick={(e) => handleBuyNowClick(e, product)}
                 >
-                  {product.tag}
-                </span>
+                  {loadingBuyNow[product._id] ? "Buying..." : "Buy Now"}
+                </button>
                 <span
                   className="bg-gray-200 text-[#f7941d] px-3 rounded-full cursor-pointer"
                   onClick={(e) => handleAddToCart(e, product)}
@@ -225,7 +231,10 @@ const ProductSlider = ({ products = [] }) => {
               <div className=" w-full flex  justify-between items-center  mb-2">
                 <div className="flex items-center gap-2 group-hover:hidden mb-2">
                   <p className="lg:text-[17px] text-[12px]  font-bold text-[#000000]">
-                    ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
+                    ₹
+                    {product.discounted_single_product_price?.toLocaleString(
+                      "en-IN"
+                    )}
                   </p>
                   <p className="text-sm line-through text-gray-400">
                     ₹{product.non_discounted_price?.toLocaleString("en-IN")}

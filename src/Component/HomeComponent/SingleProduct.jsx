@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -7,6 +7,7 @@ import {
   FaRegStar,
   FaSpinner,
   FaTimes,
+  FaChevronRight,
 } from "react-icons/fa";
 import shop from "../../assets/shop.png";
 import { useCart } from "../../context/CartContext";
@@ -20,6 +21,12 @@ import { toast } from "react-toastify";
 import Customers from "../B2bComponent/Customers";
 import LoadingSpinner from "../../utils/LoadingSpinner";
 import { jwtDecode } from "jwt-decode";
+import { load } from "@cashfreepayments/cashfree-js";
+import secure from "../../assets/secure.gif";
+import shield from "../../assets/shield.gif";
+import wallet from "../../assets/wallet.gif";
+import cargo from "../../assets/cargo.gif";
+import { handleBuyNow } from "../../utils/paymentUtils";
 const backend = import.meta.env.VITE_BACKEND;
 
 // Function to calculate dynamic bulk prices based on product price
@@ -53,10 +60,12 @@ const calculateBulkPrices = (basePrice) => {
   ];
 };
 
+
 export default function ProductCard() {
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingBuyNow, setLoadingBuyNow] = useState(false);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showBulkOrder, setShowBulkOrder] = useState(false);
@@ -76,9 +85,11 @@ export default function ProductCard() {
   const [showCart, setShowCart] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [bulkPrices, setBulkPrices] = useState([]);
+  const [showFloatingCart, setShowFloatingCart] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
+  const actionButtonsRef = useRef(null);
 
   // Fetch product data from API
   useEffect(() => {
@@ -100,7 +111,6 @@ export default function ProductCard() {
             setError("Product not found");
           }
         }
-      } catch (error) {
         console.error("Error fetching product:", error);
 
         // Try to get from localStorage as fallback
@@ -174,166 +184,25 @@ export default function ProductCard() {
     }
   };
 
-  // Handle Buy Now button
-  const handleBuyNow = async () => {
-    if (!product) return;
-
-    // Check if product is in stock
-    if (!product.product_instock) {
-      toast.error("Product is out of stock");
-      return;
-    }
-
-    // Check if requested quantity is available
-    if (product.no_of_product_instock && quantity > product.no_of_product_instock) {
-      toast.error(`Only ${product.no_of_product_instock} items available in stock`);
-      return;
-    }
-
-    try {
-      // Get token from localStorage
-      const storedToken = localStorage.getItem("token");
-      if (!storedToken) {
-        toast.error("Please login to continue");
-        navigate("/login");
-        return;
-      }
-
-      // Parse token if stored as JSON string
-      const parsedToken = storedToken.startsWith('"')
-        ? JSON.parse(storedToken)
-        : storedToken;
-
-      const decoded = jwtDecode(parsedToken);
-      const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
-
-      if (!userId) {
-        toast.error("Authentication failed");
-        navigate("/login");
-        return;
-      }
-
-      // Get user details
-      const userResponse = await axios.get(`${backend}/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${parsedToken}`,
-        },
-      });
-
-      if (!userResponse.data || !userResponse.data.data || !userResponse.data.data.user) {
-        throw new Error("Failed to fetch user details");
-      }
-
-      const userData = userResponse.data.data.user;
-
-      // Calculate expected delivery date (3-4 days from now)
-      const expectedDelivery = new Date();
-      expectedDelivery.setDate(expectedDelivery.getDate() + 4);
-
-      // Prepare order item
-      const orderItem = {
-        product_id: product._id,
-        quantity: quantity,
-        product_name: product.product_name,
-        product_sku: product.SKU,
-        product_price: product.discounted_single_product_price,
-        product_tax_rate: "0",
-        product_hsn_code: "0",
-        product_discount: "0",
-        product_img_url: product.product_image_main,
-      };
-  
-
-      // Calculate total price
-      const shippingFee = 5;
-      const codeDiscount = 15;
-      const totalPrice = Math.max(
-        0,
-        (product.discounted_single_product_price * quantity) + shippingFee - codeDiscount
-      );
-
-      // Prepare order data
-      const orderData = {
-        user_id: userId,
-        products: [orderItem],
-        totalPrice: totalPrice,
-        shippingAddress: userData.address?.[0] || "",
-        shippingCost: shippingFee,
-        email: userData.email,
-        pincode: userData.address?.[0]?.match(/\b\d{6}\b/)?.[0] || "000000",
-        name:  userData ? `${userData.name}` : "",
-        city: userData.address?.[0]?.split(",").slice(-2, -1)[0]?.trim() || "City",
-        expectedDelivery: expectedDelivery,
-      };
-
-
-      // Create the order
-      const orderResponse = await axios.post(
-        `${backend}/order/new`,
-        {
-          order: orderData,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${parsedToken}`,
-          },
-        }
-      );
-
-
-      if (
-        !orderResponse.data ||
-        !orderResponse.data.data ||
-        !orderResponse.data.data.order._id
-      ) {
-        throw new Error("Failed to create order");
-      }
-
-      const createdOrderId = orderResponse.data.data.order._id;
-
-
-      // Initiate Cashfree payment
-      const FRONTEND_URL = window.location.origin + "/payment-status/";
-
-      const paymentData = {
-        orderId: createdOrderId,
-        userId: userId,
-        FRONTEND_URL: FRONTEND_URL
-      };
-
-      const paymentResponse = await axios.post(
-        `${backend}/payment/create-cashfree-payment`,
-        paymentData,
-        {
-          headers: {
-            Authorization: `Bearer ${parsedToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-
-      if (paymentResponse.data?.data?.response?.cashfreeResponse?.paymentLink) {
-        // Redirect to Cashfree payment page
-        window.location.href = paymentResponse.data.data.response.cashfreeResponse.paymentLink;
-      } else {
-        throw new Error("Invalid payment response");
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      let errorMessage = "Failed to process payment";
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      toast.error(errorMessage);
-    }
+  // Update the handleBuyNow function to use the utility
+  const handleBuyNowClick = () => {
+    handleBuyNow({
+      product,
+      quantity,
+      navigate,
+      setLoadingBuyNow,
+      customShippingFee: 5,
+    });
   };
 
   const incrementQuantity = () => {
-    if (product.no_of_product_instock && quantity >= product.no_of_product_instock) {
-      toast.error(`Only ${product.no_of_product_instock} items available in stock`);
+    if (
+      product.no_of_product_instock &&
+      quantity >= product.no_of_product_instock
+    ) {
+      toast.error(
+        `Only ${product.no_of_product_instock} items available in stock`
+      );
       return;
     }
     setQuantity((prev) => prev + 1);
@@ -490,6 +359,24 @@ export default function ProductCard() {
     }
   };
 
+  // Update scroll event listener to use button position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (actionButtonsRef.current) {
+        const buttonPosition = actionButtonsRef.current.offsetTop;
+        const scrollPosition = window.scrollY;
+        setShowFloatingCart(scrollPosition > buttonPosition);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="p-10 flex flex-col justify-center items-center h-screen">
@@ -524,27 +411,33 @@ export default function ProductCard() {
   }
 
   return (
-    <div className="w-full px-4 md:px-10 lg:px-16 font-[outfit] relative">
+    <div className="w-full px-4 md:px-10 lg:px-16 font-[outfit] relative pb-[100px]">
       {/* Breadcrumb Navigation */}
-      <div className="w-full font-[outfit] pb-10 flex md:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium px-4 py-2 mt-4 ">
-        <div className="flex items-center flex-wrap gap-3">
-          <button
-            onClick={handleBack}
-            className="w-10 h-10 flex items-center justify-center cursor-pointer bg-[#f7941d] text-white rounded-full"
-          >
-            <FaArrowLeft size={12} />
-          </button>
-          <span className="text-base">
-            Back to products | Listed in category:{" "}
-            <Link to="/product" className="font-semibold hover:text-[#f7941d]">
-              All Products
-            </Link>
+      <nav className="w-full font-[outfit] pb-6 flex flex-wrap items-center gap-2 text-[#2F294D] text-sm md:text-base font-medium px-4 py-4 mt-4">
+        <button
+          onClick={handleBack}
+          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center cursor-pointer bg-[#f7941d] text-white rounded-full hover:bg-[#e88a1a] transition-colors"
+        >
+          <FaArrowLeft size={12} />
+        </button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Link to="/" className="hover:text-[#f7941d] transition-colors">
+            Home
+          </Link>
+          <FaChevronRight className="text-gray-400" size={12} />
+          
+          <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
+            All Products
+          </Link>
+          <FaChevronRight className="text-gray-400" size={12} />
+          
+          <span className="text-[#f7941d] truncate max-w-[200px] md:max-w-[300px]">
+            {product?.product_name || "Loading..."}
           </span>
-          <div className="text-[#2F294D] pl-0 md:pl-10 font-semibold whitespace-nowrap">
-            Single Product Page
-          </div>
         </div>
-      </div>
+
+      </nav>
       {/* Main Content */}
       <div className="flex flex-col gap-10 justify-between lg:flex-row">
         {/* Left: Product Images */}
@@ -691,10 +584,10 @@ export default function ProductCard() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" ref={actionButtonsRef}>
             <div className="flex gap-5 items-center">
               <button
-                onClick={handleBuyNow}
+                onClick={handleBuyNowClick}
                 className="w-[200px] bg-[#1e3473] text-white py-3 rounded-2xl cursor-pointer font-medium hover:bg-[#162554] transition-colors flex items-center justify-center gap-2"
               >
                 <svg
@@ -709,7 +602,8 @@ export default function ProductCard() {
                   />
                   <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
                 </svg>
-                Buy Now
+
+                {loadingBuyNow ? <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#F7941D]"></div> : "Buy Now"}
               </button>
 
               {/* Add Zipcode Check Section */}
@@ -824,12 +718,12 @@ export default function ProductCard() {
           </div>
 
           {/* Service Info */}
-          <div className="flex items-center justify-between gap-4 text-sm text-gray-600">
+          <div className="flex items-center justify-between py-2 gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <img
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDIyczgtNCA4LTEwVjVsLTgtMy04IDN2N2MwIDYgOCAxMCA4IDEweiIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4="
+                src={shield}
                 alt="Transparent"
-                className="w-6 h-6"
+                className="w-10 h-10"
               />
               <div className="flex flex-col">
                 <span className="font-medium">Transparent</span>
@@ -839,9 +733,9 @@ export default function ProductCard() {
 
             <div className="flex items-center gap-2">
               <img
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUgMTJoMTRNMTIgNWw3IDctNyA3IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPg=="
+                src={cargo}
                 alt="Shipping"
-                className="w-6 h-6"
+                className="w-10 h-10"
               />
               <div className="flex flex-col">
                 <span className="font-medium">Shipping</span>
@@ -851,9 +745,9 @@ export default function ProductCard() {
 
             <div className="flex items-center gap-2">
               <img
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkgMTJsMiAyIDQtNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4="
+                src={secure}
                 alt="Secure"
-                className="w-6 h-6"
+                className="w-10 h-10"
               />
               <div className="flex flex-col">
                 <span className="font-medium">Secure</span>
@@ -1098,6 +992,99 @@ export default function ProductCard() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Add Floating Cart with smooth transition */}
+      {product && showFloatingCart && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.1)] p-4 z-50 transition-transform duration-300 transform translate-y-0">
+          <div className="container mx-auto max-w-7xl flex items-center justify-between">
+            {/* Product Info */}
+            <div className="flex items-center gap-4">
+              <img 
+                src={product.product_image_main} 
+                alt={product.product_name} 
+                className="w-16 h-16 object-contain rounded-lg border border-gray-200"
+              />
+              <div>
+                <h3 className="text-[#2F294D] font-semibold text-lg line-clamp-1">{product.product_name}</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-[#162554]">
+                    ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    ₹{product.non_discounted_price?.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              {/* Quantity Controls */}
+              <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200">
+                <button
+                  onClick={decrementQuantity}
+                  disabled={quantity <= 1}
+                  className={`w-10 h-10 flex items-center justify-center text-xl font-bold transition-colors ${
+                    quantity <= 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-[#1e3473] hover:bg-gray-100 cursor-pointer"
+                  }`}
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (value > 0) {
+                      setQuantity(value);
+                    }
+                  }}
+                  className="w-12 text-center py-1 text-lg font-bold bg-transparent border-none focus:outline-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <button
+                  onClick={incrementQuantity}
+                  className="w-10 h-10 flex items-center justify-center text-xl font-bold text-[#1e3473] hover:bg-gray-100 cursor-pointer transition-colors"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Add to Cart Button */}
+              <button
+                onClick={handleAddToCart}
+                className="px-6 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e88a1a] transition-colors flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 20a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zm-7-3h7a2 2 0 002-2V9a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" strokeWidth="2" />
+                </svg>
+                Add to Cart
+              </button>
+
+              {/* Buy Now Button */}
+              <button
+                onClick={handleBuyNowClick}
+                className="px-6 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-[#162554] transition-colors flex items-center gap-2"
+                disabled={loadingBuyNow}
+              >
+                {!loadingBuyNow && (
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M4 11h16M4 11a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7z" strokeWidth="2" />
+                    <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
+                  </svg>
+                )}
+                {loadingBuyNow ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                ) : (
+                  "Buy Now"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {loading ? (

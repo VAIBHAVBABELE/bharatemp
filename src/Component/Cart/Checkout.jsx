@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-import { FaArrowLeft, FaTimes } from "react-icons/fa";
+import { FaArrowLeft, FaTimes, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -621,6 +621,7 @@ const Checkout = () => {
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
         window.location.href = paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
+        
       } else {
         throw new Error("Invalid payment response");
       }
@@ -684,28 +685,36 @@ const Checkout = () => {
     <div className="bg-white py-6 min-h-screen font-[outfit]">
       <ToastContainer />
       <div className="px-4 md:px-10 lg:px-16">
-        <div className="w-full font-[outfit] flex lg:flex-row flex-col items-center justify-between text-[#2F294D] text-sm font-medium py-2 mt-4 ">
-          <div className="flex items-center flex-wrap gap-3">
-            <button
-              onClick={handleBack}
-              className="w-10 h-10 flex items-center justify-center cursor-pointer bg-[#f7941d] text-white rounded-full"
-            >
-              <FaArrowLeft size={12} />
-            </button>
-            <span className="text-base">
-              Back to previous page | Listed in category:{" "}
-              <Link
-                to="/product"
-                className="font-semibold hover:text-[#f7941d]"
-              >
-                All Products
-              </Link>
-            </span>
-            <div className="text-[#2F294D] pl-0 md:pl-10 font-semibold whitespace-nowrap">
+        {/* Breadcrumb Navigation */}
+        <nav className="w-full font-[outfit] pb-6 flex flex-wrap items-center gap-2 text-[#2F294D] text-sm md:text-base font-medium px-4 py-4 mt-4">
+          <button
+            onClick={handleBack}
+            className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center cursor-pointer bg-[#f7941d] text-white rounded-full hover:bg-[#e88a1a] transition-colors"
+          >
+            <FaArrowLeft size={12} />
+          </button>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Link to="/" className="hover:text-[#f7941d] transition-colors">
+              Home
+            </Link>
+            <FaChevronRight className="text-gray-400" size={12} />
+            
+            <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
+              All Products
+            </Link>
+            <FaChevronRight className="text-gray-400" size={12} />
+            
+            <Link to="/cart" className="hover:text-[#f7941d] transition-colors">
+              Shopping Cart
+            </Link>
+            <FaChevronRight className="text-gray-400" size={12} />
+            
+            <span className="text-[#f7941d]">
               Checkout
-            </div>
+            </span>
           </div>
-        </div>
+        </nav>
 
         <div className="flex flex-col md:flex-row gap-6 mt-6">
           {/* Delivery Address Section */}

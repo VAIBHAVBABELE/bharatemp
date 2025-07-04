@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Section2 from './Section2';
 import Section3 from './Section3';
 import Customers from './Customers';
+import b2b from "../../assets/b2b.jpg";
 import { Link, useLocation } from "react-router-dom";
 import { FaCloud, FaRobot, FaPlusCircle, FaWind, FaHelicopter } from 'react-icons/fa';
 const OnlinePresenceSection = () => {
@@ -53,7 +54,9 @@ const OnlinePresenceSection = () => {
 
         {/* Right Image/Video Placeholder */}
         <div className="md:w-1/2 w-full">
-          <div className="lg:w-[600px] lg:h-[400px] md:w-[350px] md:h-[200px] bg-[#000127] rounded-4xl shadow-lg"></div>
+          <div className="lg:w-[600px] lg:h-[400px] md:w-[350px] md:h-[200px] bg-[#000127] rounded-4xl shadow-lg">
+            <img src={b2b} alt="Bharatronix" className="w-full h-full object-cover rounded-4xl" />
+          </div>
         </div>
       </div>
 

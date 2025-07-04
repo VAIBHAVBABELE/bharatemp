@@ -27,6 +27,62 @@ import top1 from "../assets/generator.png";
 import top2 from "../assets/top1.png";
 import axios from "axios";
 import trackorder from "../assets/trackorder.png";
+import search from "../assets/search.gif";
+import mic from "../assets/mic.gif";
+import cart from "../assets/cart.gif";
+import avatar from "../assets/avatar.gif";
+import truck from "../assets/truck.gif";
+import pincodes from "../utils/pincode.json";
+import arduino from "../assets/arduino.jpg";
+import stm32 from "../assets/stm32.jpg";
+import esp32 from "../assets/esp32.jpg";
+import raspberry from "../assets/raspberry.jpg";
+import esp8266 from "../assets/esp8266.jpg";
+import teensy from "../assets/teensy.jpg";
+import beaglebone from "../assets/beaglebone.jpg";
+import fpga from "../assets/fpga.jpg";
+import dcmotor from "../assets/dcmotor.jpg";
+import stepper from "../assets/stepper.jpg";
+import servomotor from "../assets/servo.jpg";
+import motordriver from "../assets/motordriver.jpg";
+import encoder from "../assets/encoder.jpg";
+import gearbox from "../assets/gearboxes.jpg";
+import lactuator from "../assets/lactuators.jpg";
+import motorc from "../assets/motorc.jpg";
+import temperature from "../assets/temperature.jpg";
+import pressure from "../assets/pressure.jpg";
+import gas from "../assets/gas.jpg";
+import humidity from "../assets/humidity.jpg";
+import light from "../assets/light.jpg";
+import sound from "../assets/sound.jpg";
+import distance from "../assets/distance.jpg";
+import lipo from "../assets/lipo.jpg";
+import liion from "../assets/li-ion.jpg";
+import nihm from "../assets/nimh.jpg";
+import batteryholder from "../assets/batteryholder.jpg";
+import charger from "../assets/charger.jpg";
+import powerbank from "../assets/powerbank.jpg";
+import batterymonitor from "../assets/batterymonitor.jpg";
+import printerfilament from "../assets/printerfilament.jpg";
+import hotend from "../assets/hotend.jpg";
+import extruder from "../assets/extruders.jpg";
+import controlboard from "../assets/controlboards.jpg";
+import steppermotor from "../assets/stepperm.jpg";
+import buildplates from "../assets/buildplates.jpg";
+import dbattery from "../assets/dbattery.jpg";
+import dmotors from "../assets/dmotors.jpg";
+import dronepartsesc from "../assets/dronepartsesc.jpg";
+import fpvs from "../assets/fpvs.jpg";
+import nozzals from "../assets/nozzals.jpg";
+import radiosystems from "../assets/radiosystem.jpg";
+import LinearRails from "../assets/linearrails.jpg";
+import frames from "../assets/frames.jpg";
+import props from "../assets/props.jpg";
+import flightcontroller from "../assets/flightcontroller.jpg";
+import motions from "../assets/motions.jpg";
+import protectionc  from "../assets/protectionc.jpg";
+
+
 const backend = import.meta.env.VITE_BACKEND;
 
 const subcategories = {
@@ -34,252 +90,252 @@ const subcategories = {
     {
       name: "Arduino",
       description: "Boards & Accessories",
-      image: "https://picsum.photos/300/200?random=1",
+      image: arduino,
     },
     {
       name: "Raspberry Pi",
       description: "Boards & Kits",
-      image: "https://picsum.photos/300/200?random=2",
+      image: raspberry,
     },
     {
       name: "ESP32",
       description: "WiFi & Bluetooth",
-      image: "https://picsum.photos/300/200?random=3",
+      image: esp32,
     },
     {
       name: "ESP8266",
       description: "IoT Development",
-      image: "https://picsum.photos/300/200?random=4",
+      image: esp8266,
     },
     {
       name: "STM32",
       description: "ARM Controllers",
-      image: "https://picsum.photos/300/200?random=5",
+      image: stm32,
     },
     {
       name: "Teensy",
       description: "USB Development",
-      image: "https://picsum.photos/300/200?random=6",
+      image: teensy,
     },
     {
       name: "BeagleBone",
       description: "Linux Boards",
-      image: "https://picsum.photos/300/200?random=7",
+      image: beaglebone,
     },
     {
       name: "FPGA",
       description: "Programmable Logic",
-      image: "https://picsum.photos/300/200?random=8",
+      image: fpga,
     },
   ],
   Sensors: [
     {
       name: "Temperature",
       description: "Heat & Cold Detection",
-      image: "https://picsum.photos/300/200?random=11",
+      image: temperature,
     },
     {
       name: "Pressure",
       description: "Force & Weight",
-      image: "https://picsum.photos/300/200?random=12",
+      image: pressure,
     },
     {
       name: "Motion",
       description: "Movement Detection",
-      image: "https://picsum.photos/300/200?random=13",
+      image: motions,
     },
     {
       name: "Gas",
       description: "Air Quality",
-      image: "https://picsum.photos/300/200?random=14",
+      image: gas,
     },
     {
       name: "Humidity",
       description: "Moisture Sensing",
-      image: "https://picsum.photos/300/200?random=15",
+      image: humidity,
     },
     {
       name: "Light",
       description: "Luminosity Detection",
-      image: "https://picsum.photos/300/200?random=16",
+      image: light,
     },
     {
       name: "Sound",
       description: "Audio Sensing",
-      image: "https://picsum.photos/300/200?random=17",
+      image: sound,
     },
     {
       name: "Distance",
       description: "Range Finding",
-      image: "https://picsum.photos/300/200?random=18",
+      image: distance,
     },
   ],
   "Motors and Drivers": [
     {
       name: "DC Motors",
       description: "Various Sizes",
-      image: "https://picsum.photos/300/200?random=21",
+      image: dcmotor,
     },
     {
       name: "Stepper Motors",
       description: "Precise Control",
-      image: "https://picsum.photos/300/200?random=22",
+      image: stepper,
     },
     {
       name: "Servo Motors",
       description: "Robotics & RC",
-      image: "https://picsum.photos/300/200?random=23",
+      image: servomotor,
     },
     {
       name: "Motor Drivers",
       description: "Control Boards",
-      image: "https://picsum.photos/300/200?random=24",
+      image: motordriver,
     },
     {
       name: "Encoders",
       description: "Position Feedback",
-      image: "https://picsum.photos/300/200?random=25",
+      image: encoder,
     },
     {
       name: "Gearboxes",
       description: "Speed Reduction",
-      image: "https://picsum.photos/300/200?random=26",
+      image: gearbox,
     },
     {
       name: "Linear Actuators",
       description: "Linear Motion",
-      image: "https://picsum.photos/300/200?random=27",
+      image: lactuator,
     },
     {
       name: "Motor Controllers",
       description: "Speed Control",
-      image: "https://picsum.photos/300/200?random=28",
+      image: motorc,
     },
   ],
   Battery: [
     {
       name: "LiPo",
       description: "High Performance",
-      image: "https://picsum.photos/300/200?random=31",
+      image: lipo,
     },
     {
       name: "Li-ion",
       description: "Rechargeable",
-      image: "https://picsum.photos/300/200?random=32",
+      image: liion,
     },
     {
       name: "NiMH",
       description: "Long Lasting",
-      image: "https://picsum.photos/300/200?random=33",
+      image: nihm,
     },
     {
       name: "Battery Holders",
       description: "Storage Solutions",
-      image: "https://picsum.photos/300/200?random=34",
+      image: batteryholder,
     },
     {
       name: "Chargers",
       description: "Smart Charging",
-      image: "https://picsum.photos/300/200?random=35",
+      image: charger,
     },
     {
       name: "Power Banks",
       description: "Portable Power",
-      image: "https://picsum.photos/300/200?random=36",
+      image: powerbank,
     },
     {
       name: "Battery Monitors",
       description: "Voltage Display",
-      image: "https://picsum.photos/300/200?random=37",
+      image: batterymonitor,
     },
     {
       name: "Protection Circuits",
       description: "Safety First",
-      image: "https://picsum.photos/300/200?random=38",
+      image: protectionc,
     },
   ],
   "3D Printer": [
     {
       name: "Filaments",
       description: "PLA, ABS & More",
-      image: "https://picsum.photos/300/200?random=41",
+      image: printerfilament,
     },
     {
       name: "Hot Ends",
       description: "Print Heads",
-      image: "https://picsum.photos/300/200?random=42",
+      image: hotend,
     },
     {
       name: "Extruders",
       description: "Feed Systems",
-      image: "https://picsum.photos/300/200?random=43",
+      image: extruder,
     },
     {
       name: "Control Boards",
       description: "Printer Brains",
-      image: "https://picsum.photos/300/200?random=44",
+      image: controlboard,
     },
     {
       name: "Stepper Motors",
       description: "Axis Control",
-      image: "https://picsum.photos/300/200?random=45",
+      image: steppermotor,
     },
     {
       name: "Linear Rails",
       description: "Smooth Motion",
-      image: "https://picsum.photos/300/200?random=46",
+      image: LinearRails,
     },
     {
       name: "Build Plates",
       description: "Print Surfaces",
-      image: "https://picsum.photos/300/200?random=47",
+      image: buildplates,
     },
     {
       name: "Nozzles",
       description: "Various Sizes",
-      image: "https://picsum.photos/300/200?random=48",
+      image: nozzals,
     },
   ],
   "Drone Parts": [
     {
       name: "ESC",
       description: "Speed Controls",
-      image: "https://picsum.photos/300/200?random=51",
+      image: dronepartsesc,
     },
     {
       name: "Flight Controllers",
       description: "Brain Units",
-      image: "https://picsum.photos/300/200?random=52",
+      image: flightcontroller,
     },
     {
       name: "Props",
       description: "Propellers",
-      image: "https://picsum.photos/300/200?random=53",
+      image: props,
     },
     {
       name: "Frames",
       description: "Drone Bodies",
-      image: "https://picsum.photos/300/200?random=54",
+      image: frames,
     },
     {
       name: "Motors",
       description: "Brushless Motors",
-      image: "https://picsum.photos/300/200?random=55",
+      image: dmotors,
     },
     {
       name: "Batteries",
       description: "Flight Power",
-      image: "https://picsum.photos/300/200?random=56",
+      image: dbattery,
     },
     {
       name: "FPV Cameras",
       description: "Live View",
-      image: "https://picsum.photos/300/200?random=57",
+      image: fpvs,
     },
     {
       name: "Radio Systems",
       description: "Control Link",
-      image: "https://picsum.photos/300/200?random=58",
+      image: radiosystems,
     },
   ],
 };
@@ -353,7 +409,7 @@ const Navbar = () => {
     },
   ];
 
-  const locations = ["Mumbai, India", "Bengaluru, India", "Hyderabad, India"];
+  const locations = pincodes.map((item) => `${item.Pincode}, ${item.City}, ${item.state}`);
 
   const toggleDropdown = (key) => {
     setOpenDropdown(openDropdown === key ? "" : key);
@@ -635,7 +691,7 @@ const Navbar = () => {
 
       {/* Main Navbar */}
       <div className="font-inter bg-white border-b shadow-sm">
-        <div className="px-4 py-3 flex items-center justify-between lg:px-16 md:px-12">
+        <div className="px-4 py-1 flex items-center justify-between lg:px-16 md:px-12">
           {/* Logo and Location Section */}
           <div className="flex items-center gap-6">
             {/* Logo */}
@@ -652,7 +708,7 @@ const Navbar = () => {
                 <img src={location1} className="w-6 h-6 mt-1" alt="Location" />
                 <div>
                   <div className="flex items-center gap-1">
-                    <span className="text-lg font-semibold text-[#F7941D]">
+                    <span className="text-base font-semibold text-[#F7941D]">
                       {location}
                     </span>
                     <FaChevronDown className="text-blue-900 text-xs" />
@@ -664,7 +720,7 @@ const Navbar = () => {
               </div>
 
               {showLocationDropdown && (
-                <div className="absolute z-40 mt-2 w-56 bg-white border border-gray-200 shadow-md rounded-md">
+                <div className="absolute z-40 mt-2 w-80 bg-white border border-gray-200 shadow-md rounded-md max-h-[400px] overflow-y-auto">
                   {locations.map((loc) => (
                     <div
                       key={loc}
@@ -687,7 +743,7 @@ const Navbar = () => {
               <div className="relative flex-1 search-container">
                 <form
                   onSubmit={handleSearch}
-                  className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2"
+                  className="flex items-center border border-gray-300 flex-1 justify-between  rounded-full px-4 py-2"
                 >
                   <input
                     type="text"
@@ -699,9 +755,9 @@ const Navbar = () => {
                   />
                   <button
                     type="submit"
-                    className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
+                    className=" w-7 h-7 rounded-full flex items-center justify-center"
                   >
-                    <FaSearch size={15} className="text-white" />
+                    <img src={search} alt="Search" className="w-7 h-7" />
                   </button>
                 </form>
 
@@ -758,16 +814,12 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
+                className={`relative border cursor-pointer border-gray-300 w-9 h-9 rounded-full flex items-center justify-center  transition-colors ${
                   isListening ? "ring-2 ring-[#F7941D]" : ""
                 }`}
                 onClick={startVoiceSearch}
               >
-                <FaMicrophone
-                  className={`h-5 w-5 ${
-                    isListening ? "text-[#F7941D]" : "text-gray-600"
-                  }`}
-                />
+                <img src={mic} alt="Mic" className="w-7 h-7" />
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>
@@ -784,10 +836,10 @@ const Navbar = () => {
             <div className="flex items-center space-x-4">
               {/* Shopping Bag Icon */}
               <div
-                className="bg-gray-100 p-3 rounded-full relative cursor-pointer"
+                className="relative border border-gray-300 rounded-3xl p-2 cursor-pointer"
                 onClick={() => navigate("/cart")}
               >
-                <img src={icon1} className="w-5 h-5" alt="Cart" />
+                <img src={cart} className="w-7 h-7" alt="Cart" />
                 {uniqueItems > 0 && (
                   <span className="absolute -top-2 -right-2 bg-[#F7941D] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {uniqueItems}
@@ -796,16 +848,16 @@ const Navbar = () => {
               </div>
 
               {/* Divider */}
-              <div className="w-px h-6 bg-gray-300"></div>
+              <div className="w-[2px] h-6 bg-gray-300"></div>
 
               {/* User Icon or Auth Buttons */}
               {user ? (
-                <div className="relative profile-dropdown-container">
+                <div className="relative border border-gray-300 rounded-3xl p-2 cursor-pointer profile-dropdown-container">
                   <div
-                    className="bg-gray-100 p-3 rounded-full cursor-pointer"
+                    className="cursor-pointer"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                   >
-                    <img src={icon2} className="w-5 h-5" alt="User" />
+                    <img src={avatar} className="w-7 h-7" alt="User" />
                   </div>
                   {showProfileDropdown && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
@@ -814,7 +866,7 @@ const Navbar = () => {
                           navigate("/profile");
                           setShowProfileDropdown(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Profile
                       </button>
@@ -825,7 +877,7 @@ const Navbar = () => {
                           window.location.href = "/";
                           setShowProfileDropdown(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Logout
                       </button>
@@ -859,7 +911,7 @@ const Navbar = () => {
 
         {/* Bottom Nav */}
         <div className="bg-white hidden md:flex md:justify-between md:items-center">
-          <div className="px-4 py-1 flex items-center space-x-4 text-sm font-medium whitespace-nowrap lg:px-16 md:px-12">
+          <div className="px-4  flex items-center space-x-4 text-sm font-medium whitespace-nowrap lg:px-16 md:px-12">
             <Link
               to="/"
               className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
@@ -919,7 +971,7 @@ const Navbar = () => {
                                 }
                                 className="group cursor-pointer"
                               >
-                                <div className="relative overflow-hidden rounded-lg">
+                                <div className="relative overflow-hidden rounded-lg border border-gray-200">
                                   <img
                                     src={subcat.image}
                                     alt={subcat.name}
@@ -940,7 +992,7 @@ const Navbar = () => {
                         <div
                           onClick={() => {
                             navigate(
-                              `/subcategories?category=${activeCategory}`
+                              `/product?category=${activeCategory}`
                             );
                             setShowCategoriesDropdown(false);
                           }}
@@ -992,7 +1044,7 @@ const Navbar = () => {
               to="/track-order"
               className=" text-blue-900 px-3 py-1 flex items-center rounded-full gap-3 transition-colors duration-300"
             >
-              <img src={trackorder} alt="Logo" className="w-6 h-6 " /> Track
+              <img src={truck} alt="Logo" className="w-10 h-10 " /> Track
               Order
             </Link>
           </div>

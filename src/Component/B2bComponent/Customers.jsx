@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
-import image1 from '../../assets/img1.png'
-import image2 from '../../assets/img2.png'
+
+import cust1 from "../../assets/cust1.jpg";
+import cust2 from "../../assets/cust2.jpg";
+import cust3 from "../../assets/cust3.jpg";
+import cust4 from "../../assets/cust4.jpg";
+import cust5 from "../../assets/cust5.jpg";
+import cust6 from "../../assets/cust6.jpg";
+import cust7 from "../../assets/cust7.jpg";
 const testimonials = [
   {
-    image: image1,
+    image: cust1,
     name: "Rajeev Sinha",
     title: "Startup Founder, Delhi",
     rating: 5,
@@ -11,7 +17,7 @@ const testimonials = [
       "We sourced a range of development boards and IoT sensors from Bharatronix, and the quality exceeded our expectations. The delivery was prompt, and their support team is very responsive. Highly recommended for tech entrepreneurs!",
   },
   {
-    image: image2,
+    image: cust2,
     name: "Sneha Arora",
     title: "Robotics Educator, Pune",
     rating: 5,
@@ -19,7 +25,7 @@ const testimonials = [
       "Bharatronix is my go-to supplier for electronic components. Their Arduino kits are well-organized and beginner-friendly, making it easy for my students to grasp practical concepts.",
   },
   {
-    image: image1,
+    image: cust3,
     name: "Ankit Mehta",
     title: "Embedded Engineer, Bangalore",
     rating: 5,
@@ -27,7 +33,7 @@ const testimonials = [
       "I’ve been ordering Raspberry Pi accessories and microcontrollers for months now. Bharatronix consistently delivers quality products with great packaging and reliable support.",
   },
   {
-    image: image2,
+    image: cust4,
     name: "Divya Sharma",
     title: "College Student, Jaipur",
     rating: 5,
@@ -35,7 +41,7 @@ const testimonials = [
       "As a B.Tech student working on my final-year project, Bharatronix helped me get all the necessary modules at affordable rates. Their tutorials and quick delivery made my life easier.",
   },
   {
-    image: image1,
+    image: cust5,
     name: "Karan Patel",
     title: "Hobbyist, Ahmedabad",
     rating: 5,
@@ -43,7 +49,7 @@ const testimonials = [
       "Excellent collection of sensors and modules! I appreciate the fast shipping and the informative product descriptions. Great for DIY projects.",
   },
   {
-    image: image2,
+    image: cust6,
     name: "Dr. Pooja Menon",
     title: "STEM Trainer, Kochi",
     rating: 5,
@@ -51,7 +57,7 @@ const testimonials = [
       "Our STEM lab needed bulk kits for an upcoming bootcamp. Bharatronix not only delivered everything on time but also gave us educational discounts. Very professional and helpful.",
   },
   {
-    image: image1,
+    image: cust7,
     name: "Mohit Verma",
     title: "IoT Developer, Hyderabad",
     rating: 5,
@@ -121,7 +127,7 @@ const Section4 = () => {
                       <div className="  space-x-4">
                        <div className="flex flex-col md:flex-row justify-between ">
                         <img
-                          className="w-16 h-16 object-cover"
+                          className="w-16 h-16 object-cover rounded-full"
                           src={testimonial.image}
                           alt={testimonial.name}
                         />

@@ -6,8 +6,9 @@ import image2 from "../../assets/homepage2.png";
 import image3 from "../../assets/homepage3.png";
 import image4 from "../../assets/homepage4.png";
 import droneImage from "../../assets/homeleft.jpg";
-import { useCart } from '../../context/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+import { handleBuyNow } from "../../utils/paymentUtils";
 
 // Default fallback images
 import fallbackImage1 from "../../assets/homepage1.png";
@@ -15,7 +16,12 @@ import fallbackImage2 from "../../assets/homepage2.png";
 import fallbackImage3 from "../../assets/homepage3.png";
 import fallbackImage4 from "../../assets/homepage4.png";
 
-const fallbackImages = [fallbackImage1, fallbackImage2, fallbackImage3, fallbackImage4];
+const fallbackImages = [
+  fallbackImage1,
+  fallbackImage2,
+  fallbackImage3,
+  fallbackImage4,
+];
 
 const categories = [
   "Top 30",
@@ -74,24 +80,29 @@ const fallbackProducts = [
   },
 ];
 
+
+
 export default function DronePartsCarousel({ products = [] }) {
   const [activeCategory, setActiveCategory] = useState("Top 30");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadingBuyNow, setLoadingBuyNow] = useState({});
+
   const [itemsToShow, setItemsToShow] = useState(3);
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const navigate = useNavigate();
 
   // Process products from API or use fallback
-  const processedProducts = products.length > 0
-    ? products.map((product, index) => ({
-        ...product,
-        // Ensure all required fields exist
-        category: product.category || "Top 30",
-        image: product.image || fallbackImages[index % fallbackImages.length],
-        tag: "Buy Now",
-        tags: "Add to cart"
-      }))
-    : fallbackProducts;
+  const processedProducts =
+    products.length > 0
+      ? products.map((product, index) => ({
+          ...product,
+          // Ensure all required fields exist
+          category: product.category || "Top 30",
+          image: product.image || fallbackImages[index % fallbackImages.length],
+          tag: "Buy Now",
+          tags: "Add to cart",
+        }))
+      : fallbackProducts;
 
   useEffect(() => {
     const updateItemsToShow = () => {
@@ -121,7 +132,9 @@ export default function DronePartsCarousel({ products = [] }) {
   const filteredProducts =
     activeCategory === "Top 30"
       ? processedProducts
-      : processedProducts.filter((product) => product.category === activeCategory);
+      : processedProducts.filter(
+          (product) => product.category === activeCategory
+        );
 
   // Navigation functions
   const nextSlide = () => {
@@ -160,8 +173,21 @@ export default function DronePartsCarousel({ products = [] }) {
   // Handle product click to navigate to details page
   const handleProductClick = (product) => {
     navigate(`/product/${product._id}`);
-    localStorage.setItem('selectedProduct', JSON.stringify(product));
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
   };
+
+  const handleBuyNowClick = (e, product) => {
+  e.stopPropagation(); // Prevent the card click event
+  handleBuyNow({
+    product,
+    quantity: 1,
+    navigate,
+    setLoadingBuyNow: (loading) => {
+      setLoadingBuyNow((prev) => ({ ...prev, [product._id]: loading }));
+    },
+    customShippingFee: 5,
+  });
+};
 
   return (
     <div className="flex flex-col md:flex-row w-full  lg:h-[600px] gap-8 py-16 bg-white font-[Outfit]">
@@ -281,32 +307,33 @@ export default function DronePartsCarousel({ products = [] }) {
                     {product.product_name}
                   </h2>
                   <img
-                    src={product.product_image_main
-                    }
+                    src={product.product_image_main}
                     alt={product.product_name}
                     className="w-full h-32 object-contain mb-4"
                   />
                   <div className="flex items-center flex-wrap gap-2 mb-2">
-                    <span 
-                      className="bg-[#f7941d] text-white md:text-[14px] text-[10px] font-semibold px-3 py-1 rounded-full cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleProductClick(product);
-                      }}
+                    <button
+                      className="bg-[#f7941d] cursor-pointer text-white font-medium py-1 px-4 rounded-2xl text-sm"
+                      onClick={(e) => handleBuyNowClick(e, product)}
                     >
-                      {product.tag}
-                    </span>
-                    <span 
+                      {loadingBuyNow[product._id] ? "Buying..." : "Buy Now"}
+                    </button>
+                    <span
                       className="bg-gray-200 px-3 py-1 text-[12px] text-[#f7941d] rounded-full cursor-pointer"
                       onClick={(e) => handleAddToCart(e, product)}
                     >
-                      {isInCart(product._id) ? `In Cart (${getItemQuantity(product._id)})` : product.tags}
+                      {isInCart(product._id)
+                        ? `In Cart (${getItemQuantity(product._id)})`
+                        : product.tags}
                     </span>
                   </div>
                   <div className="w-full flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <p className="lg:text-[15px] text-[12px] font-bold text-[#000000]">
-                        ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
+                        ₹
+                        {product.discounted_single_product_price?.toLocaleString(
+                          "en-IN"
+                        )}
                       </p>
                       <p className="text-sm line-through text-gray-400">
                         ₹{product.non_discounted_price?.toLocaleString("en-IN")}
