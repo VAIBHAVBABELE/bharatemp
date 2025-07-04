@@ -44,7 +44,7 @@ import SubCategories from './pages/SubCategories'
 import Contact from './pages/Contact'
 import ComingSoon from './pages/ComingSoon'
 import { FaWhatsapp } from 'react-icons/fa';
-import OrderSuccess2 from './Component/HomeComponent/cashThankyou.jsx'
+import OrderSuccess2 from './Component/HomeComponent/CashThankyou.jsx'
 
 const App = () => {
   return (
