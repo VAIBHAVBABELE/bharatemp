@@ -23,12 +23,12 @@ import sensor from "../assets/sensor.gif"
 import motors from "../assets/motors.gif"
 import board from "../assets/board.gif"
 import printer from "../assets/printer.gif"
-import cart1 from '../assets/Cart4.png';
-import cart2 from '../assets/cart5.png';
-import cart3 from '../assets/cart6.png';
-// import InstagramCarousel from "../Component/HomeComponent/Instagram";
-import InstagramSection from "../Component/InstagramSection";
-// import Testimonials from "../Component/Testimonials";
+import secure from "../assets/secure.gif";
+import cargo from "../assets/cargo.gif";
+import shield from "../assets/shield.gif";
+import wallet from "../assets/wallet.gif";
+import support from "../assets/support.gif";
+import VideoSection from "../Component/VideoSection";
 import { fetchProducts } from "../utils/api";
 import Customers from '../Component/B2bComponent/Customers.jsx'
 import Marquee from "../Component/HomeComponent/Marquee.jsx";
@@ -109,17 +109,17 @@ const ProductSlider = () => {
   ];
   const features = [
     {
-      img: cart1,
+      img: cargo,
       title: '100% Original Products',
       subtitle: 'Shop worry-free with 100% original products.',
     },
     {
-      img: cart2,
+      img: secure,
       title: 'Secure Payment',
       subtitle: 'Secure and seamless payments, every time.',
     },
     {
-      img: cart3,
+      img: support,
       title: '24×7 Technical support available',
       subtitle: 'We are always here – round-the-clock technical assistance.'
     },
@@ -257,9 +257,9 @@ const ProductSlider = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 px-4  py-2 rounded-2xl bg-[#F5F5F5] border-1 border-[#E0E0E0] shadow-sm"
+              className="flex items-center gap-4 px-4  py-2 rounded-2xl  border-1 border-[#E0E0E0] shadow-sm"
             >
-              <img src={feature.img} className="  p-2 rounded-lg"
+              <img src={feature.img} className="  p-2 w-20 h-20 rounded-lg"
 
               />
               <div>
@@ -286,7 +286,7 @@ const ProductSlider = () => {
           <Section1 products={products} />
 
           </div>
-          <InstagramSection />
+          <VideoSection />
            <Section5 />
            
             <Section2 products={products} />

@@ -67,7 +67,8 @@ const ReturnPolicy = () => {
                         <li>Refunds will be issued to the original payment method only (UPI, card, NetBanking, etc.).</li>
                         <li>A 5% deduction will apply on prepaid order refunds to cover payment gateway and processing fees.</li>
                         <li>Alternatively, customers can opt for a BharatroniX gift card or store credit to avoid the 5% deduction.</li>
-                        <li>Refund initiation begins within 2 working days after successful return approval.</li>
+                        <li>Once the refund is approved it will take 7 business days to credit to your bank account.
+In cancellation policy make this word as credited</li>
                     </ul>
                 </section>
 

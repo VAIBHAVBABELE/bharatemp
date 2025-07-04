@@ -11,6 +11,7 @@ import { FaSpinner } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingSpinner from "../../utils/LoadingSpinner";
+import { handleBuyNow } from "../../utils/paymentUtils";
 const backend = import.meta.env.VITE_BACKEND;
 
 // Mock data for testing when API fails
@@ -111,6 +112,8 @@ const Product = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [activeTab, setActiveTab] = useState("All");
+  const [loadingBuyNow, setLoadingBuyNow] = useState({});
+
   const [showSidebar, setShowSidebar] = useState(false);
   const [sliderValue, setSliderValue] = useState(50000);
   const [displayedProducts, setDisplayedProducts] = useState([]);
@@ -435,6 +438,23 @@ const Product = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+
+  const handleBuyNowClick = (e, product) => {
+    e.stopPropagation(); // Prevent click from bubbling up to the card
+    handleBuyNow({
+      product,
+      quantity: 1,
+      navigate,
+      setLoadingBuyNow: (loading) => {
+        setLoadingBuyNow(prev => ({
+          ...prev,
+          [product._id]: loading
+        }));
+      },
+      customShippingFee: 5,
+    });
+  };
   return (
     <>
       <ToastContainer />
@@ -835,8 +855,8 @@ const Product = () => {
 
                       <div className="mt-auto pt-5 space-y-3">
                         <div className="flex gap-3">
-                          <button className="bg-[#f7941d] text-white font-medium py-1 px-4 rounded-2xl text-sm">
-                            Buy Now
+                          <button className="bg-[#f7941d] cursor-pointer text-white font-medium py-1 px-4 rounded-2xl text-sm" onClick={(e) => handleBuyNowClick(e, product)}>
+                            {loadingBuyNow[product._id] ? "Buying..." : "Buy Now"}
                           </button>
                           <button
                             className="bg-gray-50 border border-gray-200 text-[#f7941d] py-1 px-4 rounded-2xl text-sm"

@@ -44,6 +44,7 @@ import SubCategories from './pages/SubCategories'
 import Contact from './pages/Contact'
 import ComingSoon from './pages/ComingSoon'
 import { FaWhatsapp } from 'react-icons/fa';
+import OrderSuccess2 from './Component/HomeComponent/cashThankyou.jsx'
 
 const App = () => {
   return (
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment-status/:id" element={<Thanku />} />
+          <Route path="/cash-payment-status/:id" element={<OrderSuccess2 />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/b2bpage" element={<Ouronline/>}/>
           <Route path="/subcategory" element={<Subcategory/>}/>

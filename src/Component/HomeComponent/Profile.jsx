@@ -209,7 +209,7 @@ const Orders = () => {
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h3 className="font-medium">Order #{order._id.slice(-6)}</h3>
-                  <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
+                  <p>{formatDate(order.created_at || order.createdAt)}</p>
                 </div>
                 <span className="font-bold text-[#F7941D]">
                   ₹{order.totalPrice?.toFixed(2)}
@@ -321,7 +321,6 @@ const ProfilePage = () => {
   const navItems = [
     { id: "profile", label: "Account Details" },
     { id: "orders", label: "Orders" },
-    { id: "track", label: "Track Your Order" },
     { id: "addresses", label: "Addresses" },
     { id: "favorites", label: "My Favorites" },
     { id: "loyalty", label: "Loyalty" }
@@ -499,8 +498,6 @@ const ProfilePage = () => {
     switch (activeSection) {
       case "orders":
         return <Orders />;
-      case "track":
-        return <TrackOrder />;
       case "addresses":
         return <Addresses user={user} onEdit={() => setActiveSection("profile")} />;
       case "favorites":

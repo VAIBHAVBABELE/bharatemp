@@ -39,7 +39,7 @@ const CancellationPolicy = () => {
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold text-[#1E3473] mb-4">Refund & Processing Time</h2>
                     <ul className="space-y-3 text-gray-700">
-                        <li>Refunds for eligible cancellations will be processed within 5–7 business days of confirmation.</li>
+                        <li>Refunds for eligible cancellations will be credited within 5–7 business days of confirmation.</li>
                         <li>Refunds are applicable only for prepaid and NEFT transactions.</li>
                         <li>Refunds will be made to the original source of payment. No transaction IDs will be provided; however, a "Refund Confirmation Note" from the payment gateway can be issued upon request.</li>
                         <li>If you opt for store credit (gift card or wallet balance), the 5% cancellation fee will be waived.</li>
