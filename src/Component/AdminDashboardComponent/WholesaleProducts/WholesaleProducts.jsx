@@ -352,7 +352,7 @@ const WholesaleProductsPage = () => {
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-4">
                                         <img
-                                            src={product.product_id.image?.[0] || '/placeholder.jpg'}
+                                            src={product.product_id.image?.[0] || '/placeholder.webp'}
                                             alt={product.product_id.name}
                                             className="w-16 h-16 object-cover rounded-md border"
                                         />

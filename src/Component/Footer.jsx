@@ -1,6 +1,6 @@
 import React from 'react';
-import upperline from '../assets/Line81.png';
-import footerbg from '../assets/footerbg.png';
+import upperline from '../assets/Line81.webp';
+import footerbg from '../assets/footerbg.webp';
 import logobottom from '../assets/footerlogo.svg';
 import { Link } from 'react-router-dom';
 import icon1 from './../assets/Facebook.svg'
@@ -55,7 +55,7 @@ const Footer = () => {
           <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2  gap-2 ">
             {/* Column 1 */}
             <div className="mb-4 md:mb-0 col-span-1">
-              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">Services </h3>
+              <h3 className="mb-2 text-xs md:text-[24px] font-semibold">SERVICES </h3>
               <ul className="space-y-2 md:space-y-4 text-xs md:text-[12px] lg:text-[18px]">
                 <li><Link to="/b2bpage" className="hover:text-[#F7941D]">B2B</Link></li>
                 <li><Link to="/coming-soon" className="hover:text-[#F7941D]">Manufacturing</Link></li>

@@ -11,11 +11,11 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
-import location1 from "../assets/location.png";
+import location1 from "../assets/location.webp";
 import { FaShoppingBag } from "react-icons/fa";
-import logo from "../assets/Logo.png";
-import icon1 from "../assets/Icon1.png";
-import icon2 from "../assets/icon2.png";
+import logo from "../assets/Logo.webp";
+import icon1 from "../assets/Icon1.webp";
+import icon2 from "../assets/icon2.webp";
 import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -23,64 +23,64 @@ import { SlSocialFacebook } from "react-icons/sl";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FiYoutube } from "react-icons/fi";
-import top1 from "../assets/generator.png";
-import top2 from "../assets/top1.png";
+import top1 from "../assets/generator.webp";
+import top2 from "../assets/top1.webp";
 import axios from "axios";
-import trackorder from "../assets/trackorder.png";
-import search from "../assets/search.gif";
+import trackorder from "../assets/trackorder.webp";
+import search from "../assets/search.webp";
 import mic from "../assets/mic.gif";
 import cart from "../assets/cart.gif";
 import avatar from "../assets/avatar.gif";
 import truck from "../assets/truck.gif";
 import pincodes from "../utils/pincode.json";
-import arduino from "../assets/arduino.jpg";
-import stm32 from "../assets/stm32.jpg";
-import esp32 from "../assets/esp32.jpg";
-import raspberry from "../assets/raspberry.jpg";
-import esp8266 from "../assets/esp8266.jpg";
-import teensy from "../assets/teensy.jpg";
-import beaglebone from "../assets/beaglebone.jpg";
-import fpga from "../assets/fpga.jpg";
-import dcmotor from "../assets/dcmotor.jpg";
-import stepper from "../assets/stepper.jpg";
-import servomotor from "../assets/servo.jpg";
-import motordriver from "../assets/motordriver.jpg";
-import encoder from "../assets/encoder.jpg";
-import gearbox from "../assets/gearboxes.jpg";
-import lactuator from "../assets/lactuators.jpg";
-import motorc from "../assets/motorc.jpg";
-import temperature from "../assets/temperature.jpg";
-import pressure from "../assets/pressure.jpg";
-import gas from "../assets/gas.jpg";
-import humidity from "../assets/humidity.jpg";
-import light from "../assets/light.jpg";
-import sound from "../assets/sound.jpg";
-import distance from "../assets/distance.jpg";
-import lipo from "../assets/lipo.jpg";
-import liion from "../assets/li-ion.jpg";
-import nihm from "../assets/nimh.jpg";
-import batteryholder from "../assets/batteryholder.jpg";
-import charger from "../assets/charger.jpg";
-import powerbank from "../assets/powerbank.jpg";
-import batterymonitor from "../assets/batterymonitor.jpg";
-import printerfilament from "../assets/printerfilament.jpg";
-import hotend from "../assets/hotend.jpg";
-import extruder from "../assets/extruders.jpg";
-import controlboard from "../assets/controlboards.jpg";
-import steppermotor from "../assets/stepperm.jpg";
-import buildplates from "../assets/buildplates.jpg";
-import dbattery from "../assets/dbattery.jpg";
-import dmotors from "../assets/dmotors.jpg";
-import dronepartsesc from "../assets/dronepartsesc.jpg";
-import fpvs from "../assets/fpvs.jpg";
-import nozzals from "../assets/nozzals.jpg";
-import radiosystems from "../assets/radiosystem.jpg";
-import LinearRails from "../assets/linearrails.jpg";
-import frames from "../assets/frames.jpg";
-import props from "../assets/props.jpg";
-import flightcontroller from "../assets/flightcontroller.jpg";
-import motions from "../assets/motions.jpg";
-import protectionc  from "../assets/protectionc.jpg";
+import arduino from "../assets/arduino.webp";
+import stm32 from "../assets/stm32.webp";
+import esp32 from "../assets/esp32.webp";
+import raspberry from "../assets/raspberry.webp";
+import esp8266 from "../assets/esp8266.webp";
+import teensy from "../assets/teensy.webp";
+import beaglebone from "../assets/beaglebone.webp";
+import fpga from "../assets/fpga.webp";
+import dcmotor from "../assets/dcmotor.webp";
+import stepper from "../assets/stepper.webp";
+import servomotor from "../assets/servo.webp";
+import motordriver from "../assets/motordriver.webp";
+import encoder from "../assets/encoder.webp";
+import gearbox from "../assets/gearboxes.webp";
+import lactuator from "../assets/lactuators.webp";
+import motorc from "../assets/motorc.webp";
+import temperature from "../assets/temperature.webp";
+import pressure from "../assets/pressure.webp";
+import gas from "../assets/gas.webp";
+import humidity from "../assets/humidity.webp";
+import light from "../assets/light.webp";
+import sound from "../assets/sound.webp";
+import distance from "../assets/distance.webp";
+import lipo from "../assets/lipo.webp";
+import liion from "../assets/li-ion.webp";
+import nihm from "../assets/nimh.webp";
+import batteryholder from "../assets/batteryholder.webp";
+import charger from "../assets/charger.webp";
+import powerbank from "../assets/powerbank.webp";
+import batterymonitor from "../assets/batterymonitor.webp";
+import printerfilament from "../assets/printerfilament.webp";
+import hotend from "../assets/hotend.webp";
+import extruder from "../assets/extruders.webp";
+import controlboard from "../assets/controlboards.webp";
+import steppermotor from "../assets/stepperm.webp";
+import buildplates from "../assets/buildplates.webp";
+import dbattery from "../assets/dbattery.webp";
+import dmotors from "../assets/dmotors.webp";
+import dronepartsesc from "../assets/dronepartsesc.webp";
+import fpvs from "../assets/fpvs.webp";
+import nozzals from "../assets/nozzals.webp";
+import radiosystems from "../assets/radiosystem.webp";
+import LinearRails from "../assets/linearrails.webp";
+import frames from "../assets/frames.webp";
+import props from "../assets/props.webp";
+import flightcontroller from "../assets/flightcontroller.webp";
+import motions from "../assets/motions.webp";
+import protectionc  from "../assets/protectionc.webp";
 
 
 const backend = import.meta.env.VITE_BACKEND;
@@ -405,7 +405,7 @@ const Navbar = () => {
       name: "Shop by brand",
       key: "catalog",
       items: ["Categories"],
-      links: ["/categories"],
+      links: ["/coming-soon"],
     },
   ];
 
@@ -696,7 +696,7 @@ const Navbar = () => {
           <div className="flex items-center gap-6">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 w-56 md:w-48">
-              <img src={logo} alt="Logo" className="w-80" />
+              <img src={logo} alt="Logo" className="w-80 h-16" />
             </Link>
 
             {/* Location Selector */}

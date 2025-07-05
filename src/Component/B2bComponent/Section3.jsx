@@ -1,4 +1,4 @@
-import map from '../../assets/map.png'
+import map from '../../assets/map.webp'
 import { FaCloud, FaRobot, FaPlusCircle, FaWind, FaHelicopter } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 

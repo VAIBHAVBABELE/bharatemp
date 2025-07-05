@@ -1,7 +1,7 @@
 import Marquee from "react-fast-marquee";
-import img1 from "../../assets/newlogo.png";
-import img2 from "../../assets/newlogo2.png";
-import img3 from "../../assets/newlogo3.png";
+import img1 from "../../assets/newlogo.webp";
+import img2 from "../../assets/newlogo2.webp";
+import img3 from "../../assets/newlogo3.webp";
 
 const brands = [
   { img: img1, alt: "Brand 1" },

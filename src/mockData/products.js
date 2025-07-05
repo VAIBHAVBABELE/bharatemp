@@ -1,11 +1,11 @@
 // Mock product data for testing the UI without a backend
 
-import image1 from '../assets/homepage1.png';
-import image2 from '../assets/homepage2.png';
-import image3 from '../assets/homepage3.png';
-import image4 from '../assets/homepage4.png';
-import image5 from '../assets/homepage5.png';
-import image6 from '../assets/homepage6.png';
+import image1 from '../assets/homepage1.webp';
+import image2 from '../assets/homepage2.webp';
+import image3 from '../assets/homepage3.webp';
+import image4 from '../assets/homepage4.webp';
+import image5 from '../assets/homepage5.webp';
+import image6 from '../assets/homepage6.webp';
 
 export const mockProducts = [
   {

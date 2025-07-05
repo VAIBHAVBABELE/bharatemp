@@ -285,7 +285,7 @@ const AllOrders = () => {
                                                     <td className="px-4 sm:px-6 py-4">
                                                         <div className="flex items-center">
                                                             <img
-                                                                src={product.product_id?.image?.[0] || "/placeholder.png"}
+                                                                src={product.product_id?.image?.[0] || "/placeholder.webp"}
                                                                 alt={product.product_id?.name}
                                                                 className="h-12 w-12 sm:h-16 sm:w-16 rounded-lg object-cover border border-gray-200"
                                                             />

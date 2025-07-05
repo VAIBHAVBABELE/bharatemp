@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BsInstagram } from "react-icons/bs";
-import left from "../../assets/left.png";
-import right from "../../assets/right.png";
+import left from "../../assets/left.webp";
+import right from "../../assets/right.webp";
 
 const Instagram = () => {
     const [isMobile, setIsMobile] = useState(false);

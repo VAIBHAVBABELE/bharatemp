@@ -8,7 +8,7 @@ const ReturnPolicy = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full bg-white rounded-xl shadow-md p-6 sm:p-8 lg:p-10">
-                <h1 className="text-3xl font-bold text-[#1E3473] mb-8">Return, Replacement and Refund Policy</h1>
+                <h1 className="text-3xl font-bold text-[#1E3473] mb-8">Return/Replacement and Refund Policy</h1>
                 
                 <p className="text-gray-700 mb-8">
                     At BharatroniX, we are committed to delivering high-quality products with a smooth and transparent after-sales experience. If you are not entirely satisfied with your purchase, we're here to help with clear return and refund policies outlined below.
@@ -34,7 +34,6 @@ const ReturnPolicy = () => {
                     <p className="text-gray-700 mb-4">The following products cannot be returned or exchanged:</p>
                     <ul className="list-disc pl-8 space-y-2 text-gray-700">
                         <li>Items marked as "Non-returnable" on the product page (e.g., batteries, power adapters, soldering tools, safety equipment, tyres, electronics, etc.).</li>
-                        <li>Made-to-order or customized products.</li>
                         <li>Products that have been used, damaged due to misuse, or tampered with.</li>
                         <li>Combo offers cannot be returned partially.</li>
                         <li>Products purchased under flash deals or clearance sales.</li>
@@ -53,10 +52,11 @@ const ReturnPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-[#1E3473] mb-4">Quality Check & Replacement Process</h2>
+                    <h2 className="text-2xl font-semibold text-[#1E3473] mb-4">Quality Check Process</h2>
                     <p className="text-gray-700 mb-4">Once we receive your return, our quality inspection team will examine the item(s) within 2 working days. If the item qualifies under the return policy:</p>
                     <ul className="space-y-3 text-gray-700">
-                        <li>A replacement or refund will be processed within 7–10 working days.</li>
+                        <li>A replacement will be credited within 7–10 working days.</li>
+                        <li>Replacement product will be delivered in 7 days.</li>
                         <li>If the returned item fails our quality checks or appears used/tampered, it will be returned to you. In such cases, re-shipping charges will apply.</li>
                     </ul>
                 </section>
@@ -66,7 +66,7 @@ const ReturnPolicy = () => {
                     <ul className="space-y-3 text-gray-700">
                         <li>Refunds will be issued to the original payment method only (UPI, card, NetBanking, etc.).</li>
                         <li>A 5% deduction will apply on prepaid order refunds to cover payment gateway and processing fees.</li>
-                        <li>Alternatively, customers can opt for a BharatroniX gift card or store credit to avoid the 5% deduction.</li>
+                        <li>Alternatively, customers can opt for a BharatroniX store credit to avoid the 5% deduction.</li>
                         <li>Once the refund is approved it will take 7 business days to credit to your bank account.
 In cancellation policy make this word as credited</li>
                     </ul>

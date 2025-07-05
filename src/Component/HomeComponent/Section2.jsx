@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { IoBagOutline } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
-import image1 from "../../assets/homepage1.png";
-import image2 from "../../assets/homepage2.png";
-import image3 from "../../assets/homepage3.png";
-import image4 from "../../assets/homepage4.png";
-import droneImage from "../../assets/homeleft.jpg";
+import image1 from "../../assets/homepage1.webp";
+import image2 from "../../assets/homepage2.webp";
+import image3 from "../../assets/homepage3.webp";
+import image4 from "../../assets/homepage4.webp";
+import droneImage from "../../assets/homeleft.webp";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { handleBuyNow } from "../../utils/paymentUtils";
 
 // Default fallback images
-import fallbackImage1 from "../../assets/homepage1.png";
-import fallbackImage2 from "../../assets/homepage2.png";
-import fallbackImage3 from "../../assets/homepage3.png";
-import fallbackImage4 from "../../assets/homepage4.png";
+import fallbackImage1 from "../../assets/homepage1.webp";
+import fallbackImage2 from "../../assets/homepage2.webp";
+import fallbackImage3 from "../../assets/homepage3.webp";
+import fallbackImage4 from "../../assets/homepage4.webp";
 
 const fallbackImages = [
   fallbackImage1,
@@ -25,11 +25,11 @@ const fallbackImages = [
 
 const categories = [
   "Top 30",
-  "Propellers",
-  "Battery",
-  "Wings",
-  "Stand",
-  "Camera",
+  // "Propellers",
+  // "Battery",
+  // "Wings",
+  // "Stand",
+  // "Camera",
 ];
 
 // Fallback products if API fails or props are not passed

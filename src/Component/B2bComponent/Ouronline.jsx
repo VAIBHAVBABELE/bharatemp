@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Section2 from './Section2';
 import Section3 from './Section3';
 import Customers from './Customers';
-import b2b from "../../assets/b2b.jpg";
+import b2b from "../../assets/b2b.webp";
 import { Link, useLocation } from "react-router-dom";
 import { FaCloud, FaRobot, FaPlusCircle, FaWind, FaHelicopter } from 'react-icons/fa';
 const OnlinePresenceSection = () => {

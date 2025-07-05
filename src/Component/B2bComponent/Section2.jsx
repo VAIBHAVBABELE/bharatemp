@@ -1,11 +1,11 @@
 import {  CreditCard, Headset } from 'lucide-react';
 import Marquee from "react-fast-marquee";
-import cart1 from '../../assets/cart1.png';
-import cart2 from '../../assets/cart2.png';
-import cart3 from '../../assets/cart3.png';
-import img1 from '../../assets/newlogo.png';
-import img2 from '../../assets/newlogo2.png';
-import img3 from '../../assets/newlogo3.png';
+import cart1 from '../../assets/cart1.webp';
+import cart2 from '../../assets/cart2.webp';
+import cart3 from '../../assets/cart3.webp';
+import img1 from '../../assets/newlogo.webp';
+import img2 from '../../assets/newlogo2.webp';
+import img3 from '../../assets/newlogo3.webp';
 const features = [
   {
     img: cart1,
