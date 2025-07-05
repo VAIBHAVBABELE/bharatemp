@@ -450,7 +450,7 @@ export default function ProductCard() {
             />
           </div>
           {/* Thumbnails */}
-          <div className="grid grid-cols-5 gap-4">
+          {/* <div className="grid grid-cols-5 gap-4">
             {[1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
@@ -468,7 +468,7 @@ export default function ProductCard() {
                 />
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Right: Product Details */}
@@ -758,7 +758,7 @@ export default function ProductCard() {
 
           {/* Recent Sales */}
           <div className="flex items-center gap-2">
-            <div className="flex -space-x-2">
+            {/* <div className="flex -space-x-2">
               {[1, 2, 3, 4, 5].map((i) => (
                 <img
                   key={i}
@@ -767,7 +767,7 @@ export default function ProductCard() {
                   className="w-8 h-8 rounded-full border-2 border-white"
                 />
               ))}
-            </div>
+            </div> */}
             <span className="text-gray-500 text-base font-semibold">
               1,241 Sold in the last 24 hours
             </span>
