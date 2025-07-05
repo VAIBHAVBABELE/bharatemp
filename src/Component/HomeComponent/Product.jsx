@@ -455,6 +455,8 @@ const Product = () => {
       customShippingFee: 5,
     });
   };
+
+  console.log(displayedProducts);
   return (
     <>
       <ToastContainer />
