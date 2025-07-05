@@ -601,7 +601,7 @@ const Navbar = () => {
     Sensors: {},
     "Motors and Drivers": {},
     Battery: {},
-    "3D Printer": {},
+    "3DPrinter": {},
     "Drone Parts": {},
   };
 
