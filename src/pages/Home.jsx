@@ -4,19 +4,19 @@ import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
 import Section3 from "./../Component/HomeComponent/Section3";
 import Section4 from "./../Component/HomeComponent/Section4";
-import image7 from "./../assets/homepage12.png";
-import vector1 from "./../assets/Vector1.png";
-import vector2 from "./../assets/Vector2.png";
-import image1 from "./../assets/homepage9.png";
-import image2 from "./../assets/homepage8.png";
-import vector3 from "./../assets/Vector3.png";
+import image7 from "./../assets/homepage12.webp";
+import vector1 from "./../assets/Vector1.webp";
+import vector2 from "./../assets/Vector2.webp";
+import image1 from "./../assets/homepage9.webp";
+import image2 from "./../assets/homepage8.webp";
+import vector3 from "./../assets/Vector3.webp";
 import Section5 from "./../Component/HomeComponent/Section5";
-import image8 from "../assets/homepage8.png";
-import image9 from "../assets/homepage9.png";
-import icon4 from "../assets/icon4.png";
-import image10 from "../assets/homepage10.png";
-import blue from "../assets/green.png";
-import top1 from '../assets/generator.png'
+import image8 from "../assets/homepage8.webp";
+import image9 from "../assets/homepage9.webp";
+import icon4 from "../assets/icon4.webp";
+import image10 from "../assets/homepage10.webp";
+import blue from "../assets/green.webp";
+import top1 from '../assets/generator.webp'
 import battery from '../assets/battery.gif'
 import drone from "../assets/drone.gif"
 import sensor from "../assets/sensor.gif"
@@ -32,7 +32,7 @@ import VideoSection from "../Component/VideoSection";
 import { fetchProducts } from "../utils/api";
 import Customers from '../Component/B2bComponent/Customers.jsx'
 import Marquee from "../Component/HomeComponent/Marquee.jsx";
-import LoadingSpinner from "../utils/LoadingSpinner.jsx"
+import ShimmerUI from "../utils/ShimmerUI.jsx"
 const ProductSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -272,33 +272,23 @@ const ProductSlider = () => {
 
 
         {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <div className="">
-              <LoadingSpinner/>
-            </div>
+          <div className="py-10">
+            <ShimmerUI />
           </div>
         ) : error ? (
           <div className="text-center py-10 text-red-500">{error}</div>
         ) : (
           <>
-          <Section3 />
-          <div className="pt-10">
-          <Section1 products={products} />
-
-          </div>
-          <VideoSection />
-           <Section5 />
-           
+            <Section3 />
+            <div className="pt-10">
+              <Section1 products={products} />
+            </div>
+            <VideoSection />
+            <Section5 />
             <Section2 products={products} />
-{/*             
-            <Section1 products={products} /> */}
-           
-            
-            {/* <Testimonials/> */}
             <div ref={reviewsRef} id="customer-feedback-section">
               <Customers />
             </div>
-
           </>
         )}
 

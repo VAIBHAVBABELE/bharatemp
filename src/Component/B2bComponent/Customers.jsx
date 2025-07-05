@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import cust1 from "../../assets/cust1.jpg";
-import cust2 from "../../assets/cust2.jpg";
-import cust3 from "../../assets/cust3.jpg";
-import cust4 from "../../assets/cust4.jpg";
-import cust5 from "../../assets/cust5.jpg";
-import cust6 from "../../assets/cust6.jpg";
-import cust7 from "../../assets/cust7.jpg";
+import cust1 from "../../assets/cust1.webp";
+import cust2 from "../../assets/cust2.webp";
+import cust3 from "../../assets/cust3.webp";
+import cust4 from "../../assets/cust4.webp";
+import cust5 from "../../assets/cust5.webp";
+import cust6 from "../../assets/cust6.webp";
+import cust7 from "../../assets/cust7.webp";
 const testimonials = [
   {
     image: cust1,

@@ -1,6 +1,6 @@
-import image7 from '../../assets/homepage7.png'
-import image8 from '../../assets/homepage8.png'
-import image9 from '../../assets/homepage9.png'
+import image7 from '../../assets/homepage7.webp'
+import image8 from '../../assets/homepage8.webp'
+import image9 from '../../assets/homepage9.webp'
 import { Link } from 'react-router-dom';
 
 const PromoSection = () => {

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import image7 from "./../assets/homepage7.png";
-import vector1 from "./../assets/Vector1.png";
-import vector2 from "./../assets/Vector2.png";
-import vector3 from "./../assets/Vector3.png";
-import icon4 from "../assets/icon4.png";
-import image10 from "../assets/homepage10.png";
+import image7 from "./../assets/homepage7.webp";
+import vector1 from "./../assets/Vector1.webp";
+import vector2 from "./../assets/Vector2.webp";
+import vector3 from "./../assets/Vector3.webp";
+import icon4 from "../assets/icon4.webp";
+import image10 from "../assets/homepage10.webp";
 import blue from "../assets/bluelight.svg";
 import InstagramSection from "../Component/InstagramSection";
 import { fetchProducts } from "../utils/api";

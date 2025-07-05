@@ -5,12 +5,12 @@ import { Link, useNavigate, useLocation } from "react-router-dom"; // Added useL
 import { useCart } from "../../context/CartContext";
 import { handleBuyNow } from "../../utils/paymentUtils";
 
-import fallbackImage1 from "../../assets/homepage1.png";
-import fallbackImage2 from "../../assets/homepage2.png";
-import fallbackImage3 from "../../assets/homepage3.png";
-import fallbackImage4 from "../../assets/homepage4.png";
-import fallbackImage5 from "../../assets/homepage5.png";
-import fallbackImage6 from "../../assets/homepage6.png";
+import fallbackImage1 from "../../assets/homepage1.webp";
+import fallbackImage2 from "../../assets/homepage2.webp";
+import fallbackImage3 from "../../assets/homepage3.webp";
+import fallbackImage4 from "../../assets/homepage4.webp";
+import fallbackImage5 from "../../assets/homepage5.webp";
+import fallbackImage6 from "../../assets/homepage6.webp";
 
 const fallbackImages = [
   fallbackImage1,

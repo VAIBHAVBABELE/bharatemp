@@ -9,7 +9,7 @@ import {
   FaTimes,
   FaChevronRight,
 } from "react-icons/fa";
-import shop from "../../assets/shop.png";
+import shop from "../../assets/shop.webp";
 import { useCart } from "../../context/CartContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -762,7 +762,7 @@ export default function ProductCard() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <img
                   key={i}
-                  src={`https://randomuser.me/api/portraits/thumb/men/${i}.jpg`}
+                  src={`https://randomuser.me/api/portraits/thumb/men/${i}.webp`}
                   alt="user"
                   className="w-8 h-8 rounded-full border-2 border-white"
                 />

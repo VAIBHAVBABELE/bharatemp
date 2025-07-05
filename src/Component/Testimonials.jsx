@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Star } from "lucide-react";
-import person1 from "../assets/per1.png";
-import person2 from "../assets/per2.png";
-import person3 from "../assets/per3.png";
+import person1 from "../assets/per1.webp";
+import person2 from "../assets/per2.webp";
+import person3 from "../assets/per3.webp";
 
  
 const users = [

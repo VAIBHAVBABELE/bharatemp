@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import raspberry from "../../assets/rasperrybi.svg";
-import filtericon from "../../assets/filtericon.png";
+import filtericon from "../../assets/filtericon.webp";
 import { IoFilter } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { useCart } from "../../context/CartContext";

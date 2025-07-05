@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import image1 from '../../assets/elect.png'
+import image1 from '../../assets/elect.webp'
 import image2 from '../../assets/rasperrybi.svg'
 import axios from 'axios';
 
