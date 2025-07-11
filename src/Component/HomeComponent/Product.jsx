@@ -456,7 +456,6 @@ const Product = () => {
     });
   };
 
-  console.log(displayedProducts);
   return (
     <>
       <ToastContainer />

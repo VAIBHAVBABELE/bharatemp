@@ -210,14 +210,14 @@ const AddProduct = () => {
             const formDataToSend = new FormData();
             
             // Basic Information - Required Fields
-            formDataToSend.append("category_id", Number(formData.category_id));
+            formDataToSend.append("category_id", formData.category_id);
             formDataToSend.append("category_name", formData.category_name);
-            formDataToSend.append("sub_category_id", Number(formData.sub_category_id));
+            formDataToSend.append("sub_category_id", formData.sub_category_id);
             formDataToSend.append("sub_category_name", formData.sub_category_name);
             formDataToSend.append("sub_sub_category_name", formData.sub_sub_category_name);
             
             // Brand Information
-            if (formData.brand_id) formDataToSend.append("brand_id", Number(formData.brand_id));
+            if (formData.brand_id) formDataToSend.append("brand_id", formData.brand_id);
             formDataToSend.append("brand_name", formData.brand_name);
             
             // Product Basic Information
@@ -396,7 +396,7 @@ const AddProduct = () => {
                     <div>
                         <label className="block text-sm font-medium mb-2">Category ID</label>
                         <input
-                            type="number"
+                            type="text"
                             name="category_id"
                             value={formData.category_id}
                             onChange={handleInputChange}
@@ -421,7 +421,7 @@ const AddProduct = () => {
                     <div>
                         <label className="block text-sm font-medium mb-2">Sub Category ID</label>
                         <input
-                            type="number"
+                            type="text"
                             name="sub_category_id"
                             value={formData.sub_category_id}
                             onChange={handleInputChange}
@@ -456,7 +456,7 @@ const AddProduct = () => {
                     <div>
                         <label className="block text-sm font-medium mb-2">Brand ID</label>
                         <input
-                            type="number"
+                            type="text"
                             name="brand_id"
                             value={formData.brand_id}
                             onChange={handleInputChange}
