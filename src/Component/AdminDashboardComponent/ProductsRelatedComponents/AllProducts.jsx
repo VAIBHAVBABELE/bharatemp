@@ -83,40 +83,51 @@ const AllProducts = () => {
   const filteredProducts = products.filter((product) => {
     // Search query matching
     const searchLower = searchQuery.toLowerCase().trim();
-    const matchesSearch = searchLower === '' || (
-        product?.product_name?.toLowerCase().includes(searchLower) ||
-        product?.category_name?.toLowerCase().includes(searchLower) ||
-        product?.brand_name?.toLowerCase().includes(searchLower)
-    );
+    const matchesSearch =
+      searchLower === "" ||
+      product?.product_name?.toLowerCase().includes(searchLower) ||
+      product?.category_name?.toLowerCase().includes(searchLower) ||
+      product?.brand_name?.toLowerCase().includes(searchLower);
 
     // Category filtering - show only products of selected category
-    const matchesCategory = selectedCategory === 'all' || product?.category_name?.toLowerCase() === selectedCategory?.toLowerCase();
+    const matchesCategory =
+      selectedCategory === "all" ||
+      product?.category_name?.toLowerCase() === selectedCategory?.toLowerCase();
 
     // Stock filtering - respect the showOutOfStock toggle
-    const stockCheck = showOutOfStock ? true : product?.no_of_product_instock > 0;
+    const stockCheck = showOutOfStock
+      ? true
+      : product?.no_of_product_instock > 0;
 
     return matchesSearch && matchesCategory && stockCheck;
   });
 
   // Sorting logic
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const modifier = sortOrder === 'asc' ? 1 : -1;
-    
+    const modifier = sortOrder === "asc" ? 1 : -1;
+
     switch (sortBy) {
-        case 'price':
-            const aPrice = a.discounted_single_product_price || a.non_discounted_price || 0;
-            const bPrice = b.discounted_single_product_price || b.non_discounted_price || 0;
-            return (aPrice - bPrice) * modifier;
-        case 'stock':
-            const aStock = a.no_of_product_instock || 0;
-            const bStock = b.no_of_product_instock || 0;
-            return (aStock - bStock) * modifier;
-        case 'name':
-            return (a.product_name || '').localeCompare(b.product_name || '') * modifier;
-        case 'category':
-            return (a.category_name || '').localeCompare(b.category_name || '') * modifier;
-        default:
-            return 0;
+      case "price":
+        const aPrice =
+          a.discounted_single_product_price || a.non_discounted_price || 0;
+        const bPrice =
+          b.discounted_single_product_price || b.non_discounted_price || 0;
+        return (aPrice - bPrice) * modifier;
+      case "stock":
+        const aStock = a.no_of_product_instock || 0;
+        const bStock = b.no_of_product_instock || 0;
+        return (aStock - bStock) * modifier;
+      case "name":
+        return (
+          (a.product_name || "").localeCompare(b.product_name || "") * modifier
+        );
+      case "category":
+        return (
+          (a.category_name || "").localeCompare(b.category_name || "") *
+          modifier
+        );
+      default:
+        return 0;
     }
   });
 
@@ -152,7 +163,6 @@ const AllProducts = () => {
   };
 
   async function deleteProduct(id) {
-
     toast.dismiss();
     try {
       setLoading(true);
@@ -207,7 +217,6 @@ const AllProducts = () => {
     fetchAllProducts();
     window.scrollTo(0, 0);
   }, [currentPage]);
-
 
   // View mode toggle buttons
   const ViewModeToggle = () => (
@@ -302,7 +311,9 @@ const AllProducts = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-blue-600">
-              ₹{product.discounted_single_product_price ?? product.non_discounted_price}
+              ₹
+              {product.discounted_single_product_price ??
+                product.non_discounted_price}
             </span>
             {product.discount > 0 && (
               <span className="text-sm text-gray-500 line-through">
@@ -344,194 +355,217 @@ const AllProducts = () => {
   // Delete Confirmation Modal
   const DeleteConfirmationModal = () => {
     if (!isDeleteModalOpen) return null;
-    
+
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
-                <button
-                    className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
-                    onClick={closeModalDelete}
-                >
-                    <FaTimes size={20} />
-                </button>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 relative">
+          <button
+            className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
+            onClick={closeModalDelete}
+          >
+            <FaTimes size={20} />
+          </button>
 
-                <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-800">
-                        Are you sure you want to delete this product?
-                    </h2>
-                    <p className="text-gray-500 mt-2">This action cannot be undone.</p>
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-gray-800">
+              Are you sure you want to delete this product?
+            </h2>
+            <p className="text-gray-500 mt-2">This action cannot be undone.</p>
 
-                    <div className="flex justify-center gap-4 mt-4">
-                        <button
-                            onClick={closeModalDelete}
-                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => deleteProduct(selectedProduct)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                onClick={closeModalDelete}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteProduct(selectedProduct)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Delete
+              </button>
             </div>
+          </div>
         </div>
+      </div>
     );
   };
 
   // Modal Component
   const ProductModal = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const allImages = [selectedProduct.product_image_main, ...selectedProduct.product_image_sub];
+    const allImages = [
+      selectedProduct.product_image_main,
+      ...selectedProduct.product_image_sub,
+    ];
 
     const nextImage = () => {
-        if (currentImageIndex < allImages.length - 1) {
-            setCurrentImageIndex(currentImageIndex + 1);
-        }
+      if (currentImageIndex < allImages.length - 1) {
+        setCurrentImageIndex(currentImageIndex + 1);
+      }
     };
 
     const prevImage = () => {
-        if (currentImageIndex > 0) {
-            setCurrentImageIndex(currentImageIndex - 1);
-        }
+      if (currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+      }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative overflow-hidden">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative overflow-hidden">
+          <button
+            className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
+            onClick={closeModal}
+          >
+            <FaTimes size={22} />
+          </button>
+
+          <div
+            className="max-h-[80vh] overflow-y-auto p-2"
+            style={{
+              scrollbarWidth: "thin",
+            }}
+          >
+            <div className="relative">
+              <img
+                src={allImages[currentImageIndex]}
+                alt={selectedProduct.product_name}
+                className="w-full h-64 object-cover rounded-md"
+              />
+
+              {currentImageIndex > 0 && (
                 <button
-                    className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
-                    onClick={closeModal}
+                  className="absolute top-1/2 left-2 bg-black/50 text-white p-2 rounded-full transform -translate-y-1/2"
+                  onClick={prevImage}
                 >
-                    <FaTimes size={22} />
+                  <FaChevronLeft size={20} />
                 </button>
+              )}
 
-                <div
-                    className="max-h-[80vh] overflow-y-auto p-2"
-                    style={{
-                        scrollbarWidth: "thin",
-                    }}
+              {currentImageIndex < allImages.length - 1 && (
+                <button
+                  className="absolute top-1/2 right-2 bg-black/50 text-white p-2 rounded-full transform -translate-y-1/2"
+                  onClick={nextImage}
                 >
-                    <div className="relative">
-                        <img
-                            src={allImages[currentImageIndex]}
-                            alt={selectedProduct.product_name}
-                            className="w-full h-64 object-cover rounded-md"
-                        />
-
-                        {currentImageIndex > 0 && (
-                            <button
-                                className="absolute top-1/2 left-2 bg-black/50 text-white p-2 rounded-full transform -translate-y-1/2"
-                                onClick={prevImage}
-                            >
-                                <FaChevronLeft size={20} />
-                            </button>
-                        )}
-
-                        {currentImageIndex < allImages.length - 1 && (
-                            <button
-                                className="absolute top-1/2 right-2 bg-black/50 text-white p-2 rounded-full transform -translate-y-1/2"
-                                onClick={nextImage}
-                            >
-                                <FaChevronRight size={20} />
-                            </button>
-                        )}
-                    </div>
-
-                    <h2 className="text-2xl font-bold mt-4">{selectedProduct.product_name}</h2>
-                    <p className="text-gray-500">{selectedProduct.category_name}</p>
-                    <p className="text-gray-500">{selectedProduct.brand_name}</p>
-
-                    <div className="flex items-center gap-4 mt-3">
-                        <span className="text-2xl font-bold text-blue-600">
-                            ₹{selectedProduct.discounted_single_product_price ?? selectedProduct.non_discounted_price}
-                        </span>
-                        {selectedProduct.discount > 0 && (
-                            <span className="text-gray-500 line-through">
-                                ₹{selectedProduct.non_discounted_price}
-                            </span>
-                        )}
-                    </div>
-
-                    <p className="mt-2 text-gray-600">
-                        Warranty: {selectedProduct.product_warranty}
-                    </p>
-                    <p className="mt-2 text-gray-600">
-                        Stock: {selectedProduct.no_of_product_instock} units available
-                    </p>
-
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold">Features</h3>
-                        <p className="text-gray-600 whitespace-pre-line">{selectedProduct.product_feature}</p>
-                    </div>
-
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold">Overview</h3>
-                        <p className="text-gray-600 whitespace-pre-line">{selectedProduct.product_overview}</p>
-                    </div>
-
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold">Specifications</h3>
-                        {selectedProduct.product_specification.map((spec, index) => (
-                            <div key={index} className="mt-2">
-                                <h4 className="font-medium">{spec.title}</h4>
-                                <ul className="list-none ml-4">
-                                    {spec.data.map((item, idx) => (
-                                        <li key={idx} className="text-gray-700 flex justify-between py-1 border-b">
-                                            <span className="font-medium">{item.key}:</span>
-                                            <span>{item.value}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold">Description</h3>
-                        <p className="text-gray-600 whitespace-pre-line">{selectedProduct.product_description}</p>
-                    </div>
-
-                    {selectedProduct.product_caution && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-semibold text-red-600">Caution</h3>
-                            <p className="text-gray-600 whitespace-pre-line">{selectedProduct.product_caution}</p>
-                        </div>
-                    )}
-
-                    {selectedProduct.package_include && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-semibold">Package Includes</h3>
-                            <p className="text-gray-600">{selectedProduct.package_include}</p>
-                        </div>
-                    )}
-
-                    {selectedProduct.product_tags.length > 0 && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-semibold">Tags</h3>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                                {selectedProduct.product_tags.map((tag, index) => (
-                                    <span key={index} className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex justify-center mt-4">
-                    <button
-                        onClick={closeModal}
-                        className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-                    >
-                        Close
-                    </button>
-                </div>
+                  <FaChevronRight size={20} />
+                </button>
+              )}
             </div>
+
+            <h2 className="text-2xl font-bold mt-4">
+              {selectedProduct.product_name}
+            </h2>
+            <p className="text-gray-500">{selectedProduct.category_name}</p>
+            <p className="text-gray-500">{selectedProduct.brand_name}</p>
+
+            <div className="flex items-center gap-4 mt-3">
+              <span className="text-2xl font-bold text-blue-600">
+                ₹
+                {selectedProduct.discounted_single_product_price ??
+                  selectedProduct.non_discounted_price}
+              </span>
+              {selectedProduct.discount > 0 && (
+                <span className="text-gray-500 line-through">
+                  ₹{selectedProduct.non_discounted_price}
+                </span>
+              )}
+            </div>
+
+            <p className="mt-2 text-gray-600">
+              Warranty: {selectedProduct.product_warranty}
+            </p>
+            <p className="mt-2 text-gray-600">
+              Stock: {selectedProduct.no_of_product_instock} units available
+            </p>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Features</h3>
+              <p className="text-gray-600 whitespace-pre-line">
+                {selectedProduct.product_feature}
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Overview</h3>
+              <p className="text-gray-600 whitespace-pre-line">
+                {selectedProduct.product_overview}
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Specifications</h3>
+              {selectedProduct.product_specification.map((spec, index) => (
+                <div key={index} className="mt-2">
+                  <h4 className="font-medium">{spec.title}</h4>
+                  <ul className="list-none ml-4">
+                    {spec.data.map((item, idx) => (
+                      <li
+                        key={idx}
+                        className="text-gray-700 flex justify-between py-1 border-b"
+                      >
+                        <span className="font-medium">{item.key}:</span>
+                        <span>{item.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Description</h3>
+              <p className="text-gray-600 whitespace-pre-line">
+                {selectedProduct.product_description}
+              </p>
+            </div>
+
+            {selectedProduct.product_caution && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-red-600">Caution</h3>
+                <p className="text-gray-600 whitespace-pre-line">
+                  {selectedProduct.product_caution}
+                </p>
+              </div>
+            )}
+
+            {selectedProduct.package_include && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold">Package Includes</h3>
+                <p className="text-gray-600">
+                  {selectedProduct.package_include}
+                </p>
+              </div>
+            )}
+
+            {selectedProduct.product_tags.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold">Tags</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedProduct.product_tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={closeModal}
+              className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+            >
+              Close
+            </button>
+          </div>
         </div>
+      </div>
     );
   };
 
@@ -557,7 +591,8 @@ const AllProducts = () => {
               className={`px-2 py-1 rounded-full text-xs ${
                 getStockStatus(product.no_of_product_instock) === "Out of Stock"
                   ? "bg-red-100 text-red-800"
-                  : getStockStatus(product.no_of_product_instock) === "Low Stock"
+                  : getStockStatus(product.no_of_product_instock) ===
+                    "Low Stock"
                   ? "bg-yellow-100 text-yellow-800"
                   : "bg-green-100 text-green-800"
               }`}
@@ -568,7 +603,9 @@ const AllProducts = () => {
           <div className="text-sm text-gray-500">{product.category_name}</div>
           <div className="flex items-center gap-4 mt-2">
             <span className="text-xl font-bold text-blue-600">
-              ₹{product.discounted_single_product_price ?? product.non_discounted_price}
+              ₹
+              {product.discounted_single_product_price ??
+                product.non_discounted_price}
             </span>
             {product.discount > 0 && (
               <span className="text-sm text-gray-500 line-through">
@@ -598,6 +635,9 @@ const AllProducts = () => {
   if (!isAuthorized) {
     return showPopup ? <UnauthorizedPopup onClose={closePopup} /> : null;
   }
+
+  console.log("products", products);
+  console.log("totalProducts", totalProducts);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-blue-50 p-8 pt-14">
@@ -640,7 +680,7 @@ const AllProducts = () => {
               }}
             >
               <option value="all">All Categories</option>
-              {Array.from(new Set(products.map(p => p.category_name)))
+              {Array.from(new Set(products.map((p) => p.category_name)))
                 .filter(Boolean)
                 .sort()
                 .map((category, index) => (
@@ -662,10 +702,16 @@ const AllProducts = () => {
                 <option value="category">Category</option>
               </select>
               <button
-                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                onClick={() =>
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
                 className="p-2 border rounded-md hover:bg-gray-100"
               >
-                {sortOrder === 'asc' ? <FaSortAmountDown /> : <FaSortAmountUp />}
+                {sortOrder === "asc" ? (
+                  <FaSortAmountDown />
+                ) : (
+                  <FaSortAmountUp />
+                )}
               </button>
             </div>
 
@@ -719,41 +765,80 @@ const AllProducts = () => {
         )}
 
         {/* Pagination */}
-        {Math.ceil(sortedProducts.length / productsPerPage) > 1 && (
-          <div className="mt-8 flex justify-center items-center gap-2">
+        {totalPages > 1 && (
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 cursor-pointer"
             >
               Previous
             </button>
 
-            {Array.from(
-              { length: Math.ceil(sortedProducts.length / productsPerPage) },
-              (_, i) => (
+            {/* Show first page */}
+            {currentPage > 3 && (
+              <>
                 <button
-                  key={i + 1}
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={() => setCurrentPage(1)}
                   className={`px-3 py-1 rounded-md ${
-                    currentPage === i + 1
+                    currentPage === 1
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
                   }`}
                 >
-                  {i + 1}
+                  1
                 </button>
+                {currentPage > 4 && <span className="px-2">...</span>}
+              </>
+            )}
+
+            {/* Show pages around current page */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 2 && page <= currentPage + 2)
               )
+              .map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === page
+                      ? "bg-blue-600 text-white cursor-pointer"
+                      : "bg-white text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+            {/* Show last page */}
+            {currentPage < totalPages - 2 && (
+              <>
+                {currentPage < totalPages - 3 && (
+                  <span className="px-2">...</span>
+                )}
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === totalPages
+                      ? "bg-blue-600 text-white "
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {totalPages}
+                </button>
+              </>
             )}
 
             <button
               onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(Math.ceil(sortedProducts.length / productsPerPage), prev + 1)
-                )
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
               }
-              disabled={currentPage === Math.ceil(sortedProducts.length / productsPerPage)}
-              className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50"
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 cursor-pointer"
             >
               Next
             </button>

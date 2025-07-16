@@ -60,7 +60,6 @@ const calculateBulkPrices = (basePrice) => {
   ];
 };
 
-
 export default function ProductCard() {
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -369,11 +368,11 @@ export default function ProductCard() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     handleScroll(); // Check initial position
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -426,17 +425,19 @@ export default function ProductCard() {
             Home
           </Link>
           <FaChevronRight className="text-gray-400" size={12} />
-          
-          <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
+
+          <Link
+            to="/allproducts"
+            className="hover:text-[#f7941d] transition-colors"
+          >
             All Products
           </Link>
           <FaChevronRight className="text-gray-400" size={12} />
-          
+
           <span className="text-[#f7941d] truncate max-w-[200px] md:max-w-[300px]">
             {product?.product_name || "Loading..."}
           </span>
         </div>
-
       </nav>
       {/* Main Content */}
       <div className="flex flex-col gap-10 justify-between lg:flex-row">
@@ -450,25 +451,20 @@ export default function ProductCard() {
             />
           </div>
           {/* Thumbnails */}
-          {/* <div className="grid grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5].map((index) => (
+          <div className="grid grid-cols-5 gap-4">
+            {product.product_image_sub?.map((img, index) => (
               <div
                 key={index}
                 className="border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-[#1e3473]"
               >
                 <img
-                  src={
-                    product.product_image_sub &&
-                    product.product_image_sub[index - 1]
-                      ? product.product_image_sub[index - 1]
-                      : shop
-                  }
-                  alt={`${product.product_name} thumbnail ${index}`}
+                  src={img}
+                  alt={`${product.product_name} thumbnail ${index + 1}`}
                   className="w-full h-[100px] object-contain"
                 />
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
 
         {/* Right: Product Details */}
@@ -603,7 +599,11 @@ export default function ProductCard() {
                   <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
                 </svg>
 
-                {loadingBuyNow ? <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#F7941D]"></div> : "Buy Now"}
+                {loadingBuyNow ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#F7941D]"></div>
+                ) : (
+                  "Buy Now"
+                )}
               </button>
 
               {/* Add Zipcode Check Section */}
@@ -720,11 +720,7 @@ export default function ProductCard() {
           {/* Service Info */}
           <div className="flex items-center justify-between py-2 gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
-              <img
-                src={shield}
-                alt="Transparent"
-                className="w-10 h-10"
-              />
+              <img src={shield} alt="Transparent" className="w-10 h-10" />
               <div className="flex flex-col">
                 <span className="font-medium">Transparent</span>
                 <span>100% Genuine Products </span>
@@ -732,11 +728,7 @@ export default function ProductCard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <img
-                src={cargo}
-                alt="Shipping"
-                className="w-10 h-10"
-              />
+              <img src={cargo} alt="Shipping" className="w-10 h-10" />
               <div className="flex flex-col">
                 <span className="font-medium">Shipping</span>
                 <span>One Day delivery </span>
@@ -744,11 +736,7 @@ export default function ProductCard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <img
-                src={secure}
-                alt="Secure"
-                className="w-10 h-10"
-              />
+              <img src={secure} alt="Secure" className="w-10 h-10" />
               <div className="flex flex-col">
                 <span className="font-medium">Secure</span>
                 <span>24*7 Technical support </span>
@@ -1000,16 +988,21 @@ export default function ProductCard() {
           <div className="container mx-auto max-w-7xl flex items-center justify-between">
             {/* Product Info */}
             <div className="flex items-center gap-4">
-              <img 
-                src={product.product_image_main} 
-                alt={product.product_name} 
+              <img
+                src={product.product_image_main}
+                alt={product.product_name}
                 className="w-16 h-16 object-contain rounded-lg border border-gray-200"
               />
               <div>
-                <h3 className="text-[#2F294D] font-semibold text-lg line-clamp-1">{product.product_name}</h3>
+                <h3 className="text-[#2F294D] font-semibold text-lg line-clamp-1">
+                  {product.product_name}
+                </h3>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-bold text-[#162554]">
-                    ₹{product.discounted_single_product_price?.toLocaleString("en-IN")}
+                    ₹
+                    {product.discounted_single_product_price?.toLocaleString(
+                      "en-IN"
+                    )}
                   </span>
                   <span className="text-sm text-gray-500 line-through">
                     ₹{product.non_discounted_price?.toLocaleString("en-IN")}
@@ -1058,8 +1051,16 @@ export default function ProductCard() {
                 onClick={handleAddToCart}
                 className="px-6 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e88a1a] transition-colors flex items-center gap-2"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M9 20a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zm-7-3h7a2 2 0 002-2V9a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" strokeWidth="2" />
+                <svg
+                  className="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M9 20a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zm-7-3h7a2 2 0 002-2V9a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+                    strokeWidth="2"
+                  />
                 </svg>
                 Add to Cart
               </button>
@@ -1071,8 +1072,16 @@ export default function ProductCard() {
                 disabled={loadingBuyNow}
               >
                 {!loadingBuyNow && (
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M4 11h16M4 11a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7z" strokeWidth="2" />
+                  <svg
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M4 11h16M4 11a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7z"
+                      strokeWidth="2"
+                    />
                     <path d="M8 11V7a4 4 0 018 0v4" strokeWidth="2" />
                   </svg>
                 )}
