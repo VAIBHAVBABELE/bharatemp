@@ -3,9 +3,22 @@ import Marquee from "react-fast-marquee";
 import cart1 from '../../assets/cart1.webp';
 import cart2 from '../../assets/cart2.webp';
 import cart3 from '../../assets/cart3.webp';
-import img1 from '../../assets/newlogo.webp';
-import img2 from '../../assets/newlogo2.webp';
-import img3 from '../../assets/newlogo3.webp';
+import img1 from '../../assets/1.png';
+import img2 from '../../assets/2.png';
+import img3 from '../../assets/3.png';
+import img4 from '../../assets/4.png';
+import img5 from '../../assets/5.png';
+import img6 from '../../assets/6.png';
+import img7 from '../../assets/7.png';
+import img8 from '../../assets/8.png';
+import img9 from '../../assets/9.png';
+import img10 from '../../assets/10.png';
+import img11 from '../../assets/11.png';
+import img12 from '../../assets/12.png';
+import img13 from '../../assets/13.png';
+import img14 from '../../assets/14.png';
+import img15 from '../../assets/15.png';
+import img16 from '../../assets/16.jpg';
 const features = [
   {
     img: cart1,
@@ -39,6 +52,20 @@ const brands = [
   { img: img2 },
   { img: img2 },
   { img: img3 },
+  { img: img4 },
+  { img: img5 },
+  { img: img6 },
+  { img: img7 },
+  { img: img8 },
+  { img: img9 },
+  { img: img10 },
+  { img: img11 },
+  { img: img12 },
+  { img: img13 },
+  { img: img14 },
+  { img: img15 },
+  { img: img16 },
+
 ];
 
 export default function B2BIndustriesSection() {
@@ -75,14 +102,14 @@ export default function B2BIndustriesSection() {
       </h2>
       </div>
       <Marquee pauseOnHover gradient={false} speed={50}>
-      <div className="flex gap-8 items-center py-4 mb-10 w-full ">
+      <div className="flex gap-8 items-center py-4 mb-16 w-full ">
       
         {brands.map((brand, index) => (
           <div
             key={index}
-            className="text-gray-700 font-semibold text-lg flex items-center gap-2 mr-8"
+            className="text-gray-700 font-semibold text-lg flex items-center gap-2 mr-14"
           >
-            <img src={brand.img} className="" />
+            <img src={brand.img} className="h-40" />
             
           </div>
         ))}

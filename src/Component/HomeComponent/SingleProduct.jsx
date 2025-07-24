@@ -409,6 +409,8 @@ export default function ProductCard() {
     );
   }
 
+  console.log("Product:", product);
+
   return (
     <div className="w-full px-4 md:px-10 lg:px-16 font-[outfit] relative pb-[100px]">
       {/* Breadcrumb Navigation */}
@@ -504,8 +506,10 @@ export default function ProductCard() {
           {/* Price Section */}
           <div className="space-y-2">
             <div className="text-gray-500 text-sm">
-              ₹2345 (incl. of all taxes)
+              ₹{(product.discounted_single_product_price * 1.18).toFixed(2)}{" "}
+              (incl. of all taxes)
             </div>
+
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-bold text-[#162554]">
                 ₹
@@ -513,7 +517,7 @@ export default function ProductCard() {
                   "en-IN"
                 )}
               </span>
-              <span className="text-sm text-gray-500">+₹41 Shipping</span>
+              {/* <span className="text-sm text-gray-500">+₹41 Shipping</span> */}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-gray-500 line-through">

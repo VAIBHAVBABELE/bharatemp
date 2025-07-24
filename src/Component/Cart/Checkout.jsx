@@ -103,6 +103,7 @@ const Checkout = () => {
   const [orderId, setOrderId] = useState(null);
   const access = import.meta.env.VITE_ACCESS_TOKEN;
   const secret = import.meta.env.VITE_SECRET_KEY;
+  const [rate, setRate] = useState(0);
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -123,7 +124,6 @@ const Checkout = () => {
     postalCode: "",
   });
 
-  
   // Get selected address
   const selectedAddress =
     addresses.find((addr) => addr.id === selectedAddressId) || addresses[0];
@@ -149,14 +149,11 @@ const Checkout = () => {
 
   // Calculate pricing
   const codeDiscount = 15;
-  const shippingFee = 5;
+  const shippingFee = rate;
   const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
 
   // Calculate final total using only discounted price
-  const finalTotal = Math.max(
-    0,
-    totalAmount + shippingFee - codeDiscount
-  );
+  const finalTotal = Math.max(0, totalAmount + shippingFee );
 
   // Delivery date calculation
   const getDeliveryDates = () => {
@@ -238,20 +235,20 @@ const Checkout = () => {
 
     try {
       const fullAddress = `${address.address}, ${address.city}, ${address.postalCode}`;
-      
+
       const response = await axios.post(
         `${backend}/user/${userId}/update-address`,
         {
           user: {
             address_index: index,
-            address_value: fullAddress
-          }
+            address_value: fullAddress,
+          },
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -461,32 +458,37 @@ const Checkout = () => {
     setErrors({});
 
     // Update userData state
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      address: updatedAddresses.map(addr => addr.fullAddress)
+      address: updatedAddresses.map((addr) => addr.fullAddress),
     }));
   };
 
   // Handle removing an address
   const handleRemoveAddress = async (id) => {
     try {
-      const indexToRemove = addresses.findIndex(addr => addr.id === id);
+      const indexToRemove = addresses.findIndex((addr) => addr.id === id);
       if (indexToRemove === -1) return;
 
       // Update in backend first - send empty string to remove the address
-      const success = await updateUserAddress({ address: "", city: "", postalCode: "" }, indexToRemove);
+      const success = await updateUserAddress(
+        { address: "", city: "", postalCode: "" },
+        indexToRemove
+      );
 
       if (success) {
-        const updatedAddresses = addresses.filter(addr => addr.id !== id);
+        const updatedAddresses = addresses.filter((addr) => addr.id !== id);
         setAddresses(updatedAddresses);
         if (id === selectedAddressId) {
-          setSelectedAddressId(updatedAddresses.length > 0 ? updatedAddresses[0].id : null);
+          setSelectedAddressId(
+            updatedAddresses.length > 0 ? updatedAddresses[0].id : null
+          );
         }
 
         // Update userData state
-        setUserData(prev => ({
+        setUserData((prev) => ({
           ...prev,
-          address: updatedAddresses.map(addr => addr.fullAddress)
+          address: updatedAddresses.map((addr) => addr.fullAddress),
         }));
       }
     } catch (error) {
@@ -515,6 +517,73 @@ const Checkout = () => {
     return randomstring;
   }
 
+  console.log("Selected Address:", selectedAddress?.postalCode);
+
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        // You can decide how to calculate this: average, max, or from first item
+        const firstItem = cartItems[0];
+        console.log("First Item:", firstItem);
+
+        const [lengthStr, widthStr] = firstItem.product_dimension_length_breadth
+          .split("*")
+          .map((s) => s.trim());
+
+        const shipping_length_cms = parseFloat(lengthStr);
+        const shipping_width_cms = parseFloat(widthStr);
+        const shipping_height_cms = parseFloat(
+          firstItem.product_dimension_height
+        );
+        const shipping_weight_kg = parseFloat(firstItem.product_dimension_weight);
+        console.log("Shipping Weight (kg):", shipping_weight_kg);
+
+        const response = await axios.post(
+          "https://my.ithinklogistics.com/api_v3/rate/check.json",
+          {
+            data: {
+              from_pincode: "201301",
+              to_pincode: selectedAddress?.postalCode || "000000",
+              shipping_length_cms,
+              shipping_width_cms,
+              shipping_height_cms,
+              shipping_weight_kg,
+              order_type: "forward", 
+              payment_method: "Prepaid",
+              product_mrp: totalMRP,
+              access_token: access,
+              secret_key: secret,
+            },
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const rateOptions = response.data?.data;
+        console.log("Rate Check API Response:", response);
+
+        if (!rateOptions || !Array.isArray(rateOptions)) return;
+
+        if (shipping_weight_kg > 0.5 && rateOptions[4]) {
+          console.log(rateOptions[4].rate);
+          setRate(rateOptions[4].rate);
+        } else if (rateOptions[3]) {
+          console.log(rateOptions[3].rate);
+          setRate(rateOptions[3].rate);
+        }
+      } catch (error) {
+        console.error("Error while calling Rate Check API:", error);
+      }
+    };
+
+    if (selectedAddress) {
+      fetchRate();
+    }
+  }, [selectedAddress, cartItems, totalMRP, access, secret]);
+
   // Update the handlePayment function to create order and initiate payment
   const handlePayment = async () => {
     if (addresses.length === 0 || !selectedAddressId) {
@@ -540,9 +609,10 @@ const Checkout = () => {
       // Prepare order items with warranty information
       const orderItems = cartItems.map((item) => {
         // Calculate warranty expiry (1 year from now by default)
+
+        console.log("item", item);
         const warrantyExpiry = new Date();
         warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
-
 
         return {
           product_id: item._id,
@@ -566,7 +636,7 @@ const Checkout = () => {
         email: userData?.email,
         pincode: postalCode,
         name: userData ? `${userData.name}` : "",
-        city: selectedAddr.city || "City", 
+        city: selectedAddr.city || "City",
         expectedDelivery: expectedDelivery,
       };
 
@@ -583,8 +653,6 @@ const Checkout = () => {
         }
       );
 
-      
-
       if (
         !orderResponse.data ||
         !orderResponse.data.data ||
@@ -599,10 +667,10 @@ const Checkout = () => {
       const FRONTEND_URL = window.location.origin;
 
       const paymentData = {
-        orderId: createdOrderId, 
+        orderId: createdOrderId,
         userId: userId,
         MUID: "T" + Date.now(),
-        FRONTEND_URL: FRONTEND_URL
+        FRONTEND_URL: FRONTEND_URL,
       };
 
       const paymentResponse = await axios.post(
@@ -616,12 +684,15 @@ const Checkout = () => {
         }
       );
 
-      if (paymentResponse.data?.data?.response?.phonepeResponse?.instrumentResponse?.redirectInfo?.url) {
+      if (
+        paymentResponse.data?.data?.response?.phonepeResponse
+          ?.instrumentResponse?.redirectInfo?.url
+      ) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
-        window.location.href = paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
-        
+        window.location.href =
+          paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
       } else {
         throw new Error("Invalid payment response");
       }
@@ -699,20 +770,21 @@ const Checkout = () => {
               Home
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
-            <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
+
+            <Link
+              to="/allproducts"
+              className="hover:text-[#f7941d] transition-colors"
+            >
               All Products
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
+
             <Link to="/cart" className="hover:text-[#f7941d] transition-colors">
               Shopping Cart
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
-            <span className="text-[#f7941d]">
-              Checkout
-            </span>
+
+            <span className="text-[#f7941d]">Checkout</span>
           </div>
         </nav>
 
@@ -878,7 +950,7 @@ const Checkout = () => {
                 <span className="text-gray-600">Code Discount</span>
                 <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>
