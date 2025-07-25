@@ -148,12 +148,11 @@ const Checkout = () => {
   const totalMRP = calculateTotalMRP();
 
   // Calculate pricing
-  const codeDiscount = 15;
   const shippingFee = rate;
-  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
+  // const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
 
   // Calculate final total using only discounted price
-  const finalTotal = Math.max(0, totalAmount + shippingFee );
+  const finalTotal = Math.max(0, totalAmount + shippingFee + (totalAmount * 0.18));
 
   // Delivery date calculation
   const getDeliveryDates = () => {
@@ -947,25 +946,25 @@ const Checkout = () => {
                 <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Code Discount</span>
-                <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
+                <span className="text-gray-600">GST (18% tax)</span>
+                <span className="font-medium">₹{(totalMRP * 0.18).toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>
-                  <button className="ml-2 text-blue-700 text-sm font-medium">
+                  {/* <button className="ml-2 text-blue-700 text-sm font-medium">
                     Know more
-                  </button>
+                  </button> */}
                 </div>
                 <span className="font-medium">₹{shippingFee.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between pb-4">
+              {/* <div className="flex justify-between pb-4">
                 <span className="text-gray-600">Discount on MRP</span>
                 <span className="font-medium text-green-600">
                   ₹{discountOnMrp.toFixed(2)}
                 </span>
-              </div>
+              </div> */}
             </div>
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between font-bold text-xl text-[#2F294D]">

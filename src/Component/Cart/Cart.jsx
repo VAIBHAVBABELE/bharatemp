@@ -46,13 +46,13 @@ const Cart = () => {
   const totalAmount = calculateTotalAmount();
   const totalMRP = calculateTotalMRP();
 
-  // Calculate the discount (difference between MRP and discounted price)
-  const codeDiscount = 15;
-  const shippingFee = 5;
-  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
+  // // Calculate the discount (difference between MRP and discounted price)
+  // const codeDiscount = 15;
+  // const shippingFee = 5;
+  // const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
   
-  // Calculate final total using only discounted price
-  const finalTotal = Math.max(0, totalAmount  + shippingFee - codeDiscount);
+  // Calculate final total using only discounted priced
+  const finalTotal = Math.max(0, totalAmount);
 
   // Check if user is logged in
   useEffect(() => {
@@ -208,28 +208,28 @@ const Cart = () => {
             <div className="space-y-4 text-[#2F294D]">
               <div className="flex justify-between">
                 <span className="text-gray-600">Total MRP</span>
-                <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
+                <span className="font-medium">₹{(totalMRP).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Code Discount</span>
-                <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
+                <span className="text-gray-600">GST (18% tax)</span>
+                <span className="font-medium">₹{(finalTotal * 0.18).toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>
                   <button className="ml-2 text-blue-700 text-sm font-medium">Know more</button>
                 </div>
                 <span className="font-medium">₹{shippingFee.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between pb-4">
+              </div> */}
+              {/* <div className="flex justify-between pb-4">
                 <span className="text-gray-600">Discount on MRP</span>
                 <span className="font-medium text-green-600">₹{discountOnMrp.toFixed(2)}</span>
-              </div>
+              </div> */}
             </div>
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between font-bold text-xl text-[#2F294D]">
                 <span>Total Amount</span>
-                <span>₹{finalTotal.toFixed(2)}</span>
+                <span>₹{(finalTotal * 1.18).toFixed(2)}</span>
               </div>
             </div>
             <button 
