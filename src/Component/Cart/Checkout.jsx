@@ -35,9 +35,8 @@ const AddressForm = ({
           type="text"
           name="address"
           placeholder="Enter address"
-          className={`w-full border ${
-            errors?.address ? "border-red-500" : "border-gray-300"
-          } rounded-lg p-2`}
+          className={`w-full border ${errors?.address ? "border-red-500" : "border-gray-300"
+            } rounded-lg p-2`}
           value={address.address}
           onChange={onInputChange}
         />
@@ -53,9 +52,8 @@ const AddressForm = ({
             type="text"
             name="city"
             placeholder="City, State"
-            className={`w-full border ${
-              errors?.city ? "border-red-500" : "border-gray-300"
-            } rounded-lg p-2`}
+            className={`w-full border ${errors?.city ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-2`}
             value={address.city}
             onChange={onInputChange}
           />
@@ -70,15 +68,39 @@ const AddressForm = ({
             name="postalCode"
             placeholder="6 digits"
             maxLength="6"
-            className={`w-full border ${
-              errors?.postalCode ? "border-red-500" : "border-gray-300"
-            } rounded-lg p-2`}
+            className={`w-full border ${errors?.postalCode ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-2`}
             value={address.postalCode}
             onChange={onInputChange}
           />
           {errors?.postalCode && (
             <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>
           )}
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block text-gray-700 mb-1">Company Name</label>
+          <input
+            type="text"
+            name="companyName"
+            placeholder="Company Name"
+            className={`w-full border border-gray-300 rounded-lg p-2`}
+            value={address.companyName}
+            onChange={onInputChange}
+          />
+        </div>
+        <div className="w-1/2">
+          <label className="block text-gray-700 mb-1">Gst Number</label>
+          <input
+            type="text"
+            name="gstNumber"
+            placeholder="Gst Number"
+            className={`w-full border border-gray-300 rounded-lg p-2`}
+            value={address.gstNumber}
+            onChange={onInputChange}
+          />
         </div>
       </div>
 
@@ -103,6 +125,7 @@ const Checkout = () => {
   const [orderId, setOrderId] = useState(null);
   const access = import.meta.env.VITE_ACCESS_TOKEN;
   const secret = import.meta.env.VITE_SECRET_KEY;
+  const [rate, setRate] = useState(0);
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -121,9 +144,10 @@ const Checkout = () => {
     address: "",
     city: "",
     postalCode: "",
+    companyName: "",
+    gstNumber: ""
   });
 
-  
   // Get selected address
   const selectedAddress =
     addresses.find((addr) => addr.id === selectedAddressId) || addresses[0];
@@ -148,15 +172,11 @@ const Checkout = () => {
   const totalMRP = calculateTotalMRP();
 
   // Calculate pricing
-  const codeDiscount = 15;
-  const shippingFee = 5;
-  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
+  const shippingFee = rate;
+  // const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
 
   // Calculate final total using only discounted price
-  const finalTotal = Math.max(
-    0,
-    totalAmount + shippingFee - codeDiscount
-  );
+  const finalTotal = Math.max(0, totalAmount + shippingFee + (totalAmount * 0.18));
 
   // Delivery date calculation
   const getDeliveryDates = () => {
@@ -236,22 +256,26 @@ const Checkout = () => {
       return false;
     }
 
+    toast.dismiss()
+
     try {
       const fullAddress = `${address.address}, ${address.city}, ${address.postalCode}`;
-      
+
       const response = await axios.post(
         `${backend}/user/${userId}/update-address`,
         {
           user: {
             address_index: index,
-            address_value: fullAddress
-          }
+            address_value: fullAddress,
+            companyName: address.companyName,
+            gstNumber: address.gstNumber
+          },
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -339,6 +363,8 @@ const Checkout = () => {
               city: city || "City", // Provide default value
               postalCode: postalCode || "000000", // Provide default value
               fullAddress: addr, // Keep original full address
+              companyName: user.companyName || "",  
+              gstNumber: user.gstNumber || "",      
             };
           });
 
@@ -373,6 +399,8 @@ const Checkout = () => {
       ...newAddress,
       // Combine city and postal code for display
       fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+      gstNumber: newAddress.gstNumber,
+      companyName: newAddress.companyName,
       isSelected: false,
     };
 
@@ -383,6 +411,8 @@ const Checkout = () => {
       address: "",
       city: "",
       postalCode: "",
+      companyName: "",
+      gstNumber: "",
     });
     setShowAddForm(false);
     setErrors({});
@@ -414,6 +444,8 @@ const Checkout = () => {
         address: addressToEdit.address,
         city: cityValue,
         postalCode: postalCodeValue,
+        companyName: addressToEdit.companyName,
+        gstNumber: addressToEdit.gstNumber,
       });
       setEditingAddressId(id);
       setShowEditForm(true);
@@ -440,6 +472,8 @@ const Checkout = () => {
           postalCode: newAddress.postalCode,
           // Update the combined address
           fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+          gstNumber: newAddress.gstNumber,
+          companyName: newAddress.companyName,
         };
 
         // Update user address in API
@@ -457,36 +491,43 @@ const Checkout = () => {
       address: "",
       city: "",
       postalCode: "",
+      companyName: "",
+      gstNumber: "",
     });
     setErrors({});
 
     // Update userData state
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      address: updatedAddresses.map(addr => addr.fullAddress)
+      address: updatedAddresses.map((addr) => addr.fullAddress),
     }));
   };
 
   // Handle removing an address
   const handleRemoveAddress = async (id) => {
     try {
-      const indexToRemove = addresses.findIndex(addr => addr.id === id);
+      const indexToRemove = addresses.findIndex((addr) => addr.id === id);
       if (indexToRemove === -1) return;
 
       // Update in backend first - send empty string to remove the address
-      const success = await updateUserAddress({ address: "", city: "", postalCode: "" }, indexToRemove);
+      const success = await updateUserAddress(
+        { address: "", city: "", postalCode: "" },
+        indexToRemove
+      );
 
       if (success) {
-        const updatedAddresses = addresses.filter(addr => addr.id !== id);
+        const updatedAddresses = addresses.filter((addr) => addr.id !== id);
         setAddresses(updatedAddresses);
         if (id === selectedAddressId) {
-          setSelectedAddressId(updatedAddresses.length > 0 ? updatedAddresses[0].id : null);
+          setSelectedAddressId(
+            updatedAddresses.length > 0 ? updatedAddresses[0].id : null
+          );
         }
 
         // Update userData state
-        setUserData(prev => ({
+        setUserData((prev) => ({
           ...prev,
-          address: updatedAddresses.map(addr => addr.fullAddress)
+          address: updatedAddresses.map((addr) => addr.fullAddress),
         }));
       }
     } catch (error) {
@@ -515,6 +556,73 @@ const Checkout = () => {
     return randomstring;
   }
 
+  // console.log("Selected Address:", selectedAddress?.postalCode);
+
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        // You can decide how to calculate this: average, max, or from first item
+        const firstItem = cartItems[0];
+        // console.log("First Item:", firstItem);
+
+        const [lengthStr, widthStr] = firstItem.product_dimension_length_breadth
+          .split("*")
+          .map((s) => s.trim());
+
+        const shipping_length_cms = parseFloat(lengthStr);
+        const shipping_width_cms = parseFloat(widthStr);
+        const shipping_height_cms = parseFloat(
+          firstItem.product_dimension_height
+        );
+        const shipping_weight_kg = parseFloat(firstItem.product_dimension_weight);
+        // console.log("Shipping Weight (kg):", shipping_weight_kg);
+
+        const response = await axios.post(
+          "https://my.ithinklogistics.com/api_v3/rate/check.json",
+          {
+            data: {
+              from_pincode: "201301",
+              to_pincode: selectedAddress?.postalCode || "000000",
+              shipping_length_cms,
+              shipping_width_cms,
+              shipping_height_cms,
+              shipping_weight_kg,
+              order_type: "forward",
+              payment_method: "Prepaid",
+              product_mrp: totalMRP,
+              access_token: access,
+              secret_key: secret,
+            },
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const rateOptions = response.data?.data;
+        // console.log("Rate Check API Response:", response);
+
+        if (!rateOptions || !Array.isArray(rateOptions)) return;
+
+        if (shipping_weight_kg > 0.5 && rateOptions[4]) {
+          // console.log(rateOptions[4].rate);
+          setRate(rateOptions[4].rate);
+        } else if (rateOptions[3]) {
+          // console.log(rateOptions[3].rate);
+          setRate(rateOptions[3].rate);
+        }
+      } catch (error) {
+        console.error("Error while calling Rate Check API:", error);
+      }
+    };
+
+    if (selectedAddress) {
+      fetchRate();
+    }
+  }, [selectedAddress, cartItems, totalMRP, access, secret]);
+
   // Update the handlePayment function to create order and initiate payment
   const handlePayment = async () => {
     if (addresses.length === 0 || !selectedAddressId) {
@@ -540,9 +648,10 @@ const Checkout = () => {
       // Prepare order items with warranty information
       const orderItems = cartItems.map((item) => {
         // Calculate warranty expiry (1 year from now by default)
+
+        // console.log("item", item);
         const warrantyExpiry = new Date();
         warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
-
 
         return {
           product_id: item._id,
@@ -566,7 +675,7 @@ const Checkout = () => {
         email: userData?.email,
         pincode: postalCode,
         name: userData ? `${userData.name}` : "",
-        city: selectedAddr.city || "City", 
+        city: selectedAddr.city || "City",
         expectedDelivery: expectedDelivery,
       };
 
@@ -583,8 +692,6 @@ const Checkout = () => {
         }
       );
 
-      
-
       if (
         !orderResponse.data ||
         !orderResponse.data.data ||
@@ -599,10 +706,10 @@ const Checkout = () => {
       const FRONTEND_URL = window.location.origin;
 
       const paymentData = {
-        orderId: createdOrderId, 
+        orderId: createdOrderId,
         userId: userId,
         MUID: "T" + Date.now(),
-        FRONTEND_URL: FRONTEND_URL
+        FRONTEND_URL: FRONTEND_URL,
       };
 
       const paymentResponse = await axios.post(
@@ -616,12 +723,15 @@ const Checkout = () => {
         }
       );
 
-      if (paymentResponse.data?.data?.response?.phonepeResponse?.instrumentResponse?.redirectInfo?.url) {
+      if (
+        paymentResponse.data?.data?.response?.phonepeResponse
+          ?.instrumentResponse?.redirectInfo?.url
+      ) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
-        window.location.href = paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
-        
+        window.location.href =
+          paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
       } else {
         throw new Error("Invalid payment response");
       }
@@ -699,20 +809,21 @@ const Checkout = () => {
               Home
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
-            <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
+
+            <Link
+              to="/allproducts"
+              className="hover:text-[#f7941d] transition-colors"
+            >
               All Products
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
+
             <Link to="/cart" className="hover:text-[#f7941d] transition-colors">
               Shopping Cart
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
-            <span className="text-[#f7941d]">
-              Checkout
-            </span>
+
+            <span className="text-[#f7941d]">Checkout</span>
           </div>
         </nav>
 
@@ -738,20 +849,18 @@ const Checkout = () => {
                     {addresses.map((addr) => (
                       <div
                         key={addr.id}
-                        className={`border-2 ${
-                          addr.id === selectedAddressId
+                        className={`border-2 ${addr.id === selectedAddressId
                             ? "border-[#f7941d]"
                             : "border-gray-300"
-                        } rounded-2xl p-6 relative cursor-pointer`}
+                          } rounded-2xl p-6 relative cursor-pointer`}
                         onClick={() => handleSelectAddress(addr.id)}
                       >
                         <div className="absolute right-4 top-4">
                           <div
-                            className={`w-4 h-4 border-2 ${
-                              addr.id === selectedAddressId
+                            className={`w-4 h-4 border-2 ${addr.id === selectedAddressId
                                 ? "border-[#f7941d]"
                                 : "border-gray-300"
-                            } rounded-full flex items-center justify-center`}
+                              } rounded-full flex items-center justify-center`}
                           >
                             {addr.id === selectedAddressId && (
                               <div className="w-2 h-2 bg-[#f7941d] rounded-full"></div>
@@ -766,8 +875,7 @@ const Checkout = () => {
                         )}
                         <p className="text-gray-600 mb-3">
                           {addr.fullAddress ||
-                            `${addr.address}, ${addr.city}${
-                              addr.postalCode ? `, ${addr.postalCode}` : ""
+                            `${addr.address}, ${addr.city}${addr.postalCode ? `, ${addr.postalCode}` : ""
                             }`}
                         </p>
 
@@ -806,6 +914,8 @@ const Checkout = () => {
                           address: "",
                           city: "",
                           postalCode: "",
+                          companyName: "",
+                          gstNumber: "",
                         });
                         setErrors({});
                       }
@@ -824,7 +934,7 @@ const Checkout = () => {
                     onClose={() => {
                       setShowEditForm(false);
                       setEditingAddressId(null);
-                      setNewAddress({ address: "", city: "", postalCode: "" });
+                      setNewAddress({ address: "", city: "", postalCode: "", companyName: "", gstNumber: "" });
                       setErrors({});
                     }}
                     onSubmit={handleSaveEditedAddress}
@@ -859,10 +969,9 @@ const Checkout = () => {
                 </h3>
                 <p className="text-gray-500 text-sm">
                   {selectedAddress.fullAddress ||
-                    `${selectedAddress.address}, ${selectedAddress.city}${
-                      selectedAddress.postalCode
-                        ? `, ${selectedAddress.postalCode}`
-                        : ""
+                    `${selectedAddress.address}, ${selectedAddress.city}${selectedAddress.postalCode
+                      ? `, ${selectedAddress.postalCode}`
+                      : ""
                     }`}
                 </p>
               </div>
@@ -875,25 +984,25 @@ const Checkout = () => {
                 <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Code Discount</span>
-                <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
+                <span className="text-gray-600">GST (18% tax)</span>
+                <span className="font-medium">₹{(totalMRP * 0.18).toFixed(2)}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>
-                  <button className="ml-2 text-blue-700 text-sm font-medium">
+                  {/* <button className="ml-2 text-blue-700 text-sm font-medium">
                     Know more
-                  </button>
+                  </button> */}
                 </div>
                 <span className="font-medium">₹{shippingFee.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between pb-4">
+              {/* <div className="flex justify-between pb-4">
                 <span className="text-gray-600">Discount on MRP</span>
                 <span className="font-medium text-green-600">
                   ₹{discountOnMrp.toFixed(2)}
                 </span>
-              </div>
+              </div> */}
             </div>
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between font-bold text-xl text-[#2F294D]">
@@ -903,11 +1012,10 @@ const Checkout = () => {
             </div>
             <button
               onClick={handlePayment}
-              className={`w-full ${
-                !selectedAddress || processingPayment
+              className={`w-full ${!selectedAddress || processingPayment
                   ? "bg-gray-400"
                   : "bg-[#f7941d]"
-              } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
+                } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
               disabled={!selectedAddress || processingPayment}
             >
               {processingPayment ? (

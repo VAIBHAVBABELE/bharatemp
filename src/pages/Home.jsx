@@ -146,7 +146,7 @@ const ProductSlider = () => {
                       animation: 'moveGradient 2s linear infinite'
                     }}
                   /> */}
-                  
+
                   {/* Main content */}
                   <div className="relative m-[2px] bg-[#fff] border-1 border-[#E0E0E0]  rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
                     <div>

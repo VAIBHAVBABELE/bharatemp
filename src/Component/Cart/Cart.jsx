@@ -46,13 +46,13 @@ const Cart = () => {
   const totalAmount = calculateTotalAmount();
   const totalMRP = calculateTotalMRP();
 
-  // Calculate the discount (difference between MRP and discounted price)
-  const codeDiscount = 15;
-  const shippingFee = 5;
-  const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
-  
-  // Calculate final total using only discounted price
-  const finalTotal = Math.max(0, totalAmount  + shippingFee - codeDiscount);
+  // // Calculate the discount (difference between MRP and discounted price)
+  // const codeDiscount = 15;
+  // const shippingFee = 5;
+  // const discountOnMrp = Math.round((totalMRP - totalAmount) * 100) / 100;
+
+  // Calculate final total using only discounted priced
+  const finalTotal = Math.max(0, totalAmount);
 
   // Check if user is logged in
   useEffect(() => {
@@ -68,7 +68,7 @@ const Cart = () => {
     } else {
       toast.warning('Please login to proceed with checkout');
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login", { state: { from: "cart" } });
       }, 1500);
     }
   };
@@ -84,8 +84,8 @@ const Cart = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
           <p className="text-gray-600 mb-8">Looks like you haven't added any products to your cart yet.</p>
-          <button 
-            onClick={() => navigate('/product')} 
+          <button
+            onClick={() => navigate('/product')}
             className="bg-[#f7941d] text-white px-6 py-3 rounded-full font-medium hover:bg-orange-600 transition-colors"
           >
             Continue Shopping
@@ -113,12 +113,12 @@ const Cart = () => {
               Home
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
+
             <Link to="/allproducts" className="hover:text-[#f7941d] transition-colors">
               All Products
             </Link>
             <FaChevronRight className="text-gray-400" size={12} />
-            
+
             <span className="text-[#f7941d]">
               Shopping Cart ({cartItems.length} items)
             </span>
@@ -134,15 +134,15 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div key={item._id} className="flex border-2 border-gray-300 rounded-2xl p-4 flex-col md:flex-row mb-4 items-start">
                 <div className="w-32 h-32 flex items-center justify-center mr-4">
-                  <img 
-                    src={item.product_image_main || ''} 
-                    alt={item.product_name} 
+                  <img
+                    src={item.product_image_main || ''}
+                    alt={item.product_name}
                     className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="flex justify-between w-full h-32">
                   <div className="flex flex-row justify-between items-start w-full">
-                    <h3 
+                    <h3
                       className="font-medium text-[#2F294D] text-lg cursor-pointer hover:text-[#f7941d]"
                       onClick={() => navigate(`/product/${item._id}`)}
                     >
@@ -156,7 +156,7 @@ const Cart = () => {
 
                     <div className="flex items-center">
                       <div className="flex items-center border border-gray-300 rounded-md mr-3">
-                        <button 
+                        <button
                           onClick={() => decreaseQuantity(item._id)}
                           className={`w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 ${item.quantity <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                           disabled={item.quantity <= 1}
@@ -164,14 +164,14 @@ const Cart = () => {
                           <FaMinus size={12} />
                         </button>
                         <span className="w-8 text-center">{item.quantity}</span>
-                        <button 
+                        <button
                           onClick={() => increaseQuantity(item._id)}
                           className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900"
                         >
                           <FaPlus size={12} />
                         </button>
                       </div>
-                      <button 
+                      <button
                         onClick={() => removeFromCart(item._id)}
                         className="text-red-500 hover:text-red-700"
                       >
@@ -184,7 +184,7 @@ const Cart = () => {
             ))}
 
             <div className="mt-6 flex justify-between items-center">
-              <button 
+              <button
                 onClick={() => {
                   clearCart();
                   window.location.reload();
@@ -193,7 +193,7 @@ const Cart = () => {
               >
                 Clear Cart
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/product')}
                 className="px-4 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-blue-800 transition-colors"
               >
@@ -208,37 +208,37 @@ const Cart = () => {
             <div className="space-y-4 text-[#2F294D]">
               <div className="flex justify-between">
                 <span className="text-gray-600">Total MRP</span>
-                <span className="font-medium">₹{totalMRP.toFixed(2)}</span>
+                <span className="font-medium">₹{(totalMRP).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Code Discount</span>
-                <span className="font-medium">₹{codeDiscount.toFixed(2)}</span>
+                <span className="text-gray-600">GST (18% tax)</span>
+                <span className="font-medium">₹{(finalTotal * 0.18).toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <div className="flex items-center">
                   <span className="text-gray-600">Shipping fees</span>
                   <button className="ml-2 text-blue-700 text-sm font-medium">Know more</button>
                 </div>
                 <span className="font-medium">₹{shippingFee.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between pb-4">
+              </div> */}
+              {/* <div className="flex justify-between pb-4">
                 <span className="text-gray-600">Discount on MRP</span>
                 <span className="font-medium text-green-600">₹{discountOnMrp.toFixed(2)}</span>
-              </div>
+              </div> */}
             </div>
             <div className="border-t border-b border-gray-200 py-4 my-4">
               <div className="flex justify-between font-bold text-xl text-[#2F294D]">
                 <span>Total Amount</span>
-                <span>₹{finalTotal.toFixed(2)}</span>
+                <span>₹{(finalTotal * 1.18).toFixed(2)}</span>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleCheckout}
               className="w-full bg-[#f7941d] cursor-pointer  text-white py-3 rounded-md font-medium mt-4 flex items-center justify-center"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-                <path d="M9 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H8C3.73 8 3.03 9.99 3.3 12.43L4.05 18.43C4.26 20.39 4.98 22 9 22Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M7.5 7.67V6.7C7.5 4.45 9.31 2.24 11.56 2.03C14.24 1.77 16.5 3.88 16.5 6.51V7.89" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H8C3.73 8 3.03 9.99 3.3 12.43L4.05 18.43C4.26 20.39 4.98 22 9 22Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M7.5 7.67V6.7C7.5 4.45 9.31 2.24 11.56 2.03C14.24 1.77 16.5 3.88 16.5 6.51V7.89" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Checkout
             </button>

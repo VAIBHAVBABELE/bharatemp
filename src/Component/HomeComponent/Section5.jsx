@@ -99,7 +99,7 @@ export default function RaspberrySlider() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`${backend}/product/684028fd67e4f0a208bc1de0`);
+        const response = await axios.get(`${backend}/product/687cfe189236a645209627ab`);
         if (response.data) {
           setFeaturedProduct(response.data.data.product);
         }
