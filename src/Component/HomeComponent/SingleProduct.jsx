@@ -175,6 +175,7 @@ useEffect(() => {
 
   // Handle adding to cart
   const handleAddToCart = () => {
+    toast.dismiss()
     if (product) {
       const regularItem = {
         ...product,
@@ -184,6 +185,7 @@ useEffect(() => {
         isBulkOrder: false,
       };
       addToCart(regularItem);
+      setQuantity(1);
       toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
       setShowCart(true);
     }

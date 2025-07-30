@@ -18,20 +18,24 @@ const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_TO_CART':
       const existingItemIndex = state.cartItems.findIndex(
-        (item) => 
-          item._id === action.payload._id && 
-          item.isBulkOrder === action.payload.isBulkOrder &&
-          item.bulkRange === action.payload.bulkRange
+        (item) =>
+          item._id === action.payload._id &&
+          item.isBulkOrder === !!action.payload.isBulkOrder &&
+          (item.bulkRange || '') === (action.payload.bulkRange || '')
       );
 
       if (existingItemIndex >= 0) {
-        // Item already exists, update quantity
         const updatedCartItems = [...state.cartItems];
+        const existingItem = updatedCartItems[existingItemIndex];
+        const addedQuantity = action.payload.quantity || 1;
+        const updatedQuantity = existingItem.quantity + addedQuantity;
+        const updatedPrice = action.payload.price || existingItem.price;
+
         updatedCartItems[existingItemIndex] = {
-          ...updatedCartItems[existingItemIndex],
-          quantity: action.payload.quantity || updatedCartItems[existingItemIndex].quantity + 1,
-          price: action.payload.price || updatedCartItems[existingItemIndex].price,
-          total: action.payload.total || (action.payload.price * action.payload.quantity)
+          ...existingItem,
+          quantity: updatedQuantity,
+          price: updatedPrice,
+          total: updatedQuantity * updatedPrice
         };
 
         return {
@@ -39,20 +43,22 @@ const cartReducer = (state, action) => {
           cartItems: updatedCartItems
         };
       } else {
-        // Add new item to cart with all bulk order properties
         const newItem = {
           ...action.payload,
           quantity: action.payload.quantity || 1,
           price: action.payload.price || action.payload.discounted_single_product_price,
-          total: action.payload.total || (action.payload.price * action.payload.quantity),
-          isBulkOrder: action.payload.isBulkOrder || false,
-          bulkRange: action.payload.bulkRange || null
+          total: (action.payload.price || action.payload.discounted_single_product_price) *
+            (action.payload.quantity || 1),
+          isBulkOrder: !!action.payload.isBulkOrder,
+          bulkRange: action.payload.bulkRange || ''
         };
+
         return {
           ...state,
           cartItems: [...state.cartItems, newItem]
         };
       }
+
 
     case 'REMOVE_FROM_CART':
       return {
@@ -113,7 +119,7 @@ const cartReducer = (state, action) => {
 
       // Calculate shipping (free over 1000, otherwise 5% of total with min 50)
       const shipping = totalAmount > 1000 ? 0 : Math.max(totalAmount * 0.05, 50);
-      
+
       // Calculate tax (8% of total)
       const tax = totalAmount * 0.08;
 
@@ -146,7 +152,7 @@ export const CartProvider = ({ children }) => {
             parsedCart[key] = initialState[key];
           }
         });
-        
+
         // Set the cart state with the saved cart
         Object.entries(parsedCart).forEach(([key, value]) => {
           if (key === 'cartItems' && Array.isArray(value)) {
@@ -156,7 +162,7 @@ export const CartProvider = ({ children }) => {
             });
           }
         });
-        
+
         // Recalculate totals
         dispatch({ type: 'CALCULATE_TOTALS' });
       } catch (error) {

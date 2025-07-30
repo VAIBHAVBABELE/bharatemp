@@ -11,6 +11,10 @@ import fallbackImage3 from "../../assets/homepage3.webp";
 import fallbackImage4 from "../../assets/homepage4.webp";
 import fallbackImage5 from "../../assets/homepage5.webp";
 import fallbackImage6 from "../../assets/homepage6.webp";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+const backend = import.meta.env.VITE_BACKEND;
 
 const fallbackImages = [
   fallbackImage1,
@@ -71,14 +75,14 @@ const ProductSlider = ({ products = [] }) => {
   const allProducts =
     products.length > 0
       ? products.map((product, index) => ({
-          ...product,
-          // Ensure products have all required fields
-          image: product.image || fallbackImages[index % fallbackImages.length],
-          rating: product.rating || 4,
-          reviewCount: product.reviewCount || 15,
-          tag: "BUY NOW",
-          tags: "Add to cart",
-        }))
+        ...product,
+        // Ensure products have all required fields
+        image: product.image || fallbackImages[index % fallbackImages.length],
+        rating: product.rating || 4,
+        reviewCount: product.reviewCount || 15,
+        tag: "BUY NOW",
+        tags: "Add to cart",
+      }))
       : fallbackProducts;
 
   // Filter products based on active tab
@@ -120,6 +124,90 @@ const ProductSlider = ({ products = [] }) => {
       customShippingFee: 5,
     });
   };
+
+  const handleBuyNow2 = async (e, product) => {
+    e.stopPropagation()
+    toast.dismiss()
+
+    console.log("Product:", product);
+
+    const amount = product.discounted_single_product_price
+
+    console.log("Amount:", amount);
+
+    try {
+      // Create order on backend
+      const orderResponse = await axios.post(`${backend}/payment/create-magic-checkout-payment`, {
+        amount
+      }, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+      });
+
+      console.log("Order Response:", orderResponse);
+
+      const order = orderResponse.data.data.response;
+
+      // Magic Checkout options with form fields
+      const options = {
+        key: 'rzp_live_MXIKg6JxNYfUrs',
+        one_click_checkout: true,
+        name: "BharatroniX",
+        order_id: order.id,
+        show_coupons: false,
+        redirect: false,
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
+        },
+        theme: {
+          color: "#3399cc"
+        },
+        handler: function (response) {
+          handlePaymentSuccess(response);
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          }
+        }
+      };
+
+      // Load Razorpay Magic Checkout
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handlePaymentSuccess = async (response) => {
+    try {
+      console.log("Payment Response:", response);
+      // Verify payment on backend
+      const verifyResponse = await axios.post(`${backend}/verify-magic-checkout-payment`, {
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature
+      });
+
+      if (verifyResponse.data.success) {
+        alert('Payment successful!');
+        // Redirect to success page or update UI
+      } else {
+        alert('Payment verification failed');
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      alert('Payment verification failed');
+    }
+  };
+
+
   // Handle product click to view product details
   const handleProductClick = (product) => {
     navigate(`/product/${product._id}`);
@@ -135,9 +223,8 @@ const ProductSlider = ({ products = [] }) => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 font-medium cursor-pointer lg:text-[20px] md:text-[13px]  text-[13px] relative ${
-                activeTab === tab ? "text-[#333333]  " : "text-gray-500 "
-              }`}
+              className={`pb-2 font-medium cursor-pointer lg:text-[20px] md:text-[13px]  text-[13px] relative ${activeTab === tab ? "text-[#333333]  " : "text-gray-500 "
+                }`}
             >
               {tab}
               {activeTab === tab && (
@@ -215,7 +302,7 @@ const ProductSlider = ({ products = [] }) => {
               <div className="flex items-center flex-wrap gap-2 mb-2">
                 <button
                   className="bg-[#f7941d] cursor-pointer text-white font-medium py-1 px-4 rounded-2xl text-sm"
-                  onClick={(e) => handleBuyNowClick(e, product)}
+                  onClick={(e) => handleBuyNow2(e, product)}
                 >
                   {loadingBuyNow[product._id] ? "Buying..." : "Buy Now"}
                 </button>

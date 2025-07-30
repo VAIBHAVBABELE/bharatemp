@@ -35,9 +35,8 @@ const AddressForm = ({
           type="text"
           name="address"
           placeholder="Enter address"
-          className={`w-full border ${
-            errors?.address ? "border-red-500" : "border-gray-300"
-          } rounded-lg p-2`}
+          className={`w-full border ${errors?.address ? "border-red-500" : "border-gray-300"
+            } rounded-lg p-2`}
           value={address.address}
           onChange={onInputChange}
         />
@@ -53,9 +52,8 @@ const AddressForm = ({
             type="text"
             name="city"
             placeholder="City, State"
-            className={`w-full border ${
-              errors?.city ? "border-red-500" : "border-gray-300"
-            } rounded-lg p-2`}
+            className={`w-full border ${errors?.city ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-2`}
             value={address.city}
             onChange={onInputChange}
           />
@@ -70,15 +68,39 @@ const AddressForm = ({
             name="postalCode"
             placeholder="6 digits"
             maxLength="6"
-            className={`w-full border ${
-              errors?.postalCode ? "border-red-500" : "border-gray-300"
-            } rounded-lg p-2`}
+            className={`w-full border ${errors?.postalCode ? "border-red-500" : "border-gray-300"
+              } rounded-lg p-2`}
             value={address.postalCode}
             onChange={onInputChange}
           />
           {errors?.postalCode && (
             <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>
           )}
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="block text-gray-700 mb-1">Company Name</label>
+          <input
+            type="text"
+            name="companyName"
+            placeholder="Company Name"
+            className={`w-full border border-gray-300 rounded-lg p-2`}
+            value={address.companyName}
+            onChange={onInputChange}
+          />
+        </div>
+        <div className="w-1/2">
+          <label className="block text-gray-700 mb-1">Gst Number</label>
+          <input
+            type="text"
+            name="gstNumber"
+            placeholder="Gst Number"
+            className={`w-full border border-gray-300 rounded-lg p-2`}
+            value={address.gstNumber}
+            onChange={onInputChange}
+          />
         </div>
       </div>
 
@@ -122,6 +144,8 @@ const Checkout = () => {
     address: "",
     city: "",
     postalCode: "",
+    companyName: "",
+    gstNumber: ""
   });
 
   // Get selected address
@@ -232,6 +256,8 @@ const Checkout = () => {
       return false;
     }
 
+    toast.dismiss()
+
     try {
       const fullAddress = `${address.address}, ${address.city}, ${address.postalCode}`;
 
@@ -241,6 +267,8 @@ const Checkout = () => {
           user: {
             address_index: index,
             address_value: fullAddress,
+            companyName: address.companyName,
+            gstNumber: address.gstNumber
           },
         },
         {
@@ -335,6 +363,8 @@ const Checkout = () => {
               city: city || "City", // Provide default value
               postalCode: postalCode || "000000", // Provide default value
               fullAddress: addr, // Keep original full address
+              companyName: user.companyName || "",  
+              gstNumber: user.gstNumber || "",      
             };
           });
 
@@ -369,6 +399,8 @@ const Checkout = () => {
       ...newAddress,
       // Combine city and postal code for display
       fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+      gstNumber: newAddress.gstNumber,
+      companyName: newAddress.companyName,
       isSelected: false,
     };
 
@@ -379,6 +411,8 @@ const Checkout = () => {
       address: "",
       city: "",
       postalCode: "",
+      companyName: "",
+      gstNumber: "",
     });
     setShowAddForm(false);
     setErrors({});
@@ -410,6 +444,8 @@ const Checkout = () => {
         address: addressToEdit.address,
         city: cityValue,
         postalCode: postalCodeValue,
+        companyName: addressToEdit.companyName,
+        gstNumber: addressToEdit.gstNumber,
       });
       setEditingAddressId(id);
       setShowEditForm(true);
@@ -436,6 +472,8 @@ const Checkout = () => {
           postalCode: newAddress.postalCode,
           // Update the combined address
           fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+          gstNumber: newAddress.gstNumber,
+          companyName: newAddress.companyName,
         };
 
         // Update user address in API
@@ -453,6 +491,8 @@ const Checkout = () => {
       address: "",
       city: "",
       postalCode: "",
+      companyName: "",
+      gstNumber: "",
     });
     setErrors({});
 
@@ -516,14 +556,14 @@ const Checkout = () => {
     return randomstring;
   }
 
-  console.log("Selected Address:", selectedAddress?.postalCode);
+  // console.log("Selected Address:", selectedAddress?.postalCode);
 
   useEffect(() => {
     const fetchRate = async () => {
       try {
         // You can decide how to calculate this: average, max, or from first item
         const firstItem = cartItems[0];
-        console.log("First Item:", firstItem);
+        // console.log("First Item:", firstItem);
 
         const [lengthStr, widthStr] = firstItem.product_dimension_length_breadth
           .split("*")
@@ -535,7 +575,7 @@ const Checkout = () => {
           firstItem.product_dimension_height
         );
         const shipping_weight_kg = parseFloat(firstItem.product_dimension_weight);
-        console.log("Shipping Weight (kg):", shipping_weight_kg);
+        // console.log("Shipping Weight (kg):", shipping_weight_kg);
 
         const response = await axios.post(
           "https://my.ithinklogistics.com/api_v3/rate/check.json",
@@ -547,7 +587,7 @@ const Checkout = () => {
               shipping_width_cms,
               shipping_height_cms,
               shipping_weight_kg,
-              order_type: "forward", 
+              order_type: "forward",
               payment_method: "Prepaid",
               product_mrp: totalMRP,
               access_token: access,
@@ -562,15 +602,15 @@ const Checkout = () => {
         );
 
         const rateOptions = response.data?.data;
-        console.log("Rate Check API Response:", response);
+        // console.log("Rate Check API Response:", response);
 
         if (!rateOptions || !Array.isArray(rateOptions)) return;
 
         if (shipping_weight_kg > 0.5 && rateOptions[4]) {
-          console.log(rateOptions[4].rate);
+          // console.log(rateOptions[4].rate);
           setRate(rateOptions[4].rate);
         } else if (rateOptions[3]) {
-          console.log(rateOptions[3].rate);
+          // console.log(rateOptions[3].rate);
           setRate(rateOptions[3].rate);
         }
       } catch (error) {
@@ -609,7 +649,7 @@ const Checkout = () => {
       const orderItems = cartItems.map((item) => {
         // Calculate warranty expiry (1 year from now by default)
 
-        console.log("item", item);
+        // console.log("item", item);
         const warrantyExpiry = new Date();
         warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
 
@@ -809,20 +849,18 @@ const Checkout = () => {
                     {addresses.map((addr) => (
                       <div
                         key={addr.id}
-                        className={`border-2 ${
-                          addr.id === selectedAddressId
+                        className={`border-2 ${addr.id === selectedAddressId
                             ? "border-[#f7941d]"
                             : "border-gray-300"
-                        } rounded-2xl p-6 relative cursor-pointer`}
+                          } rounded-2xl p-6 relative cursor-pointer`}
                         onClick={() => handleSelectAddress(addr.id)}
                       >
                         <div className="absolute right-4 top-4">
                           <div
-                            className={`w-4 h-4 border-2 ${
-                              addr.id === selectedAddressId
+                            className={`w-4 h-4 border-2 ${addr.id === selectedAddressId
                                 ? "border-[#f7941d]"
                                 : "border-gray-300"
-                            } rounded-full flex items-center justify-center`}
+                              } rounded-full flex items-center justify-center`}
                           >
                             {addr.id === selectedAddressId && (
                               <div className="w-2 h-2 bg-[#f7941d] rounded-full"></div>
@@ -837,8 +875,7 @@ const Checkout = () => {
                         )}
                         <p className="text-gray-600 mb-3">
                           {addr.fullAddress ||
-                            `${addr.address}, ${addr.city}${
-                              addr.postalCode ? `, ${addr.postalCode}` : ""
+                            `${addr.address}, ${addr.city}${addr.postalCode ? `, ${addr.postalCode}` : ""
                             }`}
                         </p>
 
@@ -877,6 +914,8 @@ const Checkout = () => {
                           address: "",
                           city: "",
                           postalCode: "",
+                          companyName: "",
+                          gstNumber: "",
                         });
                         setErrors({});
                       }
@@ -895,7 +934,7 @@ const Checkout = () => {
                     onClose={() => {
                       setShowEditForm(false);
                       setEditingAddressId(null);
-                      setNewAddress({ address: "", city: "", postalCode: "" });
+                      setNewAddress({ address: "", city: "", postalCode: "", companyName: "", gstNumber: "" });
                       setErrors({});
                     }}
                     onSubmit={handleSaveEditedAddress}
@@ -930,10 +969,9 @@ const Checkout = () => {
                 </h3>
                 <p className="text-gray-500 text-sm">
                   {selectedAddress.fullAddress ||
-                    `${selectedAddress.address}, ${selectedAddress.city}${
-                      selectedAddress.postalCode
-                        ? `, ${selectedAddress.postalCode}`
-                        : ""
+                    `${selectedAddress.address}, ${selectedAddress.city}${selectedAddress.postalCode
+                      ? `, ${selectedAddress.postalCode}`
+                      : ""
                     }`}
                 </p>
               </div>
@@ -974,11 +1012,10 @@ const Checkout = () => {
             </div>
             <button
               onClick={handlePayment}
-              className={`w-full ${
-                !selectedAddress || processingPayment
+              className={`w-full ${!selectedAddress || processingPayment
                   ? "bg-gray-400"
                   : "bg-[#f7941d]"
-              } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
+                } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
               disabled={!selectedAddress || processingPayment}
             >
               {processingPayment ? (
