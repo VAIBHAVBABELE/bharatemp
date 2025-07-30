@@ -135,13 +135,13 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                 <div className="space-y-6">
                   <div className="bg-gray-50 p-6 rounded-xl">
                     <h3 className="text-lg font-semibold text-[#2F294D] mb-2">
-                      Warranty Period
+                      Warranty 
                     </h3>
                     <p className="text-gray-600">
-                      1 Year Limited Hardware Warranty
+                      {product?.product_warranty}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-6 rounded-xl">
+                  {/* <div className="bg-gray-50 p-6 rounded-xl">
                     <h3 className="text-lg font-semibold text-[#2F294D] mb-2">
                       Coverage
                     </h3>
@@ -151,7 +151,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                       <li>Technical support</li>
                       <li>Parts replacement</li>
                     </ul>
-                  </div>
+                  </div> */}
                   <div className="bg-gray-50 p-6 rounded-xl">
                     <h3 className="text-lg font-semibold text-[#2F294D] mb-2">
                       Support Contact
@@ -159,7 +159,7 @@ const ProductDetailsModal = ({ isOpen, onClose, product }) => {
                     <p className="text-gray-600">
                       Email: support@bharatronix.com
                     </p>
-                    <p className="text-gray-600">Phone: 1-800-123-4567</p>
+                    <p className="text-gray-600">Phone: +9179827 48787</p>
                   </div>
                 </div>
               </div>

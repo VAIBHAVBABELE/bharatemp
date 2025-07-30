@@ -89,6 +89,12 @@ export default function ProductCard() {
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
   const actionButtonsRef = useRef(null);
+  const [selectedMainImage, setSelectedMainImage] = useState(product?.product_image_main);
+
+// Update the state when product changes
+useEffect(() => {
+  setSelectedMainImage(product?.product_image_main);
+}, [product?.product_image_main]);
 
   // Fetch product data from API
   useEffect(() => {
@@ -169,6 +175,7 @@ export default function ProductCard() {
 
   // Handle adding to cart
   const handleAddToCart = () => {
+    toast.dismiss()
     if (product) {
       const regularItem = {
         ...product,
@@ -178,6 +185,7 @@ export default function ProductCard() {
         isBulkOrder: false,
       };
       addToCart(regularItem);
+      setQuantity(1);
       toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
       setShowCart(true);
     }
@@ -409,6 +417,8 @@ export default function ProductCard() {
     );
   }
 
+  console.log("Product:", product);
+
   return (
     <div className="w-full px-4 md:px-10 lg:px-16 font-[outfit] relative pb-[100px]">
       {/* Breadcrumb Navigation */}
@@ -443,29 +453,52 @@ export default function ProductCard() {
       <div className="flex flex-col gap-10 justify-between lg:flex-row">
         {/* Left: Product Images */}
         <div className="w-full lg:w-[45%]">
-          <div className="bg-white rounded-lg mb-4">
-            <img
-              src={product.product_image_main}
-              alt={product.product_name}
-              className="w-full h-[400px] object-contain"
-            />
-          </div>
-          {/* Thumbnails */}
-          <div className="grid grid-cols-5 gap-4">
-            {product.product_image_sub?.map((img, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-[#1e3473]"
-              >
-                <img
-                  src={img}
-                  alt={`${product.product_name} thumbnail ${index + 1}`}
-                  className="w-full h-[100px] object-contain"
-                />
-              </div>
-            ))}
-          </div>
+    <div className="bg-white rounded-lg mb-4">
+      <img
+        src={selectedMainImage}
+        alt={product.product_name}
+        className="w-full h-[400px] object-contain"
+      />
+    </div>
+    
+    {/* Thumbnails */}
+    <div className="grid grid-cols-5 gap-4">
+      {/* Main image thumbnail */}
+      <div
+        className={`border rounded-lg p-2 cursor-pointer transition-colors ${
+          selectedMainImage === product.product_image_main
+            ? 'border-[#1e3473] border-2'
+            : 'border-gray-200 hover:border-[#1e3473]'
+        }`}
+        onClick={() => setSelectedMainImage(product.product_image_main)}
+      >
+        <img
+          src={product.product_image_main}
+          alt={`${product.product_name} main`}
+          className="w-full h-[100px] object-contain"
+        />
+      </div>
+      
+      {/* Sub images thumbnails */}
+      {product.product_image_sub?.map((img, index) => (
+        <div
+          key={index}
+          className={`border rounded-lg p-2 cursor-pointer transition-colors ${
+            selectedMainImage === img
+              ? 'border-[#1e3473] border-2'
+              : 'border-gray-200 hover:border-[#1e3473]'
+          }`}
+          onClick={() => setSelectedMainImage(img)}
+        >
+          <img
+            src={img}
+            alt={`${product.product_name} thumbnail ${index + 1}`}
+            className="w-full h-[100px] object-contain"
+          />
         </div>
+      ))}
+    </div>
+  </div>
 
         {/* Right: Product Details */}
         <div className="w-full lg:w-[45%] space-y-6">
@@ -504,8 +537,10 @@ export default function ProductCard() {
           {/* Price Section */}
           <div className="space-y-2">
             <div className="text-gray-500 text-sm">
-              ₹2345 (incl. of all taxes)
+              ₹{(product.discounted_single_product_price * 1.18).toFixed(2)}{" "}
+              (incl. of all taxes)
             </div>
+
             <div className="flex items-baseline gap-4">
               <span className="text-4xl font-bold text-[#162554]">
                 ₹
@@ -513,7 +548,7 @@ export default function ProductCard() {
                   "en-IN"
                 )}
               </span>
-              <span className="text-sm text-gray-500">+₹41 Shipping</span>
+              {/* <span className="text-sm text-gray-500">+₹41 Shipping</span> */}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-gray-500 line-through">
