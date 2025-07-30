@@ -1007,31 +1007,14 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            {navItems.map((item) => (
-              <div className="relative dropdown-container" key={item.key}>
-                <button
-                  onClick={() => toggleDropdown(item.key)}
+              <div className="relative dropdown-container">
+                <Link
+                to={'/coming-soon'}
                   className="flex items-center gap-1 text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
                 >
-                  {item.name}
-                  <IoMdArrowDropdown />
-                </button>
-                {openDropdown === item.key && (
-                  <div className="absolute top-10 left-0 bg-white shadow-lg rounded-md py-2 w-40 z-50">
-                    {item.items.map((subItem, idx) => (
-                      <Link
-                        to={item.links[idx]}
-                        key={idx}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setOpenDropdown("")}
-                      >
-                        {subItem}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                  Shop By Brands
+                </Link>
               </div>
-            ))}
             <Link
               to="/b2bpage"
               className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"

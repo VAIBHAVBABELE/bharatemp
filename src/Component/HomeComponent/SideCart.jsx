@@ -119,21 +119,6 @@ const SideCart = ({ isOpen, onClose }) => {
                     <span>Total MRP</span>
                     <span>₹{summary.totalMRP.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Code Discount</span>
-                    <span>- ₹{summary.codeDiscount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <span>Shipping fees</span>
-                      <Link to="#" className="text-[#1e3473] text-sm">Know more</Link>
-                    </div>
-                    <span>₹{summary.shippingFees.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Discount on MRP</span>
-                    <span>₹{summary.discountOnMRP.toFixed(2)}</span>
-                  </div>
                 </div>
                 <div className="flex justify-between items-center mt-6 pt-4 border-t">
                   <span className="text-lg font-bold text-[#2F294D]">Total Amount</span>
@@ -141,7 +126,7 @@ const SideCart = ({ isOpen, onClose }) => {
                 </div>
                 <div className="flex gap-4 mt-6">
                   <Link 
-                    to="/cart" 
+                    to="/checkout" 
                     onClick={onClose}
                     className="flex-1 px-6 py-3 bg-[#F7941D] text-white rounded-xl font-medium text-center"
                   >

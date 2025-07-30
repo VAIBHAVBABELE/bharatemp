@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const comingFromCart = location.state?.from === "cart";
 
   const backend = import.meta.env.VITE_BACKEND;
 
@@ -36,7 +39,11 @@ const Login = () => {
         localStorage.setItem('token', response.data.data.token);
         toast.success("Login successful");
         setTimeout(() => {
-          navigate("/");
+          if (comingFromCart) {
+            navigate("/cart");
+          } else {
+            navigate("/");
+          }
           window.location.reload();
         }, 1000);
       }
@@ -65,7 +72,7 @@ const Login = () => {
           <div className="w-[85%] h-[550px] md:h-[650px] flex flex-col justify-between p-6 md:p-8 lg:p-12 bg-[#1E3473] rounded-[35px]">
             <div>
               <h1 className="text-4xl font-bold text-white mb-10">Login</h1>
-              
+
               {error && (
                 <div className="mb-3 p-2 flex justify-center items-center bg-red-100 border border-red-400 text-red-700 rounded">
                   {error}
