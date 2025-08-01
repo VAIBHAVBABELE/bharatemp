@@ -80,7 +80,7 @@ import frames from "../assets/frames.webp";
 import props from "../assets/props.webp";
 import flightcontroller from "../assets/flightcontroller.webp";
 import motions from "../assets/motions.webp";
-import protectionc  from "../assets/protectionc.webp";
+import protectionc from "../assets/protectionc.webp";
 
 
 const backend = import.meta.env.VITE_BACKEND;
@@ -356,7 +356,30 @@ const Navbar = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
+  const [userPincode, setUserPincode] = useState('');
+  const [stringForDelivery, setStringForDelivery] = useState('Delivery in 24 Hours');
   const currentLocation = useLocation();
+
+  const getLocationByIP = async () => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      const foundPincode = pincodes.find((pincode) => pincode.Pincode === String(data.postal));
+
+      if (foundPincode) {
+        setStringForDelivery("Delivery in 24 Hours");
+      } else {
+        setStringForDelivery("Delivery in 24 to 72 Hours");
+      }
+      setUserPincode(data.postal);
+    } catch (error) {
+      console.error('Error fetching IP location:', error);
+    }
+  };
+
+  useEffect(() => {
+    getLocationByIP();
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -714,7 +737,7 @@ const Navbar = () => {
                     <FaChevronDown className="text-blue-900 text-xs" />
                   </div>
                   <span className="text-[12px] leading-0 text-[#1E3473]">
-                    Delivery in 60 Min
+                    {stringForDelivery}
                   </span>
                 </div>
               </div>
@@ -814,9 +837,8 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative border cursor-pointer border-gray-300 w-9 h-9 rounded-full flex items-center justify-center  transition-colors ${
-                  isListening ? "ring-2 ring-[#F7941D]" : ""
-                }`}
+                className={`relative border cursor-pointer border-gray-300 w-9 h-9 rounded-full flex items-center justify-center  transition-colors ${isListening ? "ring-2 ring-[#F7941D]" : ""
+                  }`}
                 onClick={startVoiceSearch}
               >
                 <img src={mic} alt="Mic" className="w-7 h-7" />
@@ -1007,14 +1029,14 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-              <div className="relative dropdown-container">
-                <Link
+            <div className="relative dropdown-container">
+              <Link
                 to={'/coming-soon'}
-                  className="flex items-center gap-1 text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
-                >
-                  Shop By Brands
-                </Link>
-              </div>
+                className="flex items-center gap-1 text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+              >
+                Shop By Brands
+              </Link>
+            </div>
             <Link
               to="/b2bpage"
               className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
@@ -1113,15 +1135,13 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
-                  isListening ? "ring-2 ring-[#F7941D]" : ""
-                }`}
+                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${isListening ? "ring-2 ring-[#F7941D]" : ""
+                  }`}
                 onClick={startVoiceSearch}
               >
                 <FaMicrophone
-                  className={`h-5 w-5 ${
-                    isListening ? "text-[#F7941D]" : "text-gray-600"
-                  }`}
+                  className={`h-5 w-5 ${isListening ? "text-[#F7941D]" : "text-gray-600"
+                    }`}
                 />
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
