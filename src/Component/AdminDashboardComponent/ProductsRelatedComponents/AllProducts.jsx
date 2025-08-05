@@ -636,8 +636,8 @@ const AllProducts = () => {
     return showPopup ? <UnauthorizedPopup onClose={closePopup} /> : null;
   }
 
-  console.log("products", products);
-  console.log("totalProducts", totalProducts);
+  // console.log("products", products);
+  // console.log("totalProducts", totalProducts);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-blue-50 p-8 pt-14">

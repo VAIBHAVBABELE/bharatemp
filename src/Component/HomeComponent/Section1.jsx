@@ -128,66 +128,67 @@ const ProductSlider = ({ products = [] }) => {
   const handleBuyNow2 = async (e, product) => {
     e.stopPropagation()
     toast.dismiss()
+    window.location.href = `/checkout`;
 
-    console.log("Product:", product);
+    // console.log("Product:", product);
 
-    const amount = product.discounted_single_product_price
+    // const amount = product.discounted_single_product_price
 
-    console.log("Amount:", amount);
+    // // console.log("Amount:", amount);
 
-    try {
-      // Create order on backend
-      const orderResponse = await axios.post(`${backend}/payment/create-magic-checkout-payment`, {
-        amount
-      }, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-      });
+    // try {
+    //   // Create order on backend
+    //   const orderResponse = await axios.post(`${backend}/payment/create-magic-checkout-payment`, {
+    //     amount
+    //   }, {
+    //     headers: {
+    //       "Authorization": `Bearer ${localStorage.getItem("token")}`
+    //     },
+    //   });
 
-      console.log("Order Response:", orderResponse);
+    //   // console.log("Order Response:", orderResponse);
 
-      const order = orderResponse.data.data.response;
+    //   const order = orderResponse.data.data.response;
 
-      // Magic Checkout options with form fields
-      const options = {
-        key: 'rzp_live_MXIKg6JxNYfUrs',
-        one_click_checkout: true,
-        name: "BharatroniX",
-        order_id: order.id,
-        show_coupons: false,
-        redirect: false,
-        prefill: {
-          name: "",
-          email: "",
-          contact: ""
-        },
-        theme: {
-          color: "#3399cc"
-        },
-        handler: function (response) {
-          handlePaymentSuccess(response);
-        },
-        modal: {
-          ondismiss: function () {
-            setLoading(false);
-          }
-        }
-      };
+    //   // Magic Checkout options with form fields
+    //   const options = {
+    //     key: 'rzp_live_VYPdZDe9pDrS0A',
+    //     one_click_checkout: true,
+    //     name: "BharatroniX",
+    //     order_id: order.id,
+    //     show_coupons: false,
+    //     redirect: false,
+    //     prefill: {
+    //       name: "",
+    //       email: "",
+    //       contact: ""
+    //     },
+    //     theme: {
+    //       color: "#3399cc"
+    //     },
+    //     handler: function (response) {
+    //       handlePaymentSuccess(response);
+    //     },
+    //     modal: {
+    //       ondismiss: function () {
+    //         setLoading(false);
+    //       }
+    //     }
+    //   };
 
-      // Load Razorpay Magic Checkout
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+    //   // Load Razorpay Magic Checkout
+    //   const rzp = new window.Razorpay(options);
+    //   rzp.open();
 
-    } catch (error) {
-      console.error('Error creating order:', error);
-      toast.error(error.response.data.message);
-    }
+    // } catch (error) {
+    //   console.error('Error creating order:', error);
+    //   toast.error(error.response.data.message);
+    // }
   };
 
   const handlePaymentSuccess = async (response) => {
     try {
-      console.log("Payment Response:", response);
+      // console.log("Payment Response:", response);
       // Verify payment on backend
       const verifyResponse = await axios.post(`${backend}/verify-magic-checkout-payment`, {
         razorpay_order_id: response.razorpay_order_id,

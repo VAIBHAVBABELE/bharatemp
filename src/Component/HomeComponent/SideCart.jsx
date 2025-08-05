@@ -4,11 +4,11 @@ import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const SideCart = ({ isOpen, onClose }) => {
-  const { 
-    cartItems, 
-    increaseQuantity, 
-    decreaseQuantity, 
-    removeFromCart 
+  const {
+    cartItems,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart
   } = useCart();
 
   const calculateSummary = () => {
@@ -17,6 +17,7 @@ const SideCart = ({ isOpen, onClose }) => {
       codeDiscount: 15.00,
       shippingFees: 5.00,
       discountOnMRP: 0,
+      gst: 0,
       total: 0
     };
 
@@ -27,17 +28,17 @@ const SideCart = ({ isOpen, onClose }) => {
       summary.discountOnMRP += (itemPrice * item.quantity * 0.1);
     });
 
-    summary.total = (
-      summary.totalMRP -
-      summary.codeDiscount +
-      summary.shippingFees -
-      summary.discountOnMRP
-    ).toFixed(2);
+    // Calculate GST on total MRP
+    summary.gst = summary.totalMRP * 0.18;
+
+    // Total should be: Total MRP + GST (removing other deductions for now)
+    summary.total = (summary.totalMRP + summary.gst).toFixed(2);
 
     return summary;
   };
 
   const summary = calculateSummary();
+
 
   return (
     <>
@@ -119,21 +120,25 @@ const SideCart = ({ isOpen, onClose }) => {
                     <span>Total MRP</span>
                     <span>₹{summary.totalMRP.toFixed(2)}</span>
                   </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>GST (18% tax)</span>
+                    <span>₹{summary.gst.toFixed(2)}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between items-center mt-6 pt-4 border-t">
                   <span className="text-lg font-bold text-[#2F294D]">Total Amount</span>
                   <span className="text-xl font-bold text-[#2F294D]">₹{summary.total}</span>
                 </div>
                 <div className="flex gap-4 mt-6">
-                  <Link 
-                    to="/checkout" 
+                  <Link
+                    to="/checkout"
                     onClick={onClose}
                     className="flex-1 px-6 py-3 bg-[#F7941D] text-white rounded-xl font-medium text-center"
                   >
                     Checkout
                   </Link>
-                  <Link 
-                    to="/cart" 
+                  <Link
+                    to="/cart"
                     onClick={onClose}
                     className="flex-1 px-6 py-3 bg-[#1e3473] text-white rounded-xl font-medium text-center"
                   >

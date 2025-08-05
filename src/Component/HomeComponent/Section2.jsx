@@ -95,13 +95,13 @@ export default function DronePartsCarousel({ products = [] }) {
   const processedProducts =
     products.length > 0
       ? products.map((product, index) => ({
-          ...product,
-          // Ensure all required fields exist
-          category: product.category || "Top 30",
-          image: product.image || fallbackImages[index % fallbackImages.length],
-          tag: "Buy Now",
-          tags: "Add to cart",
-        }))
+        ...product,
+        // Ensure all required fields exist
+        category: product.category || "Top 30",
+        image: product.image || fallbackImages[index % fallbackImages.length],
+        tag: "Buy Now",
+        tags: "Add to cart",
+      }))
       : fallbackProducts;
 
   useEffect(() => {
@@ -133,8 +133,8 @@ export default function DronePartsCarousel({ products = [] }) {
     activeCategory === "Top 30"
       ? processedProducts
       : processedProducts.filter(
-          (product) => product.category === activeCategory
-        );
+        (product) => product.category === activeCategory
+      );
 
   // Navigation functions
   const nextSlide = () => {
@@ -177,17 +177,18 @@ export default function DronePartsCarousel({ products = [] }) {
   };
 
   const handleBuyNowClick = (e, product) => {
-  e.stopPropagation(); // Prevent the card click event
-  handleBuyNow({
-    product,
-    quantity: 1,
-    navigate,
-    setLoadingBuyNow: (loading) => {
-      setLoadingBuyNow((prev) => ({ ...prev, [product._id]: loading }));
-    },
-    customShippingFee: 5,
-  });
-};
+    e.stopPropagation(); // Prevent the card click event
+    window.location.href = `/checkout`;
+    // handleBuyNow({
+    //   product,
+    //   quantity: 1,
+    //   navigate,
+    //   setLoadingBuyNow: (loading) => {
+    //     setLoadingBuyNow((prev) => ({ ...prev, [product._id]: loading }));
+    //   },
+    //   customShippingFee: 5,
+    // });
+  };
 
   return (
     <div className="flex flex-col md:flex-row w-full  lg:h-[600px] gap-8 py-16 bg-white font-[Outfit]">
@@ -223,11 +224,10 @@ export default function DronePartsCarousel({ products = [] }) {
                 setActiveCategory(item);
                 setCurrentIndex(0); // Reset to first slide on category change
               }}
-              className={`px-6 py-1 cursor-pointer rounded-full ${
-                activeCategory === item
+              className={`px-6 py-1 cursor-pointer rounded-full ${activeCategory === item
                   ? "border-2  border-[#F7941D] text-gray-800 font-medium"
                   : "text-gray-700"
-              }`}
+                }`}
             >
               {item}
             </button>
@@ -283,15 +283,14 @@ export default function DronePartsCarousel({ products = [] }) {
 
           {/* Carousel Cards */}
           <div
-            className={`grid gap-4 ${
-              itemsToShow === 1
+            className={`grid gap-4 ${itemsToShow === 1
                 ? "grid-cols-1"
                 : itemsToShow === 2
-                ? "grid-cols-2"
-                : itemsToShow === 3
-                ? "grid-cols-3"
-                : "grid-cols-4"
-            }`}
+                  ? "grid-cols-2"
+                  : itemsToShow === 3
+                    ? "grid-cols-3"
+                    : "grid-cols-4"
+              }`}
           >
             {getVisibleProducts().map((product, index) => (
               <div
