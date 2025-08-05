@@ -122,6 +122,7 @@ const Checkout = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [deliveryDates, setDeliveryDates] = useState("");
   const [orderId, setOrderId] = useState(null);
   const access = import.meta.env.VITE_ACCESS_TOKEN;
   const secret = import.meta.env.VITE_SECRET_KEY;
@@ -177,28 +178,6 @@ const Checkout = () => {
 
   // Calculate final total using only discounted price
   const finalTotal = Math.max(0, totalAmount + shippingFee + (totalAmount * 0.18));
-
-  // Delivery date calculation
-  const getDeliveryDates = () => {
-    const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() + 3);
-    const endDate = new Date(today);
-    endDate.setDate(today.getDate() + 4);
-
-    return {
-      start:
-        startDate.getDate() +
-        " " +
-        startDate.toLocaleString("default", { month: "short" }).toLowerCase(),
-      end:
-        endDate.getDate() +
-        " " +
-        endDate.toLocaleString("default", { month: "short" }).toLowerCase(),
-    };
-  };
-
-  const deliveryDates = getDeliveryDates();
 
   // Validation functions
   const validateAddress = (address) => {
@@ -363,8 +342,8 @@ const Checkout = () => {
               city: city || "City", // Provide default value
               postalCode: postalCode || "000000", // Provide default value
               fullAddress: addr, // Keep original full address
-              companyName: user.companyName || "",  
-              gstNumber: user.gstNumber || "",      
+              companyName: user.companyName || "",
+              gstNumber: user.gstNumber || "",
             };
           });
 
@@ -561,32 +540,61 @@ const Checkout = () => {
   useEffect(() => {
     const fetchRate = async () => {
       try {
-        // You can decide how to calculate this: average, max, or from first item
-        const firstItem = cartItems[0];
-        // console.log("First Item:", firstItem);
+        // console.log("All Cart Items:", cartItems);
 
-        const [lengthStr, widthStr] = firstItem.product_dimension_length_breadth
-          .split("*")
-          .map((s) => s.trim());
+        // Calculate total dimensions and weight for all items
+        let totalWeight = 0;
+        let totalLength = 0;
+        let totalWidth = 0;
+        let maxHeight = 0;
 
-        const shipping_length_cms = parseFloat(lengthStr);
-        const shipping_width_cms = parseFloat(widthStr);
-        const shipping_height_cms = parseFloat(
-          firstItem.product_dimension_height
-        );
-        const shipping_weight_kg = parseFloat(firstItem.product_dimension_weight);
-        // console.log("Shipping Weight (kg):", shipping_weight_kg);
+        // Process each item in the cart
+        for (const item of cartItems) {
+          const [lengthStr, widthStr] = item.product_dimension_length_breadth
+            .split("*")
+            .map((s) => s.trim());
 
+          const itemLength = parseFloat(lengthStr);
+          const itemWidth = parseFloat(widthStr);
+          const itemHeight = parseFloat(item.product_dimension_height);
+          const itemWeight = parseFloat(item.product_dimension_weight);
+
+          // Calculate based on quantity
+          const quantity = item.quantity || 1;
+
+          // Add weight (cumulative)
+          totalWeight += itemWeight * quantity;
+
+          // For dimensions, you can choose different strategies:
+          // Option 1: Sum all dimensions (assuming items are packed together)
+          totalLength += itemLength * quantity;
+          totalWidth = Math.max(totalWidth, itemWidth); // Take maximum width
+          maxHeight = Math.max(maxHeight, itemHeight); // Take maximum height
+
+          // console.log(`Item: ${item.product_name}`);
+          // console.log(`Quantity: ${quantity}`);
+          // console.log(`Dimensions: ${itemLength} x ${itemWidth} x ${itemHeight} cm`);
+          // console.log(`Weight: ${itemWeight * quantity} kg`);
+          // console.log('---');
+        }
+
+        // console.log("Total Calculated Dimensions:");
+        // console.log(`Total Weight: ${totalWeight} kg`);
+        // console.log(`Total Length: ${totalLength} cm`);
+        // console.log(`Total Width: ${totalWidth} cm`);
+        // console.log(`Max Height: ${maxHeight} cm`);
+
+        // Make API call with calculated totals
         const response = await axios.post(
           "https://my.ithinklogistics.com/api_v3/rate/check.json",
           {
             data: {
               from_pincode: "201301",
               to_pincode: selectedAddress?.postalCode || "000000",
-              shipping_length_cms,
-              shipping_width_cms,
-              shipping_height_cms,
-              shipping_weight_kg,
+              shipping_length_cms: totalLength,
+              shipping_width_cms: totalWidth,
+              shipping_height_cms: maxHeight,
+              shipping_weight_kg: totalWeight,
               order_type: "forward",
               payment_method: "Prepaid",
               product_mrp: totalMRP,
@@ -602,21 +610,35 @@ const Checkout = () => {
         );
 
         const rateOptions = response.data?.data;
-        // console.log("Rate Check API Response:", response);
+        // console.log("Rate Check API Response:", response.data);
+        setDeliveryDates(response?.data?.expected_delivery_date);
 
-        if (!rateOptions || !Array.isArray(rateOptions)) return;
-
-        if (shipping_weight_kg > 0.5 && rateOptions[4]) {
-          // console.log(rateOptions[4].rate);
-          setRate(rateOptions[4].rate);
-        } else if (rateOptions[3]) {
-          // console.log(rateOptions[3].rate);
-          setRate(rateOptions[3].rate);
+        if (!rateOptions || !Array.isArray(rateOptions)) {
+          console.log("No rate options available");
+          return;
         }
+
+        // Find the rate option for DTDC with service_type "Air"
+        const dtdcAirOption = rateOptions.find(
+          (option) => option.logistic_name === "DTDC" && option.service_type === "Air"
+        );
+
+        if (dtdcAirOption) {
+          // console.log("Selected Rate (DTDC Air):", dtdcAirOption.rate);
+          setRate(dtdcAirOption.rate);
+        } else {
+          // console.log("DTDC Air not available, using default rate option:", rateOptions[0]?.rate);
+          setRate(rateOptions[0]?.rate || 0);
+        }
+
       } catch (error) {
         console.error("Error while calling Rate Check API:", error);
+        if (error.response) {
+          console.error("API Error Response:", error.response.data);
+        }
       }
     };
+
 
     if (selectedAddress) {
       fetchRate();
@@ -722,16 +744,14 @@ const Checkout = () => {
           },
         }
       );
-
+      // console.log(paymentResponse)
       if (
-        paymentResponse.data?.data?.response?.phonepeResponse
-          ?.instrumentResponse?.redirectInfo?.url
+        paymentResponse.data.data.response.phonepeResponse.redirectUrl
       ) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
-        window.location.href =
-          paymentResponse.data.data.response.phonepeResponse.instrumentResponse.redirectInfo.url;
+        window.location.href = paymentResponse.data.data.response.phonepeResponse.redirectUrl;
       } else {
         throw new Error("Invalid payment response");
       }
@@ -764,14 +784,14 @@ const Checkout = () => {
           setUserId(id);
           setToken(parsedToken);
         } else {
-          navigate("/login");
+          navigate("/login", { state: { from: "cart" } });
         }
       } catch (error) {
         console.error("Error decoding token:", error);
-        navigate("/login");
+        navigate("/login", { state: { from: "cart" } });
       }
     } else {
-      navigate("/login");
+      navigate("/login", { state: { from: "cart" } });
     }
 
     window.scrollTo(0, 0);
@@ -850,16 +870,16 @@ const Checkout = () => {
                       <div
                         key={addr.id}
                         className={`border-2 ${addr.id === selectedAddressId
-                            ? "border-[#f7941d]"
-                            : "border-gray-300"
+                          ? "border-[#f7941d]"
+                          : "border-gray-300"
                           } rounded-2xl p-6 relative cursor-pointer`}
                         onClick={() => handleSelectAddress(addr.id)}
                       >
                         <div className="absolute right-4 top-4">
                           <div
                             className={`w-4 h-4 border-2 ${addr.id === selectedAddressId
-                                ? "border-[#f7941d]"
-                                : "border-gray-300"
+                              ? "border-[#f7941d]"
+                              : "border-gray-300"
                               } rounded-full flex items-center justify-center`}
                           >
                             {addr.id === selectedAddressId && (
@@ -964,7 +984,7 @@ const Checkout = () => {
                 <h3 className="text-lg font-medium mb-2">
                   Deliver Between :{" "}
                   <span className="text-[#f7941d]">
-                    {deliveryDates.start} - {deliveryDates.end}
+                    {deliveryDates}
                   </span>
                 </h3>
                 <p className="text-gray-500 text-sm">
@@ -1013,8 +1033,8 @@ const Checkout = () => {
             <button
               onClick={handlePayment}
               className={`w-full ${!selectedAddress || processingPayment
-                  ? "bg-gray-400"
-                  : "bg-[#f7941d]"
+                ? "bg-gray-400"
+                : "bg-[#f7941d]"
                 } cursor-pointer text-white py-3 rounded-2xl font-medium mt-4 flex items-center justify-center`}
               disabled={!selectedAddress || processingPayment}
             >

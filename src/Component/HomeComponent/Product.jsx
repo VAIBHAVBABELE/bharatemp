@@ -374,7 +374,7 @@ const Product = () => {
     priceRangeFilter,
     priceCheckboxFilters,
     categoryFilters,
-    subcategoryFilters,  
+    subcategoryFilters,
     searchQuery,
   ]);
 
@@ -498,18 +498,19 @@ const Product = () => {
 
   const handleBuyNowClick = (e, product) => {
     e.stopPropagation(); // Prevent click from bubbling up to the card
-    handleBuyNow({
-      product,
-      quantity: 1,
-      navigate,
-      setLoadingBuyNow: (loading) => {
-        setLoadingBuyNow((prev) => ({
-          ...prev,
-          [product._id]: loading,
-        }));
-      },
-      customShippingFee: 5,
-    });
+    window.location.href = `/checkout`;
+    // handleBuyNow({
+    //   product,
+    //   quantity: 1,
+    //   navigate,
+    //   setLoadingBuyNow: (loading) => {
+    //     setLoadingBuyNow((prev) => ({
+    //       ...prev,
+    //       [product._id]: loading,
+    //     }));
+    //   },
+    //   customShippingFee: 5,
+    // });
   };
 
   return (
@@ -615,11 +616,10 @@ const Product = () => {
                   <div className="flex gap-1 items-center">
                     <button
                       onClick={handleApply}
-                      className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${
-                        priceRangeFilter.max !== sliderValue
+                      className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${priceRangeFilter.max !== sliderValue
                           ? "bg-[#f7941d] hover:bg-orange-600"
                           : "bg-[#1e3473] hover:bg-blue-800"
-                      }`}
+                        }`}
                     >
                       Apply
                     </button>
@@ -788,11 +788,10 @@ const Product = () => {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`font-medium cursor-pointer relative ${
-                        activeTab === tab
+                      className={`font-medium cursor-pointer relative ${activeTab === tab
                           ? "text-gray-900 font-semibold"
                           : "text-gray-500"
-                      }`}
+                        }`}
                     >
                       {tab}
                       {activeTab === tab && (
@@ -821,11 +820,11 @@ const Product = () => {
                   // Add slider price range if it's not at max
                   ...(priceRangeFilter.max < max
                     ? [
-                        {
-                          type: "slider",
-                          value: `₹${min} - ₹${priceRangeFilter.max}`,
-                        },
-                      ]
+                      {
+                        type: "slider",
+                        value: `₹${min} - ₹${priceRangeFilter.max}`,
+                      },
+                    ]
                     : []),
                   ...priceCheckboxFilters.map((filter) => ({
                     type: "price",
@@ -845,85 +844,85 @@ const Product = () => {
                     value: brand,
                   })),
                 ].length > 0 && (
-                  <div className="flex flex-wrap gap-2 ml-2">
-                    {/* Price Range Slider Tag */}
-                    {priceRangeFilter.max < max && (
-                      <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 flex items-center">
-                        Price: ₹{min} - ₹{priceRangeFilter.max}
-                        <button
-                          className="ml-1 text-blue-600 hover:text-blue-800"
-                          onClick={() => {
-                            setPriceRangeFilter({ min, max });
-                            setTempPriceRange({ min, max });
-                            setSliderValue(max);
-                          }}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    )}
+                    <div className="flex flex-wrap gap-2 ml-2">
+                      {/* Price Range Slider Tag */}
+                      {priceRangeFilter.max < max && (
+                        <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 flex items-center">
+                          Price: ₹{min} - ₹{priceRangeFilter.max}
+                          <button
+                            className="ml-1 text-blue-600 hover:text-blue-800"
+                            onClick={() => {
+                              setPriceRangeFilter({ min, max });
+                              setTempPriceRange({ min, max });
+                              setSliderValue(max);
+                            }}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
 
-                    {priceCheckboxFilters.map((filter) => (
-                      <span
-                        key={filter}
-                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
-                      >
-                        {filter}
-                        <button
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => handlePriceCheckboxChange(filter)}
+                      {priceCheckboxFilters.map((filter) => (
+                        <span
+                          key={filter}
+                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                          {filter}
+                          <button
+                            className="ml-1 text-gray-500 hover:text-gray-700"
+                            onClick={() => handlePriceCheckboxChange(filter)}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
 
-                    {categoryFilters.map((category) => (
-                      <span
-                        key={category}
-                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
-                      >
-                        {category}
-                        <button
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => handleCategoryChange(category)}
+                      {categoryFilters.map((category) => (
+                        <span
+                          key={category}
+                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                          {category}
+                          <button
+                            className="ml-1 text-gray-500 hover:text-gray-700"
+                            onClick={() => handleCategoryChange(category)}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
 
-                    {subcategoryFilters.map((subcategory) => (
-                      <span
-                        key={subcategory}
-                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
-                      >
-                        {subcategory}
-                        <button
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => handleSubcategoryChange(subcategory)}
+                      {subcategoryFilters.map((subcategory) => (
+                        <span
+                          key={subcategory}
+                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                          {subcategory}
+                          <button
+                            className="ml-1 text-gray-500 hover:text-gray-700"
+                            onClick={() => handleSubcategoryChange(subcategory)}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
 
-                    {brandFilters.map((brand) => (
-                      <span
-                        key={brand}
-                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
-                      >
-                        {brand}
-                        <button
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => handleBrandChange(brand)}
+                      {brandFilters.map((brand) => (
+                        <span
+                          key={brand}
+                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
+                          {brand}
+                          <button
+                            className="ml-1 text-gray-500 hover:text-gray-700"
+                            onClick={() => handleBrandChange(brand)}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
               </div>
 
               {/* Product Grid */}

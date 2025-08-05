@@ -110,7 +110,7 @@ const App = () => {
           href="https://wa.link/594khg"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed z-50 bottom-12 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-4 flex items-center justify-center transition-all duration-300"
+          className="fixed z-50 bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-4 flex items-center justify-center transition-all duration-300"
           aria-label="Chat with us on WhatsApp"
         >
           <FaWhatsapp className="text-3xl" />

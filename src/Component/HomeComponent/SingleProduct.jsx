@@ -91,10 +91,10 @@ export default function ProductCard() {
   const actionButtonsRef = useRef(null);
   const [selectedMainImage, setSelectedMainImage] = useState(product?.product_image_main);
 
-// Update the state when product changes
-useEffect(() => {
-  setSelectedMainImage(product?.product_image_main);
-}, [product?.product_image_main]);
+  // Update the state when product changes
+  useEffect(() => {
+    setSelectedMainImage(product?.product_image_main);
+  }, [product?.product_image_main]);
 
   // Fetch product data from API
   useEffect(() => {
@@ -193,13 +193,14 @@ useEffect(() => {
 
   // Update the handleBuyNow function to use the utility
   const handleBuyNowClick = () => {
-    handleBuyNow({
-      product,
-      quantity,
-      navigate,
-      setLoadingBuyNow,
-      customShippingFee: 5,
-    });
+    window.location.href = `/checkout`;
+    // handleBuyNow({
+    //   product,
+    //   quantity,
+    //   navigate,
+    //   setLoadingBuyNow,
+    //   customShippingFee: 5,
+    // });
   };
 
   const incrementQuantity = () => {
@@ -291,8 +292,7 @@ useEffect(() => {
         setShowCart(true);
       } else {
         toast.error(
-          `Please enter a quantity between ${minQty} and ${
-            maxQty === Infinity ? "∞" : maxQty
+          `Please enter a quantity between ${minQty} and ${maxQty === Infinity ? "∞" : maxQty
           }`
         );
       }
@@ -331,8 +331,7 @@ useEffect(() => {
         navigate("/cart");
       } else {
         toast.error(
-          `Please enter a quantity between ${minQty} and ${
-            maxQty === Infinity ? "∞" : maxQty
+          `Please enter a quantity between ${minQty} and ${maxQty === Infinity ? "∞" : maxQty
           }`
         );
       }
@@ -417,7 +416,7 @@ useEffect(() => {
     );
   }
 
-  console.log("Product:", product);
+  // console.log("Product:", product);
 
   return (
     <div className="w-full px-4 md:px-10 lg:px-16 font-[outfit] relative pb-[100px]">
@@ -453,52 +452,50 @@ useEffect(() => {
       <div className="flex flex-col gap-10 justify-between lg:flex-row">
         {/* Left: Product Images */}
         <div className="w-full lg:w-[45%]">
-    <div className="bg-white rounded-lg mb-4">
-      <img
-        src={selectedMainImage}
-        alt={product.product_name}
-        className="w-full h-[400px] object-contain"
-      />
-    </div>
-    
-    {/* Thumbnails */}
-    <div className="grid grid-cols-5 gap-4">
-      {/* Main image thumbnail */}
-      <div
-        className={`border rounded-lg p-2 cursor-pointer transition-colors ${
-          selectedMainImage === product.product_image_main
-            ? 'border-[#1e3473] border-2'
-            : 'border-gray-200 hover:border-[#1e3473]'
-        }`}
-        onClick={() => setSelectedMainImage(product.product_image_main)}
-      >
-        <img
-          src={product.product_image_main}
-          alt={`${product.product_name} main`}
-          className="w-full h-[100px] object-contain"
-        />
-      </div>
-      
-      {/* Sub images thumbnails */}
-      {product.product_image_sub?.map((img, index) => (
-        <div
-          key={index}
-          className={`border rounded-lg p-2 cursor-pointer transition-colors ${
-            selectedMainImage === img
-              ? 'border-[#1e3473] border-2'
-              : 'border-gray-200 hover:border-[#1e3473]'
-          }`}
-          onClick={() => setSelectedMainImage(img)}
-        >
-          <img
-            src={img}
-            alt={`${product.product_name} thumbnail ${index + 1}`}
-            className="w-full h-[100px] object-contain"
-          />
+          <div className="bg-white rounded-lg mb-4">
+            <img
+              src={selectedMainImage}
+              alt={product.product_name}
+              className="w-full h-[400px] object-contain"
+            />
+          </div>
+
+          {/* Thumbnails */}
+          <div className="grid grid-cols-5 gap-4">
+            {/* Main image thumbnail */}
+            <div
+              className={`border rounded-lg p-2 cursor-pointer transition-colors ${selectedMainImage === product.product_image_main
+                  ? 'border-[#1e3473] border-2'
+                  : 'border-gray-200 hover:border-[#1e3473]'
+                }`}
+              onClick={() => setSelectedMainImage(product.product_image_main)}
+            >
+              <img
+                src={product.product_image_main}
+                alt={`${product.product_name} main`}
+                className="w-full h-[100px] object-contain"
+              />
+            </div>
+
+            {/* Sub images thumbnails */}
+            {product.product_image_sub?.map((img, index) => (
+              <div
+                key={index}
+                className={`border rounded-lg p-2 cursor-pointer transition-colors ${selectedMainImage === img
+                    ? 'border-[#1e3473] border-2'
+                    : 'border-gray-200 hover:border-[#1e3473]'
+                  }`}
+                onClick={() => setSelectedMainImage(img)}
+              >
+                <img
+                  src={img}
+                  alt={`${product.product_name} thumbnail ${index + 1}`}
+                  className="w-full h-[100px] object-contain"
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
 
         {/* Right: Product Details */}
         <div className="w-full lg:w-[45%] space-y-6">
@@ -584,11 +581,10 @@ useEffect(() => {
                 <button
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
-                  className={`w-10 h-10 flex border border-gray-300 items-center justify-center rounded-full text-xl font-bold transition-colors ${
-                    quantity <= 1
+                  className={`w-10 h-10 flex border border-gray-300 items-center justify-center rounded-full text-xl font-bold transition-colors ${quantity <= 1
                       ? "text-gray-300 bg-gray-100 cursor-not-allowed"
                       : "text-[#1e3473] bg-white hover:bg-[#f7e3c1] cursor-pointer"
-                  }`}
+                    }`}
                 >
                   −
                 </button>
@@ -698,11 +694,10 @@ useEffect(() => {
                 <button
                   onClick={checkDeliveryAvailability}
                   disabled={zipcode.length !== 6 || checkingDelivery}
-                  className={`px-4 py-3 rounded-2xl font-medium flex items-center gap-2 ${
-                    zipcode.length === 6 && !checkingDelivery
+                  className={`px-4 py-3 rounded-2xl font-medium flex items-center gap-2 ${zipcode.length === 6 && !checkingDelivery
                       ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  } transition-colors`}
+                    } transition-colors`}
                 >
                   {checkingDelivery ? (
                     <>
@@ -857,19 +852,17 @@ useEffect(() => {
                     onClick={() =>
                       handleBulkRangeSelect(item.range, item.price)
                     }
-                    className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${
-                      selectedBulkRange === item.range
+                    className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${selectedBulkRange === item.range
                         ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
                         : "px-6"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center">
                       <div
-                        className={`w-3 h-3 rounded-full border-2 ${
-                          selectedBulkRange === item.range
+                        className={`w-3 h-3 rounded-full border-2 ${selectedBulkRange === item.range
                             ? "border-[#f7941d] bg-[#f7941d]"
                             : "border-gray-300"
-                        } flex items-center justify-center`}
+                          } flex items-center justify-center`}
                       >
                         {selectedBulkRange === item.range && (
                           <div className="w-2 h-2 rounded-full bg-white"></div>
@@ -926,11 +919,10 @@ useEffect(() => {
                     <button
                       onClick={handleBulkAddToCart}
                       disabled={!selectedBulkRange || bulkQuantity === 0}
-                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
-                        selectedBulkRange && bulkQuantity > 0
+                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${selectedBulkRange && bulkQuantity > 0
                           ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      } transition-colors`}
+                        } transition-colors`}
                     >
                       <svg
                         className="w-5 h-5"
@@ -948,11 +940,10 @@ useEffect(() => {
                     <button
                       onClick={handleBulkBuyNow}
                       disabled={!selectedBulkRange || bulkQuantity === 0}
-                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${
-                        selectedBulkRange && bulkQuantity > 0
+                      className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${selectedBulkRange && bulkQuantity > 0
                           ? "bg-[#1e3473] text-white hover:bg-[#162554]"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      } transition-colors`}
+                        } transition-colors`}
                     >
                       <svg
                         className="w-5 h-5"
@@ -1053,11 +1044,10 @@ useEffect(() => {
                 <button
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
-                  className={`w-10 h-10 flex items-center justify-center text-xl font-bold transition-colors ${
-                    quantity <= 1
+                  className={`w-10 h-10 flex items-center justify-center text-xl font-bold transition-colors ${quantity <= 1
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-[#1e3473] hover:bg-gray-100 cursor-pointer"
-                  }`}
+                    }`}
                 >
                   −
                 </button>
@@ -1150,9 +1140,8 @@ useEffect(() => {
                   <button
                     key={star}
                     onClick={() => setRating(star)}
-                    className={`text-2xl md:text-3xl focus:outline-none cursor-pointer ${
-                      star <= (rating || 0) ? "text-[#FFB800]" : "text-gray-300"
-                    }`}
+                    className={`text-2xl md:text-3xl focus:outline-none cursor-pointer ${star <= (rating || 0) ? "text-[#FFB800]" : "text-gray-300"
+                      }`}
                   >
                     ★
                   </button>

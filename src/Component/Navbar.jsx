@@ -365,13 +365,14 @@ const Navbar = () => {
       const response = await fetch('https://ipapi.co/json/');
       const data = await response.json();
       const foundPincode = pincodes.find((pincode) => pincode.Pincode === String(data.postal));
-
       if (foundPincode) {
         setStringForDelivery("Delivery in 24 Hours");
+        setLocation(foundPincode.Pincode + ", " + foundPincode.City + ", " + foundPincode.state);
       } else {
         setStringForDelivery("Delivery in 24 to 72 Hours");
+        setLocation(data.city);
       }
-      setUserPincode(data.postal);
+      setUserPincode(data);
     } catch (error) {
       console.error('Error fetching IP location:', error);
     }

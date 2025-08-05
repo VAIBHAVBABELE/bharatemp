@@ -58,7 +58,7 @@ const OrderSuccess = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     const initializePayment = async () => {
       // Get and verify token
       const storedToken = localStorage.getItem("token");
@@ -123,7 +123,7 @@ const OrderSuccess = () => {
 
         const orderId = response.data.data.response.orderId;
         setOrderId(orderId);
-        
+
         if (orderId) {
           const orderResponse = await axios.get(`${backend}/order/${orderId}`, {
             headers: {
@@ -227,7 +227,7 @@ const OrderSuccess = () => {
                   }
                 );
 
-                
+
                 if (shipmentResponse.data?.status === "Success") {
                   alert("Shipment created successfully! Your order is being processed. 📦");
                   setOrderDetails(orderData);
@@ -257,7 +257,7 @@ const OrderSuccess = () => {
 
   return (
     <div className="flex items-center justify-center h-[510px] bg-white px-4">
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
