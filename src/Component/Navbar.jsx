@@ -356,9 +356,19 @@ const Navbar = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
+  const [categories, setCategories] = useState([]);
   const [userPincode, setUserPincode] = useState('');
   const [stringForDelivery, setStringForDelivery] = useState('Delivery in 24 Hours');
   const currentLocation = useLocation();
+
+  async function getAllCategories() {
+    try {
+      const response = await axios.post(`${backend}/product/all-categories`);
+      setCategories(response.data.data.product.subcategories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  }
 
   const getLocationByIP = async () => {
     try {
@@ -380,6 +390,7 @@ const Navbar = () => {
 
   useEffect(() => {
     getLocationByIP();
+    getAllCategories()
   }, []);
 
   useEffect(() => {
@@ -620,14 +631,16 @@ const Navbar = () => {
     "Drone Parts": top2,
   };
 
-  const categories = {
-    "Development Board": {},
-    Sensors: {},
-    "Motors and Drivers": {},
-    Battery: {},
-    "3DPrinter": {},
-    "Drone Parts": {},
-  };
+  console.log(categories);
+
+  // const categories = {
+  //   "Development Board": {},
+  //   Sensors: {},
+  //   "Motors and Drivers": {},
+  //   Battery: {},
+  //   "3DPrinter": {},
+  //   "Drone Parts": {},
+  // };
 
   const startVoiceSearch = () => {
     if ("webkitSpeechRecognition" in window) {
@@ -701,7 +714,7 @@ const Navbar = () => {
           <Link to="https://www.instagram.com/bharatronix/?hl=en" className="text-white  ">
             <FaInstagram alt="Instagram" className="w-6 h-6" />
           </Link>
-          <Link to="#" className="text-white  ">
+          <Link to="https://www.facebook.com/profile.php?id=61579174892065#" className="text-white  ">
             <SlSocialFacebook alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="https://www.youtube.com/@BharatroniX2024" className="text-white  ">
@@ -980,55 +993,78 @@ const Navbar = () => {
 
                       {/* Right Side - Subcategories Grid */}
                       <div className="w-3/4 p-6">
-                        <div className="grid grid-cols-4 gap-4">
-                          {subcategories[activeCategory]
-                            ?.slice(0, 8)
-                            .map((subcat, index) => (
-                              <div
-                                key={index}
-                                onClick={() =>
-                                  handleSubcategoryClick(
-                                    activeCategory,
-                                    subcat.name
-                                  )
-                                }
-                                className="group cursor-pointer"
-                              >
-                                <div className="relative overflow-hidden rounded-lg border border-gray-200">
-                                  <img
-                                    src={subcat.image}
-                                    alt={subcat.name}
-                                    className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                                  />
-                                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                                    <h3 className="text-white font-medium text-sm">
-                                      {subcat.name}
-                                    </h3>
-                                    <p className="text-gray-200 text-xs">
-                                      {subcat.description}
-                                    </p>
+                        {activeCategory && categories[activeCategory] && categories[activeCategory].length > 0 ? (
+                          <>
+                            <div className="grid grid-cols-4 gap-4">
+                              {categories[activeCategory]
+                                .slice(0, 8)
+                                .map((subcat, index) => (
+                                  <div
+                                    key={index}
+                                    onClick={() =>
+                                      handleSubcategoryClick(
+                                        activeCategory,
+                                        subcat.name
+                                      )
+                                    }
+                                    className="group cursor-pointer"
+                                  >
+                                    <div className="relative overflow-hidden rounded-lg border border-gray-200">
+                                      {subcat.image ? (
+                                        <img
+                                          src={subcat.image}
+                                          alt={subcat.name}
+                                          className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                          onError={(e) => {
+                                            // Fallback to placeholder if image fails to load
+                                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                                          }}
+                                        />
+                                      ) : (
+                                        <div className="w-full h-32 bg-gray-200 flex items-center justify-center">
+                                          <span className="text-gray-400 text-sm">No Image</span>
+                                        </div>
+                                      )}
+                                      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                                        <h3 className="text-white font-medium text-sm">
+                                          {subcat.name}
+                                        </h3>
+                                        {subcat.description && (
+                                          <p className="text-gray-200 text-xs">
+                                            {subcat.description}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                        <div
-                          onClick={() => {
-                            navigate(
-                              `/product?category=${activeCategory}`
-                            );
-                            setShowCategoriesDropdown(false);
-                          }}
-                          className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors cursor-pointer"
-                        >
-                          See All Categories
-                          <FaChevronRight className="ml-2 text-xs" />
-                        </div>
+                                ))}
+                            </div>
+                            <div
+                              onClick={() => {
+                                navigate(
+                                  `/product?category=${encodeURIComponent(activeCategory)}`
+                                );
+                                setShowCategoriesDropdown(false);
+                              }}
+                              className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors cursor-pointer"
+                            >
+                              See All in {activeCategory}
+                              <FaChevronRight className="ml-2 text-xs" />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex items-center justify-center h-40">
+                            <p className="text-gray-500">
+                              {activeCategory ? 'No subcategories available' : 'Select a category to view subcategories'}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               )}
+
             </div>
             <div className="relative dropdown-container">
               <Link

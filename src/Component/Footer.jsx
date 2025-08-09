@@ -30,7 +30,7 @@ const Footer = () => {
           </p>
 
           <div className="w-full flex flex-wrap gap-3  py-4">
-            <Link to="#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
+            <Link to="https://www.facebook.com/profile.php?id=61579174892065#" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">
               <img src={icon1} alt="Facebook" className="w-6 h-6" />
             </Link>
             <Link to="https://x.com/bharatroni68370" className="text-white p-3 border-2 border-transparent hover:border-white rounded-full transition-all duration-300 ease-in-out">

@@ -203,7 +203,7 @@ const Product = () => {
   }, []);
 
   // Fix the order of function declarations and usage
-  const tabs = ["All", "Featured", "On Sale", "Top Rated"];
+  const tabs = ["All", "On Sale", "Top Rated"];
 
   // Get category, color, and brand counts
   function getCountForCategory(category) {
@@ -300,10 +300,24 @@ const Product = () => {
 
     // Filter by tab
     if (activeTab === "On Sale") {
-      filtered = filtered.filter((p) => p.discount_percentage > 0);
+      filtered = filtered
+        .filter((p) => p.discount && p.discount > 0)
+        .sort((a, b) => (b.discount || 0) - (a.discount || 0));
     } else if (activeTab === "Top Rated") {
-      filtered = filtered.filter((p) => p.review_stars >= 4);
-    } else if (activeTab === "Featured") {
+      // Filter products with good ratings and sort by review count and rating
+      filtered = filtered
+        .filter((p) => p.review_stars >= 4)
+        .sort((a, b) => {
+          // First sort by number of reviews (descending)
+          const reviewDiff = (b.no_of_reviews || 0) - (a.no_of_reviews || 0);
+          // If review counts are equal, sort by rating (descending)
+          if (reviewDiff === 0) {
+            return (b.review_stars || 0) - (a.review_stars || 0);
+          }
+          return reviewDiff;
+        });
+    }
+    else if (activeTab === "Featured") {
       filtered = filtered.filter((p) => p.featured === true);
     }
 
@@ -425,13 +439,31 @@ const Product = () => {
 
   const handleCategoryChange = (category) => {
     setCategoryFilters((prev) => {
-      if (prev.includes(category)) {
-        return prev.filter((item) => item !== category);
+      const newFilters = prev.includes(category)
+        ? prev.filter((item) => item !== category)
+        : [...prev, category];
+
+      // Clear subcategory filters when category selection changes
+      // Only keep subcategories that belong to the newly selected categories
+      if (newFilters.length === 0) {
+        setSubcategoryFilters([]);
       } else {
-        return [...prev, category];
+        const validSubcategories = [...new Set(
+          allProducts
+            .filter((p) => newFilters.includes(p.category_name))
+            .map((p) => p.sub_category_name)
+            .filter(Boolean)
+        )];
+
+        setSubcategoryFilters((prevSub) =>
+          prevSub.filter((sub) => validSubcategories.includes(sub))
+        );
       }
+
+      return newFilters;
     });
   };
+
 
   const handleBrandChange = (brand) => {
     setBrandFilters((prev) => {
@@ -462,6 +494,39 @@ const Product = () => {
   const clearPriceCheckboxFilters = () => {
     setPriceCheckboxFilters([]);
   };
+
+  // Add this helper function to get subcategories based on selected categories
+  const getFilteredSubcategories = () => {
+    if (categoryFilters.length === 0) {
+      // If no categories are selected, show all subcategories
+      return [...new Set(allProducts.map((p) => p.sub_category_name).filter(Boolean))];
+    } else {
+      // If categories are selected, show only subcategories from those categories
+      return [...new Set(
+        allProducts
+          .filter((p) => categoryFilters.includes(p.category_name))
+          .map((p) => p.sub_category_name)
+          .filter(Boolean)
+      )];
+    }
+  };
+
+  // Modified function to get count for subcategory (considering category filters)
+  function getCountForSubcategoryFiltered(subcategory) {
+    let productsToCount = allProducts;
+
+    // If categories are selected, only count products from those categories
+    if (categoryFilters.length > 0) {
+      productsToCount = allProducts.filter((p) => categoryFilters.includes(p.category_name));
+    }
+
+    return productsToCount.filter(
+      (p) =>
+        p.sub_category_name &&
+        p.sub_category_name.toLowerCase() === subcategory.toLowerCase()
+    ).length;
+  }
+
 
   const clearCategoryFilters = () => {
     setCategoryFilters([]);
@@ -617,8 +682,8 @@ const Product = () => {
                     <button
                       onClick={handleApply}
                       className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${priceRangeFilter.max !== sliderValue
-                          ? "bg-[#f7941d] hover:bg-orange-600"
-                          : "bg-[#1e3473] hover:bg-blue-800"
+                        ? "bg-[#f7941d] hover:bg-orange-600"
+                        : "bg-[#1e3473] hover:bg-blue-800"
                         }`}
                     >
                       Apply
@@ -709,40 +774,46 @@ const Product = () => {
                 <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
                   Filter by Subcategories
                 </h3>
-                <ul className="space-y-2">
-                  {[
-                    ...new Set(
-                      allProducts
-                        .map((p) => p.sub_category_name)
-                        .filter(Boolean)
-                    ),
-                  ].map((subcategory, index) => (
-                    <li
-                      key={index}
-                      className="flex justify-between items-center"
+                {getFilteredSubcategories().length > 0 ? (
+                  <>
+                    <ul className="space-y-2">
+                      {getFilteredSubcategories().map((subcategory, index) => (
+                        <li
+                          key={index}
+                          className="flex justify-between items-center"
+                        >
+                          <label className="flex items-center text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="mr-2 h-4 w-4 accent-[#1e3473]"
+                              checked={subcategoryFilters.includes(subcategory)}
+                              onChange={() => handleSubcategoryChange(subcategory)}
+                            />
+                            {subcategory}
+                          </label>
+                          <span className="text-[#1e3473] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
+                            {getCountForSubcategoryFiltered(subcategory)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={clearSubcategoryFilters}
+                      className="text-xs mt-4 bg-[#1e3473] text-white rounded-3xl cursor-pointer px-8 py-2 hover:underline"
                     >
-                      <label className="flex items-center text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="mr-2 h-4 w-4 accent-[#1e3473]"
-                          checked={subcategoryFilters.includes(subcategory)}
-                          onChange={() => handleSubcategoryChange(subcategory)}
-                        />
-                        {subcategory}
-                      </label>
-                      <span className="text-[#1e3473] bg-gray-100 text-xs font-medium rounded-full px-2 py-0.5">
-                        {getCountForSubcategory(subcategory)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={clearSubcategoryFilters}
-                  className="text-xs mt-4 bg-[#1e3473] text-white rounded-3xl cursor-pointer px-8 py-2 hover:underline"
-                >
-                  Clear
-                </button>
+                      Clear
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">
+                    {categoryFilters.length > 0
+                      ? "No subcategories available for selected categories"
+                      : "No subcategories available"
+                    }
+                  </p>
+                )}
               </div>
+
 
               {/* Filter by Brand */}
               <div className="mb-6">
@@ -789,8 +860,8 @@ const Product = () => {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`font-medium cursor-pointer relative ${activeTab === tab
-                          ? "text-gray-900 font-semibold"
-                          : "text-gray-500"
+                        ? "text-gray-900 font-semibold"
+                        : "text-gray-500"
                         }`}
                     >
                       {tab}
