@@ -26,6 +26,7 @@ import secure from "../../assets/secure.gif";
 import shield from "../../assets/shield.gif";
 import wallet from "../../assets/wallet.gif";
 import cargo from "../../assets/cargo.gif";
+import pincodes from "../../utils/pincode.json";
 import { handleBuyNow } from "../../utils/paymentUtils";
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -193,7 +194,19 @@ export default function ProductCard() {
 
   // Update the handleBuyNow function to use the utility
   const handleBuyNowClick = () => {
-    window.location.href = `/checkout`;
+    if (product) {
+      const regularItem = {
+        ...product,
+        quantity: quantity,
+        price: product.discounted_single_product_price,
+        total: product.discounted_single_product_price * quantity,
+        isBulkOrder: false,
+      };
+      addToCart(regularItem);
+      setQuantity(1);
+      toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
+    }
+    window.location.href = `/cart`;
     // handleBuyNow({
     //   product,
     //   quantity,
@@ -346,12 +359,16 @@ export default function ProductCard() {
     }
 
     setCheckingDelivery(true);
+
     try {
-      // Replace this with your actual API endpoint
-      const response = await axios.get(`${backend}/check-delivery/${zipcode}`);
-      if (response.data.available) {
+      // Check if the zipcode exists in the pincodes array
+      const deliveryLocation = pincodes.find(
+        location => location.Pincode === zipcode && location["SFX status"] === "Active"
+      );
+
+      if (deliveryLocation) {
         setDeliveryStatus(true);
-        toast.success("Delivery available in your area!");
+        toast.success(`Delivery available in ${deliveryLocation.City}, ${deliveryLocation.state}!`);
       } else {
         setDeliveryStatus(false);
         toast.error("Sorry, delivery not available in your area");
@@ -364,6 +381,7 @@ export default function ProductCard() {
       setCheckingDelivery(false);
     }
   };
+
 
   // Update scroll event listener to use button position
   useEffect(() => {
@@ -465,8 +483,8 @@ export default function ProductCard() {
             {/* Main image thumbnail */}
             <div
               className={`border rounded-lg p-2 cursor-pointer transition-colors ${selectedMainImage === product.product_image_main
-                  ? 'border-[#1e3473] border-2'
-                  : 'border-gray-200 hover:border-[#1e3473]'
+                ? 'border-[#1e3473] border-2'
+                : 'border-gray-200 hover:border-[#1e3473]'
                 }`}
               onClick={() => setSelectedMainImage(product.product_image_main)}
             >
@@ -482,8 +500,8 @@ export default function ProductCard() {
               <div
                 key={index}
                 className={`border rounded-lg p-2 cursor-pointer transition-colors ${selectedMainImage === img
-                    ? 'border-[#1e3473] border-2'
-                    : 'border-gray-200 hover:border-[#1e3473]'
+                  ? 'border-[#1e3473] border-2'
+                  : 'border-gray-200 hover:border-[#1e3473]'
                   }`}
                 onClick={() => setSelectedMainImage(img)}
               >
@@ -582,8 +600,8 @@ export default function ProductCard() {
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
                   className={`w-10 h-10 flex border border-gray-300 items-center justify-center rounded-full text-xl font-bold transition-colors ${quantity <= 1
-                      ? "text-gray-300 bg-gray-100 cursor-not-allowed"
-                      : "text-[#1e3473] bg-white hover:bg-[#f7e3c1] cursor-pointer"
+                    ? "text-gray-300 bg-gray-100 cursor-not-allowed"
+                    : "text-[#1e3473] bg-white hover:bg-[#f7e3c1] cursor-pointer"
                     }`}
                 >
                   −
@@ -695,8 +713,8 @@ export default function ProductCard() {
                   onClick={checkDeliveryAvailability}
                   disabled={zipcode.length !== 6 || checkingDelivery}
                   className={`px-4 py-3 rounded-2xl font-medium flex items-center gap-2 ${zipcode.length === 6 && !checkingDelivery
-                      ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     } transition-colors`}
                 >
                   {checkingDelivery ? (
@@ -853,15 +871,15 @@ export default function ProductCard() {
                       handleBulkRangeSelect(item.range, item.price)
                     }
                     className={`grid grid-cols-4 items-center py-2 border-b border-gray-100 cursor-pointer ${selectedBulkRange === item.range
-                        ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
-                        : "px-6"
+                      ? "bg-blue-50 border border-gray-800 rounded-xl px-6"
+                      : "px-6"
                       }`}
                   >
                     <div className="flex items-center">
                       <div
                         className={`w-3 h-3 rounded-full border-2 ${selectedBulkRange === item.range
-                            ? "border-[#f7941d] bg-[#f7941d]"
-                            : "border-gray-300"
+                          ? "border-[#f7941d] bg-[#f7941d]"
+                          : "border-gray-300"
                           } flex items-center justify-center`}
                       >
                         {selectedBulkRange === item.range && (
@@ -920,8 +938,8 @@ export default function ProductCard() {
                       onClick={handleBulkAddToCart}
                       disabled={!selectedBulkRange || bulkQuantity === 0}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${selectedBulkRange && bulkQuantity > 0
-                          ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        ? "bg-[#f7941d] text-white hover:bg-[#e88a1a]"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         } transition-colors`}
                     >
                       <svg
@@ -941,8 +959,8 @@ export default function ProductCard() {
                       onClick={handleBulkBuyNow}
                       disabled={!selectedBulkRange || bulkQuantity === 0}
                       className={`flex-1 px-4 py-2 rounded-xl font-medium flex items-center justify-center gap-2 ${selectedBulkRange && bulkQuantity > 0
-                          ? "bg-[#1e3473] text-white hover:bg-[#162554]"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        ? "bg-[#1e3473] text-white hover:bg-[#162554]"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         } transition-colors`}
                     >
                       <svg
@@ -1045,8 +1063,8 @@ export default function ProductCard() {
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
                   className={`w-10 h-10 flex items-center justify-center text-xl font-bold transition-colors ${quantity <= 1
-                      ? "text-gray-300 cursor-not-allowed"
-                      : "text-[#1e3473] hover:bg-gray-100 cursor-pointer"
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "text-[#1e3473] hover:bg-gray-100 cursor-pointer"
                     }`}
                 >
                   −

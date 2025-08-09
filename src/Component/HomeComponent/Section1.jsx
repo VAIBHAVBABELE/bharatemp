@@ -88,19 +88,33 @@ const ProductSlider = ({ products = [] }) => {
   // Filter products based on active tab
   const getFilteredProducts = () => {
     if (activeTab === "Offers" || activeTab === "Offer") {
-      // Filter products with a discount (oldPrice > price)
+      // Filter products with higher discount and sort by discount percentage
       return allProducts
-        .filter(
-          (product) => product.oldPrice && product.oldPrice > product.price
-        )
-        .slice(0, 4);
+        .filter(product => product.discount && product.discount > 0)
+        .sort((a, b) => (b.discount || 0) - (a.discount || 0))
+        .slice(0, 5);
     }
-    if (activeTab === "Recommended for you" || activeTab === "New Arrivals") {
+
+    if (activeTab === "New Arrivals") {
+      // Sort by creation date (newest first) or updated date
+      return allProducts
+        .sort((a, b) => {
+          const dateA = new Date(a.updated_at || a.created_at);
+          const dateB = new Date(b.updated_at || b.created_at);
+          return dateB - dateA; // Newest first
+        })
+        .slice(0, 5);
+    }
+
+    if (activeTab === "Recommended for you") {
       // Filter products with high ratings
-      return allProducts.sort((a, b) => b.rating - a.rating).slice(0, 3);
+      return allProducts
+        .sort((a, b) => (b.review_stars || 0) - (a.review_stars || 0))
+        .slice(0, 5);
     }
-    // Featured - return all products or a subset if there are many
-    return allProducts.slice(0, 6);
+
+    // Trending Products or default - return products as they are
+    return allProducts.slice(0, 5);
   };
 
   const filteredProducts = getFilteredProducts();
