@@ -7,6 +7,7 @@ import { useAdminRouteProtection } from '../../../utils/AuthUtils';
 import UnauthorizedPopup from '../../../utils/UnAuthorizedPopup';
 
 const backend = import.meta.env.VITE_BACKEND
+const [isBulkMode, setIsBulkMode] = useState(false);
 
 const AddProduct = () => {
     const [formData, setFormData] = useState({
@@ -192,6 +193,8 @@ const handleBulkUpload = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // 🚨 Switch into bulk mode
+  setIsBulkMode(true);
   setLoading(true);
 
   try {
@@ -220,9 +223,9 @@ const handleBulkUpload = async (e) => {
       return;
     }
 
-    // 🚨 Option A: if backend has /bulk-upload endpoint
+    // 🚨 Option A: Bulk endpoint (if backend supports it)
     /*
-    const response = await axios.post(
+    await axios.post(
       `${backend}/product/bulk-upload`,
       { products },
       {
@@ -231,7 +234,7 @@ const handleBulkUpload = async (e) => {
     );
     */
 
-    // 🚨 Option B: if backend only has /add-product (loop through each)
+    // 🚨 Option B: Loop each product (if only /add-product exists)
     for (const product of products) {
       try {
         await axios.post(`${backend}/product/add-product`, product, {
@@ -251,11 +254,20 @@ const handleBulkUpload = async (e) => {
   setLoading(false);
 };
 
+
     
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            setLoading(true);
+
+          // 🚨 If bulk upload mode is active, skip normal submit
+  if (isBulkMode) {
+    toast.info("Bulk upload mode active — use the file upload instead of the form.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    // ... rest of your existing code
 
             // Validate required fields
             if (!formData.category_id || !formData.category_name || !formData.sub_category_id || !formData.SKU || !formData.product_name) {
