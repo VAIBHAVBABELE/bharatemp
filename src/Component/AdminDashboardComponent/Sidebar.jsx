@@ -56,7 +56,7 @@ const Sidebar = () => {
                     <Link to="/admin-dashboard/invoices" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Invoices</Link>
                     <Link to="/admin-dashboard/return-requests" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Return Requests</Link>
                     <Link to="/admin-dashboard/complaints" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">All Complaint Raised</Link>
-                    <Link to="/admin-dashboard/contact-us" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Contact Us</Link>
+                    <Link to="/admin-dashboard/contactus" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">Contact Us</Link>
                     <Link to="/admin-dashboard/news-updates" onClick={closeNav} className="block p-3 hover:bg-gray-700 rounded">News & Updates</Link>
   
                 </nav>
