@@ -187,7 +187,71 @@ const AddProduct = () => {
         setFormData({ ...formData, warranty_pricing: updatedWarranty });
     };
 
+// Bulk Upload Handler
+const handleBulkUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
+  setLoading(true);
+
+  try {
+    let products = [];
+
+    if (file.name.endsWith(".csv")) {
+      // Parse CSV
+      const text = await file.text();
+      const parsed = Papa.parse(text, { header: true });
+      products = parsed.data.filter(row => row.SKU && row.product_name);
+    } else if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+      // Parse Excel
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      products = XLSX.utils.sheet_to_json(sheet);
+    } else {
+      toast.error("Please upload a CSV or Excel file.");
+      setLoading(false);
+      return;
+    }
+
+    if (!products.length) {
+      toast.error("No valid products found in file.");
+      setLoading(false);
+      return;
+    }
+
+    // 🚨 Option A: if backend has /bulk-upload endpoint
+    /*
+    const response = await axios.post(
+      `${backend}/product/bulk-upload`,
+      { products },
+      {
+        headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}` },
+      }
+    );
+    */
+
+    // 🚨 Option B: if backend only has /add-product (loop through each)
+    for (const product of products) {
+      try {
+        await axios.post(`${backend}/product/add-product`, product, {
+          headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}` },
+        });
+      } catch (err) {
+        console.error("Failed to add product:", product.SKU, err);
+      }
+    }
+
+    toast.success(`Uploaded ${products.length} products successfully!`);
+  } catch (err) {
+    console.error(err);
+    toast.error("Error processing file");
+  }
+
+  setLoading(false);
+};
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
