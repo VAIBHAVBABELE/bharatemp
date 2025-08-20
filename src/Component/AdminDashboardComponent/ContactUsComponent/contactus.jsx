@@ -1,134 +1,149 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const MessagesList = () => {
-  const [messages, setMessages] = useState([]);
+const ContactUs = () => {
+  const [contacts, setContacts] = useState([]);
   const [search, setSearch] = useState("");
-  const [selectedMessage, setSelectedMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const rowsPerPage = 5;
 
-  // Fetch messages from backend
   useEffect(() => {
-    fetch("/api/messages")
-      .then((res) => res.json())
-      .then((data) => {
-        // Sort messages by date (latest first)
-        const sorted = data.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setMessages(sorted);
-      })
-      .catch((err) => console.error("Error fetching messages:", err));
+    // Mock data – replace with API call
+    const data = [
+      {
+        id: 1,
+        firstName: "Jatin",
+        lastName: "Sharma",
+        email: "hello@email.com",
+        subject: "Regarding Taxation Help",
+        message:
+          "Hello Team, I need some help regarding taxation and compliance. Please guide me with the process in detail.",
+      },
+      {
+        id: 2,
+        firstName: "Ravi",
+        lastName: "Kumar",
+        email: "ravi@example.com",
+        subject: "Savings Query",
+        message: "Can you suggest how to maximize savings legally while filing taxes?",
+      },
+    ];
+    setContacts(data);
   }, []);
 
-  // Search filter
-  const filteredMessages = messages.filter((msg) => {
-    const searchText = search.toLowerCase();
-    return (
-      msg.name.toLowerCase().includes(searchText) ||
-      msg.email.toLowerCase().includes(searchText) ||
-      msg.subject.toLowerCase().includes(searchText) ||
-      msg.message.toLowerCase().includes(searchText) ||
-      (msg.date && new Date(msg.date).toLocaleString().includes(searchText))
-    );
-  });
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentMessages = filteredMessages.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  // Filter
+  const filtered = contacts.filter(
+    (c) =>
+      c.firstName.toLowerCase().includes(search.toLowerCase()) ||
+      c.lastName.toLowerCase().includes(search.toLowerCase()) ||
+      c.email.toLowerCase().includes(search.toLowerCase()) ||
+      c.subject.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Pagination
+  const indexOfLast = currentPage * rowsPerPage;
+  const indexOfFirst = indexOfLast - rowsPerPage;
+  const currentRows = filtered.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+
   return (
-    <div className="p-6">
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search by name, email, subject, date, message..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="mb-4 p-2 border rounded w-full"
-      />
-
-      {/* Messages List */}
-      <div className="grid gap-4">
-        {currentMessages.length > 0 ? (
-          currentMessages.map((msg) => (
-            <Card
-              key={msg._id}
-              className="cursor-pointer hover:shadow-lg transition"
-              onClick={() => setSelectedMessage(msg)}
-            >
-              <CardContent className="p-4">
-                <h2 className="text-lg font-semibold">{msg.subject}</h2>
-                <p className="text-sm text-gray-600">
-                  {msg.name} • {msg.email}
-                </p>
-                <p className="text-gray-700 truncate">{msg.message}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(msg.date).toLocaleString()}
-                </p>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <p className="text-gray-500">No messages found.</p>
-        )}
-      </div>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-6 space-x-2">
-          <Button
-            variant="outline"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Prev
-          </Button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-
-      {/* Modal Popup */}
-      {selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
-            <button
-              onClick={() => setSelectedMessage(null)}
-              className="absolute top-2 right-2 text-gray-600"
-            >
-              ✖
-            </button>
-            <h2 className="text-xl font-bold mb-2">
-              {selectedMessage.subject}
-            </h2>
-            <p className="text-sm text-gray-600 mb-2">
-              {selectedMessage.name} • {selectedMessage.email}
-            </p>
-            <p className="mb-4">{selectedMessage.message}</p>
-            <p className="text-xs text-gray-500">
-              {new Date(selectedMessage.date).toLocaleString()}
-            </p>
+    <div className="p-4 w-full">
+      <Card className="shadow-md">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-4">Contact Us Submissions</h2>
+          <div className="flex justify-between items-center mb-4">
+            <Input
+              placeholder="Search by name, email, subject..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-1/3"
+            />
           </div>
-        </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full border text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 border">First Name</th>
+                  <th className="p-2 border">Last Name</th>
+                  <th className="p-2 border">Email</th>
+                  <th className="p-2 border">Subject</th>
+                  <th className="p-2 border">Message</th>
+                  <th className="p-2 border">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentRows.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50">
+                    <td className="p-2 border">{c.firstName}</td>
+                    <td className="p-2 border">{c.lastName}</td>
+                    <td className="p-2 border">{c.email}</td>
+                    <td className="p-2 border">{c.subject}</td>
+                    <td className="p-2 border">
+                      {c.message.length > 50
+                        ? c.message.substring(0, 50) + "..."
+                        : c.message}
+                    </td>
+                    <td className="p-2 border">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedMessage(c)}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center mt-4 gap-2">
+            <Button
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+            >
+              Prev
+            </Button>
+            <span className="px-2 self-center">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modal for full message */}
+      {selectedMessage && (
+        <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Full Message</DialogTitle>
+            </DialogHeader>
+            <div className="mt-2">
+              <p><strong>Name:</strong> {selectedMessage.firstName} {selectedMessage.lastName}</p>
+              <p><strong>Email:</strong> {selectedMessage.email}</p>
+              <p><strong>Subject:</strong> {selectedMessage.subject}</p>
+              <p className="mt-2"><strong>Message:</strong><br />{selectedMessage.message}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
 };
 
-export default MessagesList;
+export default ContactUs;
