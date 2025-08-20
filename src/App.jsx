@@ -32,6 +32,7 @@ import Invoice from './Component/AdminDashboardComponent/InvoiceComponents/Invoi
 import AllComplaintRaised from './Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx'
 import ReturnRequest from './Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx'
 import NewsUpdates from './Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx'
+import ContactUs from './Component/AdminDashboardComponent/ContactUs.jsx';  
 import TermsAndConditions from './pages/TermsAndConditions'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import OrdersAndPaymentPolicy from './pages/OrdersAndPaymentPolicy'
@@ -93,7 +94,7 @@ const App = () => {
             <Route path='/admin-dashboard/news-updates' element={<NewsUpdates />} />
             <Route path='/admin-dashboard/inventory' element={<InventoryManagement />} />
             <Route path='/admin-dashboard/complaints' element={<AllComplaintRaised />} />
-            <Route path='/admin-dashboard/contactus' element={<Contactus />} />
+            <Route path='/admin-dashboard/contactus' element={<ContactUs />} />
 
           </Route>
 
