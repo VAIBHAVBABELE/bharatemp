@@ -102,7 +102,7 @@ export default function ProductCard() {
     const fetchProductData = async () => {
       setLoading(true);
       try {
-        // Fetch from API
+        
         const response = await axios.get(`${backend}/product/${id}`);
 
         if (response.data.status === "Success" && response.data.data.product) {
