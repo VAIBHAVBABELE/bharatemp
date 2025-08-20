@@ -7,7 +7,7 @@ import { useAdminRouteProtection } from '../../../utils/AuthUtils';
 import UnauthorizedPopup from '../../../utils/UnAuthorizedPopup';
 
 const backend = import.meta.env.VITE_BACKEND
-const [isBulkMode, setIsBulkMode] = useState(false);
+
 
 const AddProduct = () => {
     const [formData, setFormData] = useState({
@@ -70,6 +70,7 @@ const AddProduct = () => {
     const [previewImages, setPreviewImages] = useState([]);
     const { showPopup, closePopup, isAuthorized } = useAdminRouteProtection(["SuperAdmin"]);
     const [loading, setLoading] = useState(false)
+    const [isBulkMode, setIsBulkMode] = useState(false);
 
     // Remove Image
     const removeImage = (index) => {
