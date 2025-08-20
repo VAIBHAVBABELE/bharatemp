@@ -32,7 +32,7 @@ import Invoice from './Component/AdminDashboardComponent/InvoiceComponents/Invoi
 import AllComplaintRaised from './Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx'
 import ReturnRequest from './Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx'
 import NewsUpdates from './Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx'
-import ContactUs from './Component/AdminDashboardComponent/ContactUs.jsx';  
+import ContactUs from './Component/AdminDashboardComponent/ContactUsComponent/contactus.jsx'; 
 import TermsAndConditions from './pages/TermsAndConditions'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import OrdersAndPaymentPolicy from './pages/OrdersAndPaymentPolicy'
