@@ -9,6 +9,8 @@ import {
   FaBolt,
   FaMicrophone,
   FaChevronRight,
+  FaMapMarkerAlt,
+  FaCrosshairs,
 } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import location1 from "../assets/location.webp";
@@ -33,6 +35,12 @@ import cart from "../assets/cart.gif";
 import avatar from "../assets/avatar.gif";
 import truck from "../assets/truck.gif";
 import pincodes from "../utils/pincode.json";
+import { 
+  getLocationByCoordinates, 
+  searchLocations, 
+  getCurrentLocation as getCurrentLocationService,
+  formatLocationString 
+} from "../utils/locationService";
 import arduino from "../assets/arduino.webp";
 import stm32 from "../assets/stm32.webp";
 import esp32 from "../assets/esp32.webp";
@@ -360,6 +368,8 @@ const Navbar = () => {
   const [userPincode, setUserPincode] = useState('');
   const [stringForDelivery, setStringForDelivery] = useState('Delivery in 24 Hours');
   const currentLocation = useLocation();
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [userCoordinates, setUserCoordinates] = useState(null);
 
   async function getAllCategories() {
     try {
@@ -385,6 +395,97 @@ const Navbar = () => {
       setUserPincode(data);
     } catch (error) {
       console.error('Error fetching IP location:', error);
+    }
+  };
+
+  // Enhanced location detection using geolocation API
+  const getLocationByCoordinatesLocal = async (latitude, longitude) => {
+    try {
+      setIsGettingLocation(true);
+      
+      const result = await getLocationByCoordinates(latitude, longitude);
+      
+      if (result.success) {
+        setStringForDelivery(result.deliveryTime);
+        setLocation(formatLocationString(result));
+        setUserPincode({
+          postal: result.postcode,
+          city: result.city,
+          state: result.state
+        });
+        setUserCoordinates(result.coordinates);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error getting location by coordinates:', error);
+      return false;
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  // Get current location using browser geolocation
+  const getCurrentLocation = async () => {
+    try {
+      setIsGettingLocation(true);
+      
+      const result = await getCurrentLocationService();
+      
+      if (result.success) {
+        setStringForDelivery(result.deliveryTime);
+        setLocation(formatLocationString(result));
+        setUserPincode({
+          postal: result.postcode,
+          city: result.city,
+          state: result.state
+        });
+        setUserCoordinates(result.coordinates);
+      } else {
+        // Fallback to IP-based location
+        getLocationByIP();
+      }
+    } catch (error) {
+      console.error('Error getting current location:', error);
+      // Fallback to IP-based location
+      getLocationByIP();
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  // Search location by coordinates
+  const searchLocationByCoordinates = async (latitude, longitude) => {
+    try {
+      const success = await getLocationByCoordinatesLocal(latitude, longitude);
+      if (success) {
+        setShowLocationDropdown(false);
+      }
+    } catch (error) {
+      console.error('Error searching location by coordinates:', error);
+    }
+  };
+
+  // Enhanced location search with coordinates
+  const handleLocationSearch = async (searchTerm) => {
+    try {
+      const results = await searchLocations(searchTerm);
+      
+      if (results.length > 0) {
+        const result = results[0]; // Use first result
+        setStringForDelivery(result.deliveryTime);
+        setLocation(formatLocationString(result));
+        setUserPincode({
+          postal: result.postcode,
+          city: result.city,
+          state: result.state
+        });
+        setUserCoordinates(result.coordinates);
+        setShowLocationDropdown(false);
+      }
+    } catch (error) {
+      console.error('Error searching location:', error);
     }
   };
 
@@ -710,45 +811,45 @@ const Navbar = () => {
           <span>24 hours Express delivery</span>
         </div>
 
-        <div className=" flex flex-wrap pl-40 gap-4 items-center ">
-          <Link to="https://www.instagram.com/bharatronix/?hl=en" className="text-white  ">
+        <div className="flex flex-wrap items-center gap-4 pl-40 ">
+          <Link to="https://www.instagram.com/bharatronix/?hl=en" className="text-white ">
             <FaInstagram alt="Instagram" className="w-6 h-6" />
           </Link>
-          <Link to="https://www.facebook.com/profile.php?id=61579174892065#" className="text-white  ">
+          <Link to="https://www.facebook.com/profile.php?id=61579174892065#" className="text-white ">
             <SlSocialFacebook alt=" Facebook" className="w-6 h-6" />
           </Link>
-          <Link to="https://www.youtube.com/@BharatroniX2024" className="text-white  ">
+          <Link to="https://www.youtube.com/@BharatroniX2024" className="text-white ">
             <FiYoutube alt=" Facebook" className="w-6 h-6" />
           </Link>
-          <Link to="https://x.com/bharatroni68370" className="text-white  ">
+          <Link to="https://x.com/bharatroni68370" className="text-white ">
             <FaXTwitter alt="Twitter" className="w-6 h-6" />
           </Link>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <div className="font-inter bg-white border-b shadow-sm">
-        <div className="px-4 py-1 flex items-center justify-between lg:px-16 md:px-12">
+      <div className="bg-white border-b shadow-sm font-inter">
+        <div className="flex items-center justify-between px-4 py-1 lg:px-16 md:px-12">
           {/* Logo and Location Section */}
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 w-56 md:w-48">
-              <img src={logo} alt="Logo" className="w-80 h-16" />
+            <Link to="/" className="flex items-center w-56 gap-3 md:w-48">
+              <img src={logo} alt="Logo" className="h-16 w-80" />
             </Link>
 
             {/* Location Selector */}
             <div className="relative hidden lg:block location-dropdown-container">
               <div
                 onClick={() => setShowLocationDropdown((prev) => !prev)}
-                className="cursor-pointer flex items-start gap-2"
+                className="flex items-start gap-2 cursor-pointer"
               >
                 <img src={location1} className="w-6 h-6 mt-1" alt="Location" />
                 <div>
                   <div className="flex items-center gap-1">
                     <span className="text-base font-semibold text-[#F7941D]">
-                      {location}
+                      {isGettingLocation ? "Getting location..." : location}
                     </span>
-                    <FaChevronDown className="text-blue-900 text-xs" />
+                    <FaChevronDown className="text-xs text-blue-900" />
                   </div>
                   <span className="text-[12px] leading-0 text-[#1E3473]">
                     {stringForDelivery}
@@ -757,16 +858,64 @@ const Navbar = () => {
               </div>
 
               {showLocationDropdown && (
-                <div className="absolute z-40 mt-2 w-80 bg-white border border-gray-200 shadow-md rounded-md max-h-[400px] overflow-y-auto">
-                  {locations.map((loc) => (
-                    <div
-                      key={loc}
-                      onClick={() => handleLocationSelect(loc)}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-700"
+                <div className="absolute z-40 mt-2 w-96 bg-white border border-gray-200 shadow-md rounded-md max-h-[500px] overflow-y-auto">
+                  {/* Current Location Button */}
+                  <div className="p-3 border-b border-gray-200">
+                    <button
+                      onClick={getCurrentLocation}
+                      disabled={isGettingLocation}
+                      className="flex items-center w-full gap-2 px-3 py-2 font-medium text-blue-700 transition-colors rounded-lg bg-blue-50 hover:bg-blue-100 disabled:opacity-50"
                     >
-                      {loc}
+                      <FaCrosshairs className="w-4 h-4" />
+                      {isGettingLocation ? "Getting location..." : "Use my current location"}
+                    </button>
+                  </div>
+
+                  {/* Location Search */}
+                  <div className="p-3 border-b border-gray-200">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Search location or enter coordinates (e.g., 28.6139, 77.2090)"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleLocationSearch(e.target.value);
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={(e) => handleLocationSearch(e.target.previousElementSibling.value)}
+                        className="px-3 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e6851a] transition-colors"
+                      >
+                        <FaSearch className="w-4 h-4" />
+                      </button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Current Coordinates Display */}
+                  {userCoordinates && (
+                    <div className="p-3 border-b border-gray-200 bg-gray-50">
+                      <div className="mb-1 text-xs text-gray-600">Current Coordinates:</div>
+                      <div className="font-mono text-sm">
+                        {userCoordinates.latitude.toFixed(6)}, {userCoordinates.longitude.toFixed(6)}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Popular Locations */}
+                  <div className="p-3">
+                    <div className="mb-2 text-sm font-medium text-gray-700">Popular Locations:</div>
+                    {locations.slice(0, 10).map((loc) => (
+                      <div
+                        key={loc}
+                        onClick={() => handleLocationSelect(loc)}
+                        className="px-3 py-2 text-sm text-gray-700 rounded-lg cursor-pointer hover:bg-gray-100"
+                      >
+                        {loc}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -775,24 +924,24 @@ const Navbar = () => {
           {/* Search Bar Section */}
           <div className="hidden lg:flex flex-1 items-center justify-center max-w-[650px] w-full mx-4">
             {/* Search Bar and Voice Button Container */}
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center w-full gap-2">
               {/* Search Bar with Suggestions */}
               <div className="relative flex-1 search-container">
                 <form
                   onSubmit={handleSearch}
-                  className="flex items-center border border-gray-300 flex-1 justify-between  rounded-full px-4 py-2"
+                  className="flex items-center justify-between flex-1 px-4 py-2 border border-gray-300 rounded-full"
                 >
                   <input
                     type="text"
                     placeholder="Search by name, category, brand..."
-                    className="flex-1 bg-transparent text-sm outline-none"
+                    className="flex-1 text-sm bg-transparent outline-none"
                     value={searchQuery}
                     onChange={handleSearchInputChange}
                     onKeyPress={handleKeyPress}
                   />
                   <button
                     type="submit"
-                    className=" w-7 h-7 rounded-full flex items-center justify-center"
+                    className="flex items-center justify-center rounded-full w-7 h-7"
                   >
                     <img src={search} alt="Search" className="w-7 h-7" />
                   </button>
@@ -800,11 +949,11 @@ const Navbar = () => {
 
                 {/* Suggestions Dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <div className="absolute left-0 right-0 z-50 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg top-full">
                     {suggestions.map((suggestion, index) => (
                       <div
                         key={index}
-                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-50"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         <div className="flex items-center gap-2">
@@ -812,7 +961,7 @@ const Navbar = () => {
                           <div className="flex flex-col">
                             {suggestion.type === "product" ? (
                               <>
-                                <span className="text-gray-900 font-medium">
+                                <span className="font-medium text-gray-900">
                                   {suggestion.name}
                                 </span>
                                 <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -830,7 +979,7 @@ const Navbar = () => {
                               </>
                             ) : (
                               <>
-                                <span className="text-gray-900 font-medium">
+                                <span className="font-medium text-gray-900">
                                   {suggestion.displayText}
                                 </span>
                                 <span className="text-xs text-gray-500">
@@ -872,7 +1021,7 @@ const Navbar = () => {
             <div className="flex items-center space-x-4">
               {/* Shopping Bag Icon */}
               <div
-                className="relative border border-gray-300 rounded-3xl p-2 cursor-pointer"
+                className="relative p-2 border border-gray-300 cursor-pointer rounded-3xl"
                 onClick={() => navigate("/cart")}
               >
                 <img src={cart} className="w-7 h-7" alt="Cart" />
@@ -888,7 +1037,7 @@ const Navbar = () => {
 
               {/* User Icon or Auth Buttons */}
               {user ? (
-                <div className="relative border border-gray-300 rounded-3xl p-2 cursor-pointer profile-dropdown-container">
+                <div className="relative p-2 border border-gray-300 cursor-pointer rounded-3xl profile-dropdown-container">
                   <div
                     className="cursor-pointer"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -896,13 +1045,13 @@ const Navbar = () => {
                     <img src={avatar} className="w-7 h-7" alt="User" />
                   </div>
                   {showProfileDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <div className="absolute right-0 z-50 w-48 py-1 mt-2 bg-white rounded-md shadow-lg">
                       <button
                         onClick={() => {
                           navigate("/profile");
                           setShowProfileDropdown(false);
                         }}
-                        className="block cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block w-full px-4 py-2 text-sm text-left text-gray-700 cursor-pointer hover:bg-gray-100"
                       >
                         Profile
                       </button>
@@ -913,7 +1062,7 @@ const Navbar = () => {
                           window.location.href = "/";
                           setShowProfileDropdown(false);
                         }}
-                        className="block cursor-pointer w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block w-full px-4 py-2 text-sm text-left text-gray-700 cursor-pointer hover:bg-gray-100"
                       >
                         Logout
                       </button>
@@ -921,7 +1070,7 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div className="hidden md:flex items-center gap-2">
+                <div className="items-center hidden gap-2 md:flex">
                   <button
                     onClick={() => navigate("/login")}
                     className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
@@ -946,15 +1095,15 @@ const Navbar = () => {
         </div>
 
         {/* Bottom Nav */}
-        <div className="bg-white hidden md:flex md:justify-between md:items-center">
-          <div className="px-4  flex items-center space-x-4 text-sm font-medium whitespace-nowrap lg:px-16 md:px-12">
+        <div className="hidden bg-white md:flex md:justify-between md:items-center">
+          <div className="flex items-center px-4 space-x-4 text-sm font-medium whitespace-nowrap lg:px-16 md:px-12">
             <Link
               to="/"
-              className="hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+              className="px-3 py-1 rounded-full hover:text-white hover:bg-blue-900"
             >
               HOME
             </Link>
-            {/* <Link to="/product" className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full">
+            {/* <Link to="/product" className="px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900">
               All Products
             </Link> */}
             <div
@@ -964,7 +1113,7 @@ const Navbar = () => {
             >
               <Link
                 to="/product"
-                className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full flex items-center gap-1"
+                className="flex items-center gap-1 px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900"
               >
                 All Categories
                 <FaChevronDown className="text-xs" />
@@ -976,17 +1125,17 @@ const Navbar = () => {
                   <div className="max-w-[2000px] mx-auto px-4">
                     <div className="flex">
                       {/* Left Side - Category List */}
-                      <div className="w-1/4 bg-gray-50 p-4 border-r border-gray-200">
+                      <div className="w-1/4 p-4 border-r border-gray-200 bg-gray-50">
                         {Object.keys(categories).map((category, index) => (
                           <div
                             key={index}
                             onMouseEnter={() => setActiveCategory(category)}
-                            className="flex items-center justify-between py-3 px-4 hover:bg-gray-100 rounded-lg group cursor-pointer"
+                            className="flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 group"
                           >
                             <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">
                               {category}
                             </span>
-                            <FaChevronRight className="text-gray-400 text-xs" />
+                            <FaChevronRight className="text-xs text-gray-400" />
                           </div>
                         ))}
                       </div>
@@ -1007,30 +1156,30 @@ const Navbar = () => {
                                         subcat.name
                                       )
                                     }
-                                    className="group cursor-pointer"
+                                    className="cursor-pointer group"
                                   >
-                                    <div className="relative overflow-hidden rounded-lg border border-gray-200">
+                                    <div className="relative overflow-hidden border border-gray-200 rounded-lg">
                                       {subcat.image ? (
                                         <img
                                           src={subcat.image}
                                           alt={subcat.name}
-                                          className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                                          className="object-cover w-full h-32 transition-transform duration-300 group-hover:scale-105"
                                           onError={(e) => {
                                             // Fallback to placeholder if image fails to load
                                             e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
                                           }}
                                         />
                                       ) : (
-                                        <div className="w-full h-32 bg-gray-200 flex items-center justify-center">
-                                          <span className="text-gray-400 text-sm">No Image</span>
+                                        <div className="flex items-center justify-center w-full h-32 bg-gray-200">
+                                          <span className="text-sm text-gray-400">No Image</span>
                                         </div>
                                       )}
                                       <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                                        <h3 className="text-white font-medium text-sm">
+                                        <h3 className="text-sm font-medium text-white">
                                           {subcat.name}
                                         </h3>
                                         {subcat.description && (
-                                          <p className="text-gray-200 text-xs">
+                                          <p className="text-xs text-gray-200">
                                             {subcat.description}
                                           </p>
                                         )}
@@ -1069,14 +1218,14 @@ const Navbar = () => {
             <div className="relative dropdown-container">
               <Link
                 to={'/coming-soon'}
-                className="flex items-center gap-1 text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+                className="flex items-center gap-1 px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900"
               >
                 Shop By Brands
               </Link>
             </div>
             <Link
               to="/b2bpage"
-              className="text-gray-700 hover:text-white hover:bg-blue-900 px-3 py-1 rounded-full"
+              className="px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900"
             >
               B2B Enquiry
             </Link>
@@ -1084,7 +1233,7 @@ const Navbar = () => {
           <div className="flex pr-4 lg:pr-16 md:pr-8">
             <Link
               to="/track-order"
-              className=" text-blue-900 px-3 py-1 flex items-center rounded-full gap-3 transition-colors duration-300"
+              className="flex items-center gap-3 px-3 py-1 text-blue-900 transition-colors duration-300 rounded-full "
             >
               <img src={truck} alt="Logo" className="w-10 h-10 " /> Track
               Order
@@ -1094,19 +1243,19 @@ const Navbar = () => {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden px-4 py-4 space-y-3 text-sm bg-white shadow-md">
+          <div className="px-4 py-4 space-y-3 text-sm bg-white shadow-md md:hidden">
             {/* Mobile Search Bar Section */}
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center w-full gap-2">
               {/* Search Bar with Suggestions */}
               <div className="relative flex-1 search-container">
                 <form
                   onSubmit={handleSearch}
-                  className="flex items-center flex-1 justify-between bg-gray-100 rounded-full px-4 py-2"
+                  className="flex items-center justify-between flex-1 px-4 py-2 bg-gray-100 rounded-full"
                 >
                   <input
                     type="text"
                     placeholder="Search by name, category, brand..."
-                    className="flex-1 bg-transparent text-sm outline-none"
+                    className="flex-1 text-sm bg-transparent outline-none"
                     value={searchQuery}
                     onChange={handleSearchInputChange}
                     onKeyPress={handleKeyPress}
@@ -1121,11 +1270,11 @@ const Navbar = () => {
 
                 {/* Suggestions Dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <div className="absolute left-0 right-0 z-50 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg top-full">
                     {suggestions.map((suggestion, index) => (
                       <div
                         key={index}
-                        className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-50"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         <div className="flex items-center gap-2">
@@ -1133,7 +1282,7 @@ const Navbar = () => {
                           <div className="flex flex-col">
                             {suggestion.type === "product" ? (
                               <>
-                                <span className="text-gray-900 font-medium">
+                                <span className="font-medium text-gray-900">
                                   {suggestion.name}
                                 </span>
                                 <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -1151,7 +1300,7 @@ const Navbar = () => {
                               </>
                             ) : (
                               <>
-                                <span className="text-gray-900 font-medium">
+                                <span className="font-medium text-gray-900">
                                   {suggestion.displayText}
                                 </span>
                                 <span className="text-xs text-gray-500">
@@ -1190,7 +1339,7 @@ const Navbar = () => {
               </button>
             </div>
 
-            <div className="flex flex-col gap-2 items-center text-center">
+            <div className="flex flex-col items-center gap-2 text-center">
               <Link
                 to="/"
                 className="block py-2 font-bold hover:text-[#F7941D]"
