@@ -701,8 +701,8 @@ const Navbar = () => {
           </a>
           {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
           <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
-          <Link to="tel:+917982748787" className="hover:text-[#F7941D]">
-            +91 79827 48787
+          <Link to="tel:+91 9403893115" className="hover:text-[#F7941D]">
+           +91 94038 93115
           </Link>
         </div>
         <div className="hidden lg:flex items-center text-[15px] gap-2">
