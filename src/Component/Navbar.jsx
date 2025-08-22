@@ -354,8 +354,10 @@ const Navbar = () => {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
-  const [location, setLocation] = useState("Delhi, India");
-  const [user, setUser] = useState(null);
+  const [location, setLocation] = useState("Detecting...");
+  const [stringForDelivery, setStringForDelivery] = useState("");
+  const [userPincode, setUserPincode] = useState('');
+  const [userCoordinates, setUserCoordinates] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Development Board");
@@ -365,11 +367,60 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { uniqueItems, cartItems } = useCart();
   const [categories, setCategories] = useState([]);
-  const [userPincode, setUserPincode] = useState('');
-  const [stringForDelivery, setStringForDelivery] = useState('Delivery in 24 Hours');
   const currentLocation = useLocation();
   const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [userCoordinates, setUserCoordinates] = useState(null);
+  const [user, setUser] = useState(null); // <-- Add this line
+
+  // Helper to check if pincode exists
+  const isPincodeAvailable = (zipcode) => {
+    return pincodes.some((p) => String(p.Pincode) === String(zipcode));
+  };
+
+  // Get location by browser geolocation
+  const fetchLocationAndDelivery = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setUserCoordinates({ latitude, longitude });
+
+          // Use a reverse geocoding API to get address from coordinates
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await res.json();
+            const zipcode =
+              data.address.postcode ||
+              data.address.pincode ||
+              data.address.zip ||
+              "";
+
+            setLocation(
+              `${zipcode}, ${data.address.city || data.address.town || data.address.village || ""}, ${data.address.state || ""}`
+            );
+            setUserPincode(zipcode);
+
+            if (isPincodeAvailable(zipcode)) {
+              setStringForDelivery("Delivery in 24 Hours");
+            } else {
+              setStringForDelivery("");
+            }
+          } catch (err) {
+            setLocation("Location not found");
+            setStringForDelivery("");
+          }
+        },
+        (err) => {
+          setLocation("Location not found");
+          setStringForDelivery("");
+        }
+      );
+    } else {
+      setLocation("Geolocation not supported");
+      setStringForDelivery("");
+    }
+  };
 
   async function getAllCategories() {
     try {
@@ -490,7 +541,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    getLocationByIP();
+    fetchLocationAndDelivery();
     getAllCategories()
   }, []);
 
