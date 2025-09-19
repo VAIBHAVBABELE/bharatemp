@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
   FaEdit,
@@ -107,16 +107,18 @@ const AllProducts = () => {
     const modifier = sortOrder === "asc" ? 1 : -1;
 
     switch (sortBy) {
-      case "price":
+      case "price": {
         const aPrice =
           a.discounted_single_product_price || a.non_discounted_price || 0;
         const bPrice =
           b.discounted_single_product_price || b.non_discounted_price || 0;
         return (aPrice - bPrice) * modifier;
-      case "stock":
+      }
+      case "stock": {
         const aStock = a.no_of_product_instock || 0;
         const bStock = b.no_of_product_instock || 0;
         return (aStock - bStock) * modifier;
+      }
       case "name":
         return (
           (a.product_name || "").localeCompare(b.product_name || "") * modifier
@@ -190,7 +192,7 @@ const AllProducts = () => {
     }
   }
 
-  async function fetchAllProducts() {
+  const fetchAllProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.post(`${backend}/product/list`, {
@@ -207,16 +209,16 @@ const AllProducts = () => {
       console.error("Error fetching products:", error);
       setLoading(false);
     }
-  }
+  }, [currentPage, productsPerPage]);
 
   useEffect(() => {
     fetchAllProducts();
-  }, []);
+  }, [fetchAllProducts]);
 
   useEffect(() => {
     fetchAllProducts();
     window.scrollTo(0, 0);
-  }, [currentPage]);
+  }, [fetchAllProducts]);
 
   // View mode toggle buttons
   const ViewModeToggle = () => (
@@ -683,7 +685,7 @@ const AllProducts = () => {
               {Array.from(new Set(products.map((p) => p.category_name)))
                 .filter(Boolean)
                 .sort()
-                .map((category, index) => (
+                .map((category) => (
                   <option key={category} value={category}>
                     {category}
                   </option>

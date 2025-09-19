@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // Create cart context
 const CartContext = createContext();
@@ -10,18 +10,18 @@ const initialState = {
   uniqueItems: 0,
   totalAmount: 0,
   shipping: 0,
-  tax: 0
+  tax: 0,
 };
 
 // Cart reducer
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_TO_CART':
+    case "ADD_TO_CART": {
       const existingItemIndex = state.cartItems.findIndex(
         (item) =>
           item._id === action.payload._id &&
           item.isBulkOrder === !!action.payload.isBulkOrder &&
-          (item.bulkRange || '') === (action.payload.bulkRange || '')
+          (item.bulkRange || "") === (action.payload.bulkRange || "")
       );
 
       if (existingItemIndex >= 0) {
@@ -29,84 +29,91 @@ const cartReducer = (state, action) => {
         const existingItem = updatedCartItems[existingItemIndex];
         const addedQuantity = action.payload.quantity || 1;
         const updatedQuantity = existingItem.quantity + addedQuantity;
+        // Use the new price if provided, otherwise keep existing price
         const updatedPrice = action.payload.price || existingItem.price;
 
         updatedCartItems[existingItemIndex] = {
           ...existingItem,
           quantity: updatedQuantity,
           price: updatedPrice,
-          total: updatedQuantity * updatedPrice
+          total: updatedQuantity * updatedPrice,
         };
 
         return {
           ...state,
-          cartItems: updatedCartItems
+          cartItems: updatedCartItems,
         };
       } else {
         const newItem = {
           ...action.payload,
           quantity: action.payload.quantity || 1,
-          price: action.payload.price || action.payload.discounted_single_product_price,
-          total: (action.payload.price || action.payload.discounted_single_product_price) *
+          price:
+            action.payload.price ||
+            action.payload.discounted_single_product_price,
+          total:
+            (action.payload.price ||
+              action.payload.discounted_single_product_price) *
             (action.payload.quantity || 1),
           isBulkOrder: !!action.payload.isBulkOrder,
-          bulkRange: action.payload.bulkRange || ''
+          bulkRange: action.payload.bulkRange || "",
         };
 
         return {
           ...state,
-          cartItems: [...state.cartItems, newItem]
+          cartItems: [...state.cartItems, newItem],
         };
       }
+    }
 
-
-    case 'REMOVE_FROM_CART':
+    case "REMOVE_FROM_CART":
       return {
         ...state,
-        cartItems: state.cartItems.filter((item) => item._id !== action.payload)
+        cartItems: state.cartItems.filter(
+          (item) => item._id !== action.payload
+        ),
       };
 
-    case 'CLEAR_CART':
+    case "CLEAR_CART":
       return {
         ...state,
-        cartItems: []
+        cartItems: [],
       };
 
-    case 'INCREASE_QUANTITY':
+    case "INCREASE_QUANTITY":
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
           item._id === action.payload
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        )
+        ),
       };
 
-    case 'DECREASE_QUANTITY':
+    case "DECREASE_QUANTITY":
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
           item._id === action.payload && item.quantity > 1
             ? { ...item, quantity: item.quantity - 1 }
             : item
-        )
+        ),
       };
 
-    case 'UPDATE_QUANTITY':
+    case "UPDATE_QUANTITY":
       return {
         ...state,
         cartItems: state.cartItems.map((item) =>
           item._id === action.payload.id
             ? { ...item, quantity: action.payload.quantity }
             : item
-        )
+        ),
       };
 
-    case 'CALCULATE_TOTALS':
+    case "CALCULATE_TOTALS": {
       const { totalItems, totalAmount } = state.cartItems.reduce(
         (acc, item) => {
-          // Use the correct price based on whether it's a bulk order
-          const itemPrice = item.isBulkOrder ? item.price : (item.new_price || item.price);
+          // Use the stored price for calculations
+          const itemPrice = item.price;
           acc.totalItems += item.quantity;
           acc.totalAmount += itemPrice * item.quantity;
           return acc;
@@ -118,7 +125,8 @@ const cartReducer = (state, action) => {
       const uniqueItems = state.cartItems.length;
 
       // Calculate shipping (free over 1000, otherwise 5% of total with min 50)
-      const shipping = totalAmount > 1000 ? 0 : Math.max(totalAmount * 0.05, 50);
+      const shipping =
+        totalAmount > 1000 ? 0 : Math.max(totalAmount * 0.05, 50);
 
       // Calculate tax (8% of total)
       const tax = totalAmount * 0.08;
@@ -129,8 +137,9 @@ const cartReducer = (state, action) => {
         uniqueItems,
         totalAmount,
         shipping,
-        tax
+        tax,
       };
+    }
 
     default:
       return state;
@@ -143,11 +152,11 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage on initial render
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        Object.keys(initialState).forEach(key => {
+        Object.keys(initialState).forEach((key) => {
           if (parsedCart[key] === undefined) {
             parsedCart[key] = initialState[key];
           }
@@ -155,19 +164,19 @@ export const CartProvider = ({ children }) => {
 
         // Set the cart state with the saved cart
         Object.entries(parsedCart).forEach(([key, value]) => {
-          if (key === 'cartItems' && Array.isArray(value)) {
-            dispatch({ type: 'CLEAR_CART' });
-            value.forEach(item => {
-              dispatch({ type: 'ADD_TO_CART', payload: item });
+          if (key === "cartItems" && Array.isArray(value)) {
+            dispatch({ type: "CLEAR_CART" });
+            value.forEach((item) => {
+              dispatch({ type: "ADD_TO_CART", payload: item });
             });
           }
         });
 
         // Recalculate totals
-        dispatch({ type: 'CALCULATE_TOTALS' });
+        dispatch({ type: "CALCULATE_TOTALS" });
       } catch (error) {
         console.error("Error loading cart from localStorage:", error);
-        localStorage.removeItem('cart');
+        localStorage.removeItem("cart");
       }
     }
   }, []);
@@ -175,59 +184,59 @@ export const CartProvider = ({ children }) => {
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (state.cartItems.length > 0) {
-      localStorage.setItem('cart', JSON.stringify(state));
+      localStorage.setItem("cart", JSON.stringify(state));
     } else {
-      localStorage.removeItem('cart');
+      localStorage.removeItem("cart");
     }
   }, [state]);
 
   // Calculate totals whenever cart items change
   useEffect(() => {
-    dispatch({ type: 'CALCULATE_TOTALS' });
+    dispatch({ type: "CALCULATE_TOTALS" });
   }, [state.cartItems]);
 
   // Add item to cart
   const addToCart = (product) => {
-    dispatch({ type: 'ADD_TO_CART', payload: product });
+    dispatch({ type: "ADD_TO_CART", payload: product });
   };
 
   // Remove item from cart
   const removeFromCart = (productId) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
+    dispatch({ type: "REMOVE_FROM_CART", payload: productId });
   };
 
   // Clear the entire cart
   const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
+    dispatch({ type: "CLEAR_CART" });
   };
 
   // Increase item quantity
   const increaseQuantity = (productId) => {
-    dispatch({ type: 'INCREASE_QUANTITY', payload: productId });
+    dispatch({ type: "INCREASE_QUANTITY", payload: productId });
   };
 
   // Decrease item quantity
   const decreaseQuantity = (productId) => {
-    dispatch({ type: 'DECREASE_QUANTITY', payload: productId });
+    dispatch({ type: "DECREASE_QUANTITY", payload: productId });
   };
 
   // Update item quantity directly
   const updateQuantity = (productId, quantity) => {
     if (quantity < 1) return;
     dispatch({
-      type: 'UPDATE_QUANTITY',
-      payload: { id: productId, quantity: parseInt(quantity) }
+      type: "UPDATE_QUANTITY",
+      payload: { id: productId, quantity: parseInt(quantity) },
     });
   };
 
   // Check if item exists in cart
   const isInCart = (productId) => {
-    return state.cartItems.some(item => item._id === productId);
+    return state.cartItems.some((item) => item._id === productId);
   };
 
   // Get quantity of specific item in cart
   const getItemQuantity = (productId) => {
-    const item = state.cartItems.find(item => item._id === productId);
+    const item = state.cartItems.find((item) => item._id === productId);
     return item ? item.quantity : 0;
   };
 
@@ -240,7 +249,7 @@ export const CartProvider = ({ children }) => {
     decreaseQuantity,
     updateQuantity,
     isInCart,
-    getItemQuantity
+    getItemQuantity,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -250,7 +259,7 @@ export const CartProvider = ({ children }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };

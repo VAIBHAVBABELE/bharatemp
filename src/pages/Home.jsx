@@ -3,36 +3,37 @@ import { Link } from "react-router-dom";
 import Section1 from "./../Component/HomeComponent/Section1";
 import Section2 from "./../Component/HomeComponent/Section2";
 import Section3 from "./../Component/HomeComponent/Section3";
-import Section4 from "./../Component/HomeComponent/Section4";
+// import Section4 from "./../Component/HomeComponent/Section4";
 import image7 from "./../assets/homepage12.webp";
 import vector1 from "./../assets/Vector1.webp";
 import vector2 from "./../assets/Vector2.webp";
-import image1 from "./../assets/homepage9.webp";
-import image2 from "./../assets/homepage8.webp";
+// import image1 from "./../assets/homepage9.webp";
+// import image2 from "./../assets/homepage8.webp";
 import vector3 from "./../assets/Vector3.webp";
 import Section5 from "./../Component/HomeComponent/Section5";
-import image8 from "../assets/homepage8.webp";
-import image9 from "../assets/homepage9.webp";
-import icon4 from "../assets/icon4.webp";
-import image10 from "../assets/homepage10.webp";
+// import image8 from "../assets/homepage8.webp";
+// import image9 from "../assets/homepage9.webp";
+// import icon4 from "../assets/icon4.webp";
+// import image10 from "../assets/homepage10.webp";
 import blue from "../assets/green.webp";
-import top1 from '../assets/generator.webp'
-import battery from '../assets/battery.gif'
-import drone from "../assets/drone.gif"
-import sensor from "../assets/sensor.gif"
-import motors from "../assets/motors.gif"
-import board from "../assets/board.gif"
-import printer from "../assets/printer.gif"
+// import top1 from "../assets/generator.webp";
+import battery from "../assets/battery.gif";
+import drone from "../assets/drone.gif";
+import sensor from "../assets/sensor.gif";
+import motors from "../assets/motors.gif";
+import board from "../assets/board.gif";
+import printer from "../assets/printer.gif";
 import secure from "../assets/secure.gif";
 import cargo from "../assets/cargo.gif";
-import shield from "../assets/shield.gif";
-import wallet from "../assets/wallet.gif";
+// import shield from "../assets/shield.gif";
+// import wallet from "../assets/wallet.gif";
 import support from "../assets/support.gif";
 import VideoSection from "../Component/VideoSection";
 import { fetchProducts } from "../utils/api";
-import Customers from '../Component/B2bComponent/Customers.jsx'
+import Customers from "../Component/B2bComponent/Customers.jsx";
 import Marquee from "../Component/HomeComponent/Marquee.jsx";
-import ShimmerUI from "../utils/ShimmerUI.jsx"
+import ShimmerUI from "../utils/ShimmerUI.jsx";
+import BlogsSection from "../sections/BlogsSection.jsx";
 const ProductSlider = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,65 +64,70 @@ const ProductSlider = () => {
   useEffect(() => {
     window.scrollToReviews = () => {
       if (reviewsRef.current) {
-        reviewsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        reviewsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
     };
-    return () => { delete window.scrollToReviews; };
+    return () => {
+      delete window.scrollToReviews;
+    };
   }, []);
 
   const cardData = [
     {
       image: board,
-      title: 'Development Board',
-      version: 'Arduino, ESP32, RPi',
-      category: 'Development Board'
+      title: "Development Board",
+      version: "Arduino, ESP32, RPi",
+      category: "Development Board",
     },
     {
       image: sensor,
-      title: 'Sensors',
-      version: 'Temperature, Pressure, Motion',
-      category: 'Sensors'
+      title: "Sensors",
+      version: "Temperature, Pressure, Motion",
+      category: "Sensors",
     },
     {
       image: motors,
-      title: 'Motors and Drivers',
-      version: 'DC, Stepper, Servo',
-      category: 'Motors and Drivers'
+      title: "Motors and Drivers",
+      version: "DC, Stepper, Servo",
+      category: "Motors and Drivers",
     },
     {
       image: battery,
-      title: 'Battery',
-      version: 'LiPo, Li-ion, NiMH',
-      category: 'Battery'
+      title: "Battery",
+      version: "LiPo, Li-ion, NiMH",
+      category: "Battery",
     },
     {
       image: printer,
-      title: '3D Printer',
-      version: 'Parts & Accessories',
-      category: '3D Printer'
+      title: "3D Printer",
+      version: "Parts & Accessories",
+      category: "3D Printer",
     },
     {
       image: drone,
-      title: 'Drone Parts',
-      version: 'ESC, Flight Controllers, Props',
-      category: 'Drone Parts'
-    }
+      title: "Drone Parts",
+      version: "ESC, Flight Controllers, Props",
+      category: "Drone Parts",
+    },
   ];
   const features = [
     {
       img: cargo,
-      title: '100% Original Products',
-      subtitle: 'Shop worry-free with 100% original products.',
+      title: "100% Original Products",
+      subtitle: "Shop worry-free with 100% original products.",
     },
     {
       img: secure,
-      title: 'Secure Payment',
-      subtitle: 'Secure and seamless payments, every time.',
+      title: "Secure Payment",
+      subtitle: "Secure and seamless payments, every time.",
     },
     {
       img: support,
-      title: '24×7 Technical support available',
-      subtitle: 'We are always here – round-the-clock technical assistance.'
+      title: "24×7 Technical support available",
+      subtitle: "We are always here – round-the-clock technical assistance.",
     },
   ];
 
@@ -133,7 +139,9 @@ const ProductSlider = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
             {cardData.map((card, index) => (
               <Link
-                to={`/allproducts?category=${encodeURIComponent(card.category)}`}
+                to={`/allproducts?category=${encodeURIComponent(
+                  card.category
+                )}`}
                 key={index}
                 className="group"
               >
@@ -180,7 +188,6 @@ const ProductSlider = () => {
           </div>
         </div>
 
-
         <div className="bg-[#000127] w-full xl:h-[500px] h-auto lg:px-20 md:px-12 px-4 rounded-2xl py-10 flex flex-col lg:flex-row gap-8 relative overflow-hidden">
           {/* Left: Text Section */}
           <div className=" lg:w-1/2 w-full lg:text-left flex flex-col justify-center">
@@ -208,7 +215,9 @@ const ProductSlider = () => {
               <div className="flex items-center gap-3 font-[outfit]">
                 <img src={vector1} className="w-8 h-8" alt="100% Original" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">100% Original Products</h3>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                    100% Original Products
+                  </h3>
                   <p className="text-[#FFFFFF] text-[11px] leading-tight">
                     Shop worry-free with 100% original products
                   </p>
@@ -217,7 +226,9 @@ const ProductSlider = () => {
               <div className="flex items-center gap-3 font-[outfit]">
                 <img src={vector2} className="w-8 h-8" alt="Secure Payment" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">Secure Payment</h3>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                    Secure Payment
+                  </h3>
                   <p className="text-[#FFFFFF] text-[11px] leading-tight">
                     Secure and seamless payments, every time
                   </p>
@@ -226,7 +237,9 @@ const ProductSlider = () => {
               <div className="flex items-center gap-3 font-[outfit]">
                 <img src={vector3} className="w-8 h-8" alt="24x7 Support" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">24×7 Technical support</h3>
+                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                    24×7 Technical support
+                  </h3>
                   <p className="text-[#FFFFFF] text-[11px] leading-tight">
                     We're always here – round-the-clock technical assistance
                   </p>
@@ -252,24 +265,22 @@ const ProductSlider = () => {
           </div>
         </div>
 
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  py-8 ">
           {features.map((feature, index) => (
             <div
               key={index}
               className="flex items-center gap-4 px-4  py-2 rounded-2xl  border-1 border-[#E0E0E0] shadow-sm"
             >
-              <img src={feature.img} className="  p-2 w-20 h-20 rounded-lg"
-
-              />
+              <img src={feature.img} className="  p-2 w-20 h-20 rounded-lg" />
               <div>
-                <h3 className="text-sm font-bold text-blue-900">{feature.title}</h3>
+                <h3 className="text-sm font-bold text-blue-900">
+                  {feature.title}
+                </h3>
                 <p className="text-sm text-orange-500">{feature.subtitle}</p>
               </div>
             </div>
           ))}
         </div>
-
 
         {loading ? (
           <div className="py-10">
@@ -286,12 +297,14 @@ const ProductSlider = () => {
             <VideoSection />
             <Section5 />
             <Section2 products={products} />
+
+            {/* Blogs Section  */}
+              <BlogsSection/>
             <div ref={reviewsRef} id="customer-feedback-section">
               <Customers />
             </div>
           </>
         )}
-
       </div>
       <Marquee />
     </div>

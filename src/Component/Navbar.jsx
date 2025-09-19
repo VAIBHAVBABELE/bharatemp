@@ -12,12 +12,12 @@ import {
   FaMapMarkerAlt,
   FaCrosshairs,
 } from "react-icons/fa";
-import { IoMdArrowDropdown } from "react-icons/io";
+// import { IoMdArrowDropdown } from "react-icons/io";
 import location1 from "../assets/location.webp";
-import { FaShoppingBag } from "react-icons/fa";
+// import { FaShoppingBag } from "react-icons/fa";
 import logo from "../assets/Logo.webp";
-import icon1 from "../assets/Icon1.webp";
-import icon2 from "../assets/icon2.webp";
+// import icon1 from "../assets/Icon1.webp";
+// import icon2 from "../assets/icon2.webp";
 import { useCart } from "../context/CartContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -413,11 +413,13 @@ const Navbar = () => {
           } catch (err) {
             setLocation("Location not found");
             setStringForDelivery("");
+            throw err;
           }
         },
         (err) => {
           setLocation("Location not found");
           setStringForDelivery("");
+          throw err;
         }
       );
     } else {
@@ -1324,7 +1326,7 @@ const Navbar = () => {
 
             <div className="relative dropdown-container">
               <Link
-                to={"/comming-soon"}
+                to={'/shopbybrand'}
                 className="flex items-center gap-1 px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900"
               >
                 Shop By Brands
