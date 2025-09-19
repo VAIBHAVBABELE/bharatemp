@@ -3,9 +3,6 @@
 body {
   font-family: "Outfit", sans-serif;
 }
-
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 @keyframes moveGradient {
@@ -15,6 +12,10 @@ body {
   100% {
     background-position: 200% 0%;
   }
+}
+
+:root {
+  --navbar-height: 140px; 
 }
 
 /* Add this class for reusability */
@@ -52,5 +53,197 @@ body {
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+/* Fix for navbar dropdown gap issue */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+}
+
+/* Main navbar container */
+.bg-white.border-b.shadow-sm {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+}
+
+/* Dropdown container - absolutely positioned relative to navbar */
+.categories-dropdown-container .absolute {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%; /* This positions it directly below the navbar */
+  margin-top: 0;
+  z-index: 99;
+}
+
+/* Ensure the dropdown wrapper has proper positioning */
+.relative.group {
+  position: static !important; /* This is key for proper dropdown positioning */
+}
+
+/* Dropdown content styling */
+.categories-dropdown-container .w-screen {
+  width: 100vw;
+  left: 0;
+  right: 0;
+  border-top: 2px solid #1E3473;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  animation: dropdownAppear 0.2s ease-out;
+}
+
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Remove any gap between navbar and dropdown */
+.bg-white.border-b.shadow-sm {
+  position: relative;
+  z-index: 100;
+}
+
+/* Category list styling */
+.categories-dropdown-container .bg-gray-50 {
+  background-color: #f8fafc;
+  padding: 0.75rem;
+}
+
+.categories-dropdown-container .px-4.py-3.rounded-lg {
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
+  border-left: 3px solid transparent;
+}
+
+.categories-dropdown-container .px-4.py-3.rounded-lg:hover {
+  background-color: #eff6ff;
+  border-left-color: #1E3473;
+}
+
+.categories-dropdown-container .px-4.py-3.rounded-lg.group:hover span {
+  color: #1E3473;
+  font-weight: 600;
+}
+
+/* Active category highlight */
+.categories-dropdown-container .bg-blue-50 {
+  background-color: #eff6ff !important;
+  border-left-color: #1E3473 !important;
+}
+
+.categories-dropdown-container .text-blue-700 {
+  color: #1E3473 !important;
+  font-weight: 600;
+}
+
+/* Subcategory card styling */
+.categories-dropdown-container .cursor-pointer.group .rounded-lg {
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.categories-dropdown-container .cursor-pointer.group:hover .rounded-lg {
+  border-color: #1E3473;
+  box-shadow: 0 4px 12px rgba(30, 52, 115, 0.15);
+}
+
+.categories-dropdown-container .cursor-pointer.group .object-cover {
+  transition: transform 0.3s ease;
+}
+
+.categories-dropdown-container .cursor-pointer.group:hover .object-cover {
+  transform: scale(1.05);
+}
+
+/* Subcategory text styling */
+.categories-dropdown-container .cursor-pointer.group h3 {
+  transition: color 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.categories-dropdown-container .cursor-pointer.group:hover h3 {
+  color: #F7941D;
+}
+
+/* View All button styling */
+.categories-dropdown-container .mt-6.flex.items-center.justify-center {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1E3473;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  margin-top: 1.5rem !important;
+}
+
+.categories-dropdown-container .mt-6.flex.items-center.justify-center:hover {
+  background-color: #e2e8f0;
+  color: #1E3473;
+  border-color: #94a3b8;
+}
+
+/* No categories available styling */
+.categories-dropdown-container .flex.items-center.justify-center.h-64 {
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.categories-dropdown-container .text-gray-600 {
+  color: #475569;
+}
+
+/* Ensure proper spacing in dropdown */
+.categories-dropdown-container .p-6 {
+  padding: 1.5rem;
+}
+
+.categories-dropdown-container .grid.grid-cols-4.gap-6 {
+  gap: 1.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+  .categories-dropdown-container .grid.grid-cols-4.gap-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .categories-dropdown-container .absolute {
+    position: relative;
+    top: 0;
+    margin-top: 0.5rem;
+    border-top: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .categories-dropdown-container .flex {
+    flex-direction: column;
+  }
+  
+  .categories-dropdown-container .w-1\/4, 
+  .categories-dropdown-container .w-3\/4 {
+    width: 100%;
+  }
+  
+  .categories-dropdown-container .border-r {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .categories-dropdown-container .grid.grid-cols-4.gap-6 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
