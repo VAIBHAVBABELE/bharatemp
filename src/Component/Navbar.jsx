@@ -35,11 +35,11 @@ import cart from "../assets/cart.gif";
 import avatar from "../assets/avatar.gif";
 import truck from "../assets/truck.gif";
 import pincodes from "../utils/pincode.json";
-import { 
-  getLocationByCoordinates, 
-  searchLocations, 
+import {
+  getLocationByCoordinates,
+  searchLocations,
   getCurrentLocation as getCurrentLocationService,
-  formatLocationString 
+  formatLocationString,
 } from "../utils/locationService";
 import arduino from "../assets/arduino.webp";
 import stm32 from "../assets/stm32.webp";
@@ -89,7 +89,6 @@ import props from "../assets/props.webp";
 import flightcontroller from "../assets/flightcontroller.webp";
 import motions from "../assets/motions.webp";
 import protectionc from "../assets/protectionc.webp";
-
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -356,7 +355,7 @@ const Navbar = () => {
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [location, setLocation] = useState("Detecting...");
   const [stringForDelivery, setStringForDelivery] = useState("");
-  const [userPincode, setUserPincode] = useState('');
+  const [userPincode, setUserPincode] = useState("");
   const [userCoordinates, setUserCoordinates] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -397,7 +396,12 @@ const Navbar = () => {
               "";
 
             setLocation(
-              `${zipcode}, ${data.address.city || data.address.town || data.address.village || ""}, ${data.address.state || ""}`
+              `${zipcode}, ${
+                data.address.city ||
+                data.address.town ||
+                data.address.village ||
+                ""
+              }, ${data.address.state || ""}`
             );
             setUserPincode(zipcode);
 
@@ -427,25 +431,33 @@ const Navbar = () => {
       const response = await axios.post(`${backend}/product/all-categories`);
       setCategories(response.data.data.product.subcategories);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   }
 
   const getLocationByIP = async () => {
     try {
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch("https://ipapi.co/json/");
       const data = await response.json();
-      const foundPincode = pincodes.find((pincode) => pincode.Pincode === String(data.postal));
+      const foundPincode = pincodes.find(
+        (pincode) => pincode.Pincode === String(data.postal)
+      );
       if (foundPincode) {
         setStringForDelivery("Delivery in 24 Hours");
-        setLocation(foundPincode.Pincode + ", " + foundPincode.City + ", " + foundPincode.state);
+        setLocation(
+          foundPincode.Pincode +
+            ", " +
+            foundPincode.City +
+            ", " +
+            foundPincode.state
+        );
       } else {
         setStringForDelivery("Delivery in 24 to 72 Hours");
         setLocation(data.city);
       }
       setUserPincode(data);
     } catch (error) {
-      console.error('Error fetching IP location:', error);
+      console.error("Error fetching IP location:", error);
     }
   };
 
@@ -453,24 +465,24 @@ const Navbar = () => {
   const getLocationByCoordinatesLocal = async (latitude, longitude) => {
     try {
       setIsGettingLocation(true);
-      
+
       const result = await getLocationByCoordinates(latitude, longitude);
-      
+
       if (result.success) {
         setStringForDelivery(result.deliveryTime);
         setLocation(formatLocationString(result));
         setUserPincode({
           postal: result.postcode,
           city: result.city,
-          state: result.state
+          state: result.state,
         });
         setUserCoordinates(result.coordinates);
         return true;
       }
-      
+
       return false;
     } catch (error) {
-      console.error('Error getting location by coordinates:', error);
+      console.error("Error getting location by coordinates:", error);
       return false;
     } finally {
       setIsGettingLocation(false);
@@ -481,16 +493,16 @@ const Navbar = () => {
   const getCurrentLocation = async () => {
     try {
       setIsGettingLocation(true);
-      
+
       const result = await getCurrentLocationService();
-      
+
       if (result.success) {
         setStringForDelivery(result.deliveryTime);
         setLocation(formatLocationString(result));
         setUserPincode({
           postal: result.postcode,
           city: result.city,
-          state: result.state
+          state: result.state,
         });
         setUserCoordinates(result.coordinates);
       } else {
@@ -498,7 +510,7 @@ const Navbar = () => {
         getLocationByIP();
       }
     } catch (error) {
-      console.error('Error getting current location:', error);
+      console.error("Error getting current location:", error);
       // Fallback to IP-based location
       getLocationByIP();
     } finally {
@@ -514,7 +526,7 @@ const Navbar = () => {
         setShowLocationDropdown(false);
       }
     } catch (error) {
-      console.error('Error searching location by coordinates:', error);
+      console.error("Error searching location by coordinates:", error);
     }
   };
 
@@ -522,7 +534,7 @@ const Navbar = () => {
   const handleLocationSearch = async (searchTerm) => {
     try {
       const results = await searchLocations(searchTerm);
-      
+
       if (results.length > 0) {
         const result = results[0]; // Use first result
         setStringForDelivery(result.deliveryTime);
@@ -530,19 +542,19 @@ const Navbar = () => {
         setUserPincode({
           postal: result.postcode,
           city: result.city,
-          state: result.state
+          state: result.state,
         });
         setUserCoordinates(result.coordinates);
         setShowLocationDropdown(false);
       }
     } catch (error) {
-      console.error('Error searching location:', error);
+      console.error("Error searching location:", error);
     }
   };
 
   useEffect(() => {
     fetchLocationAndDelivery();
-    getAllCategories()
+    getAllCategories();
   }, []);
 
   useEffect(() => {
@@ -592,11 +604,13 @@ const Navbar = () => {
       name: "Shop by brand",
       key: "catalog",
       items: ["Categories"],
-      links: ["/coming-soon"],
+      links: ["/product"],
     },
   ];
 
-  const locations = pincodes.map((item) => `${item.Pincode}, ${item.City}, ${item.state}`);
+  const locations = pincodes.map(
+    (item) => `${item.Pincode}, ${item.City}, ${item.state}`
+  );
 
   const toggleDropdown = (key) => {
     setOpenDropdown(openDropdown === key ? "" : key);
@@ -854,7 +868,7 @@ const Navbar = () => {
           {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
           <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
           <Link to="tel:+91 9403893115" className="hover:text-[#F7941D]">
-           +91 94038 93115
+            +91 94038 93115
           </Link>
         </div>
         <div className="hidden lg:flex items-center text-[15px] gap-2">
@@ -863,13 +877,22 @@ const Navbar = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-4 pl-40 ">
-          <Link to="https://www.instagram.com/bharatronix/?hl=en" className="text-white ">
+          <Link
+            to="https://www.instagram.com/bharatronix/?hl=en"
+            className="text-white "
+          >
             <FaInstagram alt="Instagram" className="w-6 h-6" />
           </Link>
-          <Link to="https://www.facebook.com/profile.php?id=61579174892065#" className="text-white ">
+          <Link
+            to="https://www.facebook.com/profile.php?id=61579174892065#"
+            className="text-white "
+          >
             <SlSocialFacebook alt=" Facebook" className="w-6 h-6" />
           </Link>
-          <Link to="https://www.youtube.com/@BharatroniX2024" className="text-white ">
+          <Link
+            to="https://www.youtube.com/@BharatroniX2024"
+            className="text-white "
+          >
             <FiYoutube alt=" Facebook" className="w-6 h-6" />
           </Link>
           <Link to="https://x.com/bharatroni68370" className="text-white ">
@@ -918,7 +941,9 @@ const Navbar = () => {
                       className="flex items-center w-full gap-2 px-3 py-2 font-medium text-blue-700 transition-colors rounded-lg bg-blue-50 hover:bg-blue-100 disabled:opacity-50"
                     >
                       <FaCrosshairs className="w-4 h-4" />
-                      {isGettingLocation ? "Getting location..." : "Use my current location"}
+                      {isGettingLocation
+                        ? "Getting location..."
+                        : "Use my current location"}
                     </button>
                   </div>
 
@@ -930,13 +955,17 @@ const Navbar = () => {
                         placeholder="Search location or enter coordinates (e.g., 28.6139, 77.2090)"
                         className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             handleLocationSearch(e.target.value);
                           }
                         }}
                       />
                       <button
-                        onClick={(e) => handleLocationSearch(e.target.previousElementSibling.value)}
+                        onClick={(e) =>
+                          handleLocationSearch(
+                            e.target.previousElementSibling.value
+                          )
+                        }
                         className="px-3 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e6851a] transition-colors"
                       >
                         <FaSearch className="w-4 h-4" />
@@ -947,16 +976,21 @@ const Navbar = () => {
                   {/* Current Coordinates Display */}
                   {userCoordinates && (
                     <div className="p-3 border-b border-gray-200 bg-gray-50">
-                      <div className="mb-1 text-xs text-gray-600">Current Coordinates:</div>
+                      <div className="mb-1 text-xs text-gray-600">
+                        Current Coordinates:
+                      </div>
                       <div className="font-mono text-sm">
-                        {userCoordinates.latitude.toFixed(6)}, {userCoordinates.longitude.toFixed(6)}
+                        {userCoordinates.latitude.toFixed(6)},{" "}
+                        {userCoordinates.longitude.toFixed(6)}
                       </div>
                     </div>
                   )}
 
                   {/* Popular Locations */}
                   <div className="p-3">
-                    <div className="mb-2 text-sm font-medium text-gray-700">Popular Locations:</div>
+                    <div className="mb-2 text-sm font-medium text-gray-700">
+                      Popular Locations:
+                    </div>
                     {locations.slice(0, 10).map((loc) => (
                       <div
                         key={loc}
@@ -1051,8 +1085,9 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative border cursor-pointer border-gray-300 w-9 h-9 rounded-full flex items-center justify-center  transition-colors ${isListening ? "ring-2 ring-[#F7941D]" : ""
-                  }`}
+                className={`relative border cursor-pointer border-gray-300 w-9 h-9 rounded-full flex items-center justify-center  transition-colors ${
+                  isListening ? "ring-2 ring-[#F7941D]" : ""
+                }`}
                 onClick={startVoiceSearch}
               >
                 <img src={mic} alt="Mic" className="w-7 h-7" />
@@ -1154,11 +1189,11 @@ const Navbar = () => {
             >
               HOME
             </Link>
-            {/* <Link to="/product" className="px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900">
-              All Products
-            </Link> */}
+
+            {/* Categories Dropdown - Fixed to have only one instance */}
             <div
               className="relative group categories-dropdown-container"
+              style={{ position: "static" }}
               onMouseEnter={() => setShowCategoriesDropdown(true)}
               onMouseLeave={() => setShowCategoriesDropdown(false)}
             >
@@ -1172,30 +1207,37 @@ const Navbar = () => {
 
               {/* Categories Dropdown */}
               {showCategoriesDropdown && (
-                <div className="fixed left-0 right-0 top-[var(--navbar-height)] mt-0 bg-white shadow-lg w-screen z-50">
-                  <div className="max-w-[2000px] mx-auto px-4">
+                <div className="absolute left-0 right-0 top-full bg-white shadow-xl border-t-2 border-blue-800 z-99">
+                  <div className="max-w-[2000px] mx-auto">
                     <div className="flex">
                       {/* Left Side - Category List */}
-                      <div className="w-1/4 p-4 border-r border-gray-200 bg-gray-50">
+                      <div className="w-1/4 p-3 border-r border-gray-200 bg-gray-50">
                         {Object.keys(categories).map((category, index) => (
                           <div
                             key={index}
                             onMouseEnter={() => setActiveCategory(category)}
-                            className="flex items-center justify-between px-4 py-3 rounded-lg cursor-pointer hover:bg-gray-100 group"
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-all ${
+                              activeCategory === category
+                                ? "bg-blue-50 text-blue-800 font-semibold border-l-4 border-blue-800"
+                                : "hover:bg-blue-100 text-gray-700 hover:text-blue-800"
+                            }`}
                           >
-                            <span className="text-gray-700 group-hover:text-[#F7941D] font-medium">
-                              {category}
-                            </span>
+                            <span className="text-sm">{category}</span>
                             <FaChevronRight className="text-xs text-gray-400" />
                           </div>
                         ))}
                       </div>
 
                       {/* Right Side - Subcategories Grid */}
-                      <div className="w-3/4 p-6">
-                        {activeCategory && categories[activeCategory] && categories[activeCategory].length > 0 ? (
+                      <div className="w-3/4 p-5">
+                        {activeCategory &&
+                        categories[activeCategory] &&
+                        categories[activeCategory].length > 0 ? (
                           <>
-                            <div className="grid grid-cols-4 gap-4">
+                            <h3 className="mb-5 text-xl font-bold text-gray-800 border-b border-gray-200 pb-2">
+                              {activeCategory}
+                            </h3>
+                            <div className="grid grid-cols-4 gap-5">
                               {categories[activeCategory]
                                 .slice(0, 8)
                                 .map((subcat, index) => (
@@ -1207,30 +1249,32 @@ const Navbar = () => {
                                         subcat.name
                                       )
                                     }
-                                    className="cursor-pointer group"
+                                    className="cursor-pointer group transition-all duration-200 hover:-translate-y-0.5"
                                   >
-                                    <div className="relative overflow-hidden border border-gray-200 rounded-lg">
+                                    <div className="relative overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
                                       {subcat.image ? (
                                         <img
                                           src={subcat.image}
                                           alt={subcat.name}
-                                          className="object-cover w-full h-32 transition-transform duration-300 group-hover:scale-105"
+                                          className="object-cover w-full h-28 transition-transform duration-300 group-hover:scale-105"
                                           onError={(e) => {
-                                            // Fallback to placeholder if image fails to load
-                                            e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                                            e.target.src =
+                                              "https://via.placeholder.com/300x200?text=No+Image";
                                           }}
                                         />
                                       ) : (
-                                        <div className="flex items-center justify-center w-full h-32 bg-gray-200">
-                                          <span className="text-sm text-gray-400">No Image</span>
+                                        <div className="flex items-center justify-center w-full h-28 bg-gray-100">
+                                          <span className="text-sm text-gray-400">
+                                            No Image
+                                          </span>
                                         </div>
                                       )}
-                                      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                                        <h3 className="text-sm font-medium text-white">
+                                      <div className="p-3 bg-white">
+                                        <h3 className="font-semibold text-gray-900 group-hover:text-[#F7941D] transition-colors text-sm">
                                           {subcat.name}
                                         </h3>
                                         {subcat.description && (
-                                          <p className="text-xs text-gray-200">
+                                          <p className="mt-1 text-xs text-gray-500 line-clamp-2">
                                             {subcat.description}
                                           </p>
                                         )}
@@ -1242,20 +1286,32 @@ const Navbar = () => {
                             <div
                               onClick={() => {
                                 navigate(
-                                  `/product?category=${encodeURIComponent(activeCategory)}`
+                                  `/product?category=${encodeURIComponent(
+                                    activeCategory
+                                  )}`
                                 );
                                 setShowCategoriesDropdown(false);
                               }}
-                              className="mt-4 flex items-center justify-center py-3 px-6 bg-gray-50 hover:bg-gray-100 rounded-lg text-[#F7941D] font-medium transition-colors cursor-pointer"
+                              className="mt-6 flex items-center justify-center py-2.5 px-5 bg-blue-50 hover:bg-blue-100 rounded-md text-blue-800 font-semibold transition-colors cursor-pointer border border-blue-200 hover:border-blue-300"
                             >
-                              See All in {activeCategory}
+                              View All {activeCategory} Products
                               <FaChevronRight className="ml-2 text-xs" />
                             </div>
                           </>
                         ) : (
-                          <div className="flex items-center justify-center h-40">
-                            <p className="text-gray-500">
-                              {activeCategory ? 'No subcategories available' : 'Select a category to view subcategories'}
+                          <div className="flex flex-col items-center justify-center h-56">
+                            <div className="text-4xl text-gray-300 mb-3">
+                              🔍
+                            </div>
+                            <p className="text-gray-600 text-base mb-2 font-medium">
+                              {activeCategory
+                                ? "No subcategories available"
+                                : "Select a category"}
+                            </p>
+                            <p className="text-sm text-gray-500 text-center">
+                              {activeCategory
+                                ? "Check back later for new products"
+                                : "Hover over a category to see subcategories"}
                             </p>
                           </div>
                         )}
@@ -1264,11 +1320,11 @@ const Navbar = () => {
                   </div>
                 </div>
               )}
-
             </div>
+
             <div className="relative dropdown-container">
               <Link
-                to={'/coming-soon'}
+                to={"/comming-soon"}
                 className="flex items-center gap-1 px-3 py-1 text-gray-700 rounded-full hover:text-white hover:bg-blue-900"
               >
                 Shop By Brands
@@ -1286,8 +1342,7 @@ const Navbar = () => {
               to="/track-order"
               className="flex items-center gap-3 px-3 py-1 text-blue-900 transition-colors duration-300 rounded-full "
             >
-              <img src={truck} alt="Logo" className="w-10 h-10 " /> Track
-              Order
+              <img src={truck} alt="Logo" className="w-10 h-10 " /> Track Order
             </Link>
           </div>
         </div>
@@ -1372,13 +1427,15 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${isListening ? "ring-2 ring-[#F7941D]" : ""
-                  }`}
+                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
+                  isListening ? "ring-2 ring-[#F7941D]" : ""
+                }`}
                 onClick={startVoiceSearch}
               >
                 <FaMicrophone
-                  className={`h-5 w-5 ${isListening ? "text-[#F7941D]" : "text-gray-600"
-                    }`}
+                  className={`h-5 w-5 ${
+                    isListening ? "text-[#F7941D]" : "text-gray-600"
+                  }`}
                 />
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">

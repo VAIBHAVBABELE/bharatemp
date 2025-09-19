@@ -13,6 +13,9 @@ import "react-toastify/dist/ReactToastify.css";
 import LoadingSpinner from "../../utils/LoadingSpinner";
 import { handleBuyNow } from "../../utils/paymentUtils";
 const backend = import.meta.env.VITE_BACKEND;
+import arduino from "../../assets/arduino.webp";
+import esp32 from "../../assets/esp32.webp";
+import servomotor from "../../assets/servo.webp";
 
 // Mock data for testing when API fails
 const mockProducts = [
@@ -41,8 +44,8 @@ const mockProducts = [
     brand_name: "Arduino",
     non_discounted_price: 1500,
     discounted_single_product_price: 1200,
-    product_image_main: raspberry,
-    product_image_sub: [raspberry],
+    product_image_main: arduino,
+    product_image_sub: [arduino],
     review_stars: 4.2,
     no_of_reviews: 85,
     featured: true,
@@ -59,8 +62,8 @@ const mockProducts = [
     brand_name: "Espressif",
     non_discounted_price: 800,
     discounted_single_product_price: 650,
-    product_image_main: raspberry,
-    product_image_sub: [raspberry],
+    product_image_main: esp32,
+    product_image_sub: [esp32],
     review_stars: 4.0,
     no_of_reviews: 60,
     featured: false,
@@ -95,8 +98,8 @@ const mockProducts = [
     brand_name: "TowerPro",
     non_discounted_price: 300,
     discounted_single_product_price: 280,
-    product_image_main: raspberry,
-    product_image_sub: [raspberry],
+    product_image_main: servomotor,
+    product_image_sub: [servomotor],
     review_stars: 4.3,
     no_of_reviews: 70,
     featured: true,
@@ -378,7 +381,9 @@ const Product = () => {
 
     // Filter by brand
     if (brandFilters.length > 0) {
-      filtered = filtered.filter((p) => brandFilters.includes(p.brand_name));
+      filtered = filtered.filter((p) =>
+        brandFilters.includes(p.brand_name)
+      );
     }
 
     setDisplayedProducts(filtered);
@@ -389,6 +394,7 @@ const Product = () => {
     priceCheckboxFilters,
     categoryFilters,
     subcategoryFilters,
+    brandFilters,
     searchQuery,
   ]);
 
@@ -641,10 +647,10 @@ const Product = () => {
               </div>
 
               {/* Price Filter Slider */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Filter by Price</h3>
+              <div className="mb-6 -mt-2">
+                <h3 className="text-lg font-semibold mb-4">Filter by Price</h3>
                 <div className="flex items-center space-x-2 mb-4">
-                  <div className="h-1 flex-grow bg-gray-200 rounded-full relative">
+                  <div className="h-1 -top-1.5 flex-grow bg-gray-200 rounded-full relative">
                     {/* Temp slider range - orange overlay */}
                     <div
                       className="absolute h-1 bg-[#1e3473] rounded-full"
@@ -656,7 +662,7 @@ const Product = () => {
                       max={max}
                       value={sliderValue}
                       onChange={handleSliderChange}
-                      className="absolute w-full h-1 opacity-0 cursor-pointer"
+                      className="absolute w-full h-1 opacity-0 cursor-pointer -top-8"
                     />
                     {/* Slider thumb */}
                     <div
@@ -737,7 +743,7 @@ const Product = () => {
 
               {/* Filter by Categories */}
               <div className="mb-6">
-                <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3">
+                <h3 className="bg-[#1e3473] text-white px-4 py-1.5 text-sm font-medium rounded-full mb-3 ">
                   Filter by Categories
                 </h3>
                 <ul className="space-y-2">

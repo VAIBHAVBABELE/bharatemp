@@ -17,7 +17,8 @@ import Signup from "./Component/Signup";
 import ForgotPassword from "./Component/ForgotPassword";
 import VerifyOTP from "./Component/VerifyOTP";
 import ResetPassword from "./Component/ResetPassword";
-import AdminLogin from './Component/AdminDashboardComponent/AdminLogin.jsx'
+import AdminLogin from './Component/AdminDashboardComponent/AdminLogin.jsx';
+import ShopByBrand from './pages/ShopByBrand';
 import AdminDashboard from './Component/AdminDashboardComponent/AdminDashboard.jsx'
 import Admin from './Admin.jsx'
 import AddProduct from './Component/AdminDashboardComponent/ProductsRelatedComponents/AddProduct.jsx'
@@ -47,6 +48,7 @@ import ComingSoon from './pages/ComingSoon'
 import { FaWhatsapp } from 'react-icons/fa';
 import OrderSuccess2 from './Component/HomeComponent/CashThankyou.jsx'
 
+
 const App = () => {
   return (
 
@@ -69,6 +71,8 @@ const App = () => {
           <Route path="/b2bpage" element={<Ouronline/>}/>
           <Route path="/subcategory" element={<Subcategory/>}/>
           <Route path="/subcategories" element={<SubCategories />} />
+          
+          
           {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -77,6 +81,7 @@ const App = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
+         
           
           {/* dashboard */}
           <Route path='/admin-login' element={<AdminLogin />} />
