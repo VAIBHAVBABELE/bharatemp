@@ -1,119 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import raspberry from "../../assets/rasperrybi.svg";
-import filtericon from "../../assets/filtericon.webp";
 import { IoFilter } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { useCart } from "../../context/CartContext";
-import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingSpinner from "../../utils/LoadingSpinner";
-import { handleBuyNow } from "../../utils/paymentUtils";
-const backend = import.meta.env.VITE_BACKEND;
-import arduino from "../../assets/arduino.webp";
-import esp32 from "../../assets/esp32.webp";
-import servomotor from "../../assets/servo.webp";
-
-// Mock data for testing when API fails
-const mockProducts = [
-  {
-    _id: 1,
-    product_name: "Raspberry Pi 4",
-    category_name: "Development Boards",
-    brand_name: "Raspberry Pi",
-    non_discounted_price: 3500,
-    discounted_single_product_price: 3200,
-    product_image_main: raspberry,
-    product_image_sub: [raspberry],
-    review_stars: 4.5,
-    no_of_reviews: 120,
-    featured: true,
-    topRated: true,
-    onSale: true,
-    discount_percentage: 8,
-    deliveryDate: "May 15, 2023",
-    deliveryType: "Free Delivery",
-  },
-  {
-    _id: 2,
-    product_name: "Arduino Uno",
-    category_name: "Development Boards",
-    brand_name: "Arduino",
-    non_discounted_price: 1500,
-    discounted_single_product_price: 1200,
-    product_image_main: arduino,
-    product_image_sub: [arduino],
-    review_stars: 4.2,
-    no_of_reviews: 85,
-    featured: true,
-    topRated: false,
-    onSale: true,
-    discount_percentage: 20,
-    deliveryDate: "May 16, 2023",
-    deliveryType: "Free Delivery",
-  },
-  {
-    _id: 3,
-    product_name: "ESP32 Development Board",
-    category_name: "Development Boards",
-    brand_name: "Espressif",
-    non_discounted_price: 800,
-    discounted_single_product_price: 650,
-    product_image_main: esp32,
-    product_image_sub: [esp32],
-    review_stars: 4.0,
-    no_of_reviews: 60,
-    featured: false,
-    topRated: false,
-    onSale: true,
-    discount_percentage: 18,
-    deliveryDate: "May 17, 2023",
-    deliveryType: "Free Delivery",
-  },
-  {
-    _id: 4,
-    product_name: "Ultrasonic Sensor HC-SR04",
-    category_name: "Sensors",
-    brand_name: "Generic",
-    non_discounted_price: 250,
-    discounted_single_product_price: 200,
-    product_image_main: raspberry,
-    product_image_sub: [raspberry],
-    review_stars: 3.8,
-    no_of_reviews: 45,
-    featured: false,
-    topRated: false,
-    onSale: false,
-    discount_percentage: 0,
-    deliveryDate: "May 18, 2023",
-    deliveryType: "Standard Delivery",
-  },
-  {
-    _id: 5,
-    product_name: "Servo Motor SG90",
-    category_name: "Motors",
-    brand_name: "TowerPro",
-    non_discounted_price: 300,
-    discounted_single_product_price: 280,
-    product_image_main: servomotor,
-    product_image_sub: [servomotor],
-    review_stars: 4.3,
-    no_of_reviews: 70,
-    featured: true,
-    topRated: true,
-    onSale: false,
-    discount_percentage: 6,
-    deliveryDate: "May 19, 2023",
-    deliveryType: "Free Delivery",
-  },
-];
+import { fetchProductsDynamic } from "../../utils/api";
 
 const Product = () => {
   const [allProducts, setAllProducts] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0);
   const [activeTab, setActiveTab] = useState("All");
   const [loadingBuyNow, setLoadingBuyNow] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
@@ -177,49 +76,51 @@ const Product = () => {
     }
   }, [location]);
 
-  async function fetchAllProducts() {
+  async function fetchAllProducts(options = {}) {
     try {
       setLoading(true);
-      const response = await axios.post(`${backend}/product/list`, {
-        pageNum: 1,
+      const result = await fetchProductsDynamic({
         pageSize: 1000,
-        filters: {},
+        useMockData: true,
+        ...options,
       });
-      if (response.data.status === "Success") {
-        const products = response.data.data.productList || [];
-        setAllProducts(products);
-        setTotalProducts(response.data.data.productCount || products.length);
+
+      if (result.success) {
+        setAllProducts(result.products);
+        console.log(`Fetched ${result.products.length} products successfully`);
+        if (result.isMockData) {
+          console.log("Using mock data as fallback");
+        }
       } else {
+        console.error("Failed to fetch products:", result.error);
         setAllProducts([]);
-        setTotalProducts(0);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
       setAllProducts([]);
-      setTotalProducts(0);
     } finally {
       setLoading(false);
     }
   }
-  
+
   // Add refresh function for when new products are added
-  const refreshProducts = () => {
+  const refreshProducts = useCallback(() => {
     fetchAllProducts();
-  };
-  
+  }, []);
+
   // Listen for storage events to refresh when products are added
   useEffect(() => {
     const checkForRefresh = setInterval(() => {
-      if (localStorage.getItem('refreshProducts')) {
+      if (localStorage.getItem("refreshProducts")) {
         refreshProducts();
-        localStorage.removeItem('refreshProducts');
+        localStorage.removeItem("refreshProducts");
       }
     }, 1000);
-    
+
     return () => {
       clearInterval(checkForRefresh);
     };
-  }, []);
+  }, [refreshProducts]);
 
   useEffect(() => {
     fetchAllProducts();
@@ -228,7 +129,15 @@ const Product = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, priceRangeFilter, priceCheckboxFilters, categoryFilters, subcategoryFilters, brandFilters, searchQuery]);
+  }, [
+    activeTab,
+    priceRangeFilter,
+    priceCheckboxFilters,
+    categoryFilters,
+    subcategoryFilters,
+    brandFilters,
+    searchQuery,
+  ]);
 
   // Fix the order of function declarations and usage
   const tabs = ["All", "On Sale", "Top Rated"];
@@ -242,54 +151,61 @@ const Product = () => {
     return allProducts.filter((p) => p.brand_name === brand).length;
   }
 
-  function getCountForPriceRange(min, max) {
-    return allProducts.filter((p) => {
-      const price = p.discounted_single_product_price || p.non_discounted_price;
-      if (max === Infinity) {
-        return price && price >= min;
-      }
-      return price && price >= min && price <= max;
-    }).length;
-  }
+  const getCountForPriceRange = useCallback(
+    (min, max) => {
+      return allProducts.filter((p) => {
+        const price =
+          p.discounted_single_product_price || p.non_discounted_price;
+        if (max === Infinity) {
+          return price && price >= min;
+        }
+        return price && price >= min && price <= max;
+      }).length;
+    },
+    [allProducts]
+  );
 
-  const priceRanges = [
-    {
-      label: "Under ₹500",
-      min: 0,
-      max: 499,
-      count: getCountForPriceRange(0, 499),
-    },
-    {
-      label: "₹500 - ₹999",
-      min: 500,
-      max: 999,
-      count: getCountForPriceRange(500, 999),
-    },
-    {
-      label: "₹1000 - ₹1999",
-      min: 1000,
-      max: 1999,
-      count: getCountForPriceRange(1000, 1999),
-    },
-    {
-      label: "₹2000 - ₹3999",
-      min: 2000,
-      max: 3999,
-      count: getCountForPriceRange(2000, 3999),
-    },
-    {
-      label: "₹4000 - ₹4999",
-      min: 4000,
-      max: 4999,
-      count: getCountForPriceRange(4000, 4999),
-    },
-    {
-      label: "Over ₹5000",
-      min: 5000,
-      max: Infinity,
-      count: getCountForPriceRange(5000, Infinity),
-    },
-  ];
+  const priceRanges = useMemo(
+    () => [
+      {
+        label: "Under ₹500",
+        min: 0,
+        max: 499,
+        count: getCountForPriceRange(0, 499),
+      },
+      {
+        label: "₹500 - ₹999",
+        min: 500,
+        max: 999,
+        count: getCountForPriceRange(500, 999),
+      },
+      {
+        label: "₹1000 - ₹1999",
+        min: 1000,
+        max: 1999,
+        count: getCountForPriceRange(1000, 1999),
+      },
+      {
+        label: "₹2000 - ₹3999",
+        min: 2000,
+        max: 3999,
+        count: getCountForPriceRange(2000, 3999),
+      },
+      {
+        label: "₹4000 - ₹4999",
+        min: 4000,
+        max: 4999,
+        count: getCountForPriceRange(4000, 4999),
+      },
+      {
+        label: "Over ₹5000",
+        min: 5000,
+        max: Infinity,
+        count: getCountForPriceRange(5000, Infinity),
+      },
+    ],
+    [getCountForPriceRange]
+  );
 
   const uniqueCategories = [
     ...new Set(allProducts.map((p) => p.category_name)),
@@ -344,8 +260,7 @@ const Product = () => {
           }
           return reviewDiff;
         });
-    }
-    else if (activeTab === "Featured") {
+    } else if (activeTab === "Featured") {
       filtered = filtered.filter((p) => p.featured === true);
     }
 
@@ -406,9 +321,7 @@ const Product = () => {
 
     // Filter by brand
     if (brandFilters.length > 0) {
-      filtered = filtered.filter((p) =>
-        brandFilters.includes(p.brand_name)
-      );
+      filtered = filtered.filter((p) => brandFilters.includes(p.brand_name));
     }
 
     setDisplayedProducts(filtered);
@@ -421,6 +334,7 @@ const Product = () => {
     subcategoryFilters,
     brandFilters,
     searchQuery,
+    priceRanges,
   ]);
 
   // Get paginated products for display
@@ -436,14 +350,6 @@ const Product = () => {
     // Update temp price range but don't apply it yet
     setTempPriceRange({ min: min, max: value });
   };
-
-  function getCountForSubcategory(subcategory) {
-    return allProducts.filter(
-      (p) =>
-        p.sub_category_name &&
-        p.sub_category_name.toLowerCase() === subcategory.toLowerCase()
-    ).length;
-  }
 
   const handleSubcategoryChange = (subcategory) => {
     setSubcategoryFilters((prev) => {
@@ -486,12 +392,14 @@ const Product = () => {
       if (newFilters.length === 0) {
         setSubcategoryFilters([]);
       } else {
-        const validSubcategories = [...new Set(
-          allProducts
-            .filter((p) => newFilters.includes(p.category_name))
-            .map((p) => p.sub_category_name)
-            .filter(Boolean)
-        )];
+        const validSubcategories = [
+          ...new Set(
+            allProducts
+              .filter((p) => newFilters.includes(p.category_name))
+              .map((p) => p.sub_category_name)
+              .filter(Boolean)
+          ),
+        ];
 
         setSubcategoryFilters((prevSub) =>
           prevSub.filter((sub) => validSubcategories.includes(sub))
@@ -501,7 +409,6 @@ const Product = () => {
       return newFilters;
     });
   };
-
 
   const handleBrandChange = (brand) => {
     setBrandFilters((prev) => {
@@ -537,15 +444,19 @@ const Product = () => {
   const getFilteredSubcategories = () => {
     if (categoryFilters.length === 0) {
       // If no categories are selected, show all subcategories
-      return [...new Set(allProducts.map((p) => p.sub_category_name).filter(Boolean))];
+      return [
+        ...new Set(allProducts.map((p) => p.sub_category_name).filter(Boolean)),
+      ];
     } else {
       // If categories are selected, show only subcategories from those categories
-      return [...new Set(
-        allProducts
-          .filter((p) => categoryFilters.includes(p.category_name))
-          .map((p) => p.sub_category_name)
-          .filter(Boolean)
-      )];
+      return [
+        ...new Set(
+          allProducts
+            .filter((p) => categoryFilters.includes(p.category_name))
+            .map((p) => p.sub_category_name)
+            .filter(Boolean)
+        ),
+      ];
     }
   };
 
@@ -555,7 +466,9 @@ const Product = () => {
 
     // If categories are selected, only count products from those categories
     if (categoryFilters.length > 0) {
-      productsToCount = allProducts.filter((p) => categoryFilters.includes(p.category_name));
+      productsToCount = allProducts.filter((p) =>
+        categoryFilters.includes(p.category_name)
+      );
     }
 
     return productsToCount.filter(
@@ -564,7 +477,6 @@ const Product = () => {
         p.sub_category_name.toLowerCase() === subcategory.toLowerCase()
     ).length;
   }
-
 
   const clearCategoryFilters = () => {
     setCategoryFilters([]);
@@ -576,9 +488,6 @@ const Product = () => {
 
   // Calculate slider percentage for display
   const percentage = ((sliderValue - min) / (max - min)) * 100;
-
-  // Calculate applied range percentage for the applied filter indicator
-  const appliedPercentage = ((priceRangeFilter.max - min) / (max - min)) * 100;
 
   // Update the function to handle product click with the proper ID
   const handleProductClick = (product) => {
@@ -599,7 +508,7 @@ const Product = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleBuyNowClick = (e, product) => {
+  const handleBuyNowClick = (e) => {
     e.stopPropagation(); // Prevent click from bubbling up to the card
     window.location.href = `/checkout`;
     // handleBuyNow({
@@ -719,10 +628,11 @@ const Product = () => {
                   <div className="flex gap-1 items-center">
                     <button
                       onClick={handleApply}
-                      className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${priceRangeFilter.max !== sliderValue
-                        ? "bg-[#f7941d] hover:bg-orange-600"
-                        : "bg-[#1e3473] hover:bg-blue-800"
-                        }`}
+                      className={`px-4 py-1 text-xs font-medium text-white rounded-full transition shadow-sm ${
+                        priceRangeFilter.max !== sliderValue
+                          ? "bg-[#f7941d] hover:bg-orange-600"
+                          : "bg-[#1e3473] hover:bg-blue-800"
+                      }`}
                     >
                       Apply
                     </button>
@@ -825,7 +735,9 @@ const Product = () => {
                               type="checkbox"
                               className="mr-2 h-4 w-4 accent-[#1e3473]"
                               checked={subcategoryFilters.includes(subcategory)}
-                              onChange={() => handleSubcategoryChange(subcategory)}
+                              onChange={() =>
+                                handleSubcategoryChange(subcategory)
+                              }
                             />
                             {subcategory}
                           </label>
@@ -846,12 +758,10 @@ const Product = () => {
                   <p className="text-sm text-gray-500 italic">
                     {categoryFilters.length > 0
                       ? "No subcategories available for selected categories"
-                      : "No subcategories available"
-                    }
+                      : "No subcategories available"}
                   </p>
                 )}
               </div>
-
 
               {/* Filter by Brand */}
               <div className="mb-6">
@@ -897,10 +807,11 @@ const Product = () => {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`font-medium cursor-pointer relative ${activeTab === tab
-                        ? "text-gray-900 font-semibold"
-                        : "text-gray-500"
-                        }`}
+                      className={`font-medium cursor-pointer relative ${
+                        activeTab === tab
+                          ? "text-gray-900 font-semibold"
+                          : "text-gray-500"
+                      }`}
                     >
                       {tab}
                       {activeTab === tab && (
@@ -936,11 +847,11 @@ const Product = () => {
                   // Add slider price range if it's not at max
                   ...(priceRangeFilter.max < max
                     ? [
-                      {
-                        type: "slider",
-                        value: `₹${min} - ₹${priceRangeFilter.max}`,
-                      },
-                    ]
+                        {
+                          type: "slider",
+                          value: `₹${min} - ₹${priceRangeFilter.max}`,
+                        },
+                      ]
                     : []),
                   ...priceCheckboxFilters.map((filter) => ({
                     type: "price",
@@ -960,85 +871,85 @@ const Product = () => {
                     value: brand,
                   })),
                 ].length > 0 && (
-                    <div className="flex flex-wrap gap-2 ml-2">
-                      {/* Price Range Slider Tag */}
-                      {priceRangeFilter.max < max && (
-                        <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 flex items-center">
-                          Price: ₹{min} - ₹{priceRangeFilter.max}
-                          <button
-                            className="ml-1 text-blue-600 hover:text-blue-800"
-                            onClick={() => {
-                              setPriceRangeFilter({ min, max });
-                              setTempPriceRange({ min, max });
-                              setSliderValue(max);
-                            }}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      )}
-
-                      {priceCheckboxFilters.map((filter) => (
-                        <span
-                          key={filter}
-                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                  <div className="flex flex-wrap gap-2 ml-2">
+                    {/* Price Range Slider Tag */}
+                    {priceRangeFilter.max < max && (
+                      <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 flex items-center">
+                        Price: ₹{min} - ₹{priceRangeFilter.max}
+                        <button
+                          className="ml-1 text-blue-600 hover:text-blue-800"
+                          onClick={() => {
+                            setPriceRangeFilter({ min, max });
+                            setTempPriceRange({ min, max });
+                            setSliderValue(max);
+                          }}
                         >
-                          {filter}
-                          <button
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                            onClick={() => handlePriceCheckboxChange(filter)}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                          ×
+                        </button>
+                      </span>
+                    )}
 
-                      {categoryFilters.map((category) => (
-                        <span
-                          key={category}
-                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    {priceCheckboxFilters.map((filter) => (
+                      <span
+                        key={filter}
+                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                      >
+                        {filter}
+                        <button
+                          className="ml-1 text-gray-500 hover:text-gray-700"
+                          onClick={() => handlePriceCheckboxChange(filter)}
                         >
-                          {category}
-                          <button
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                            onClick={() => handleCategoryChange(category)}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                          ×
+                        </button>
+                      </span>
+                    ))}
 
-                      {subcategoryFilters.map((subcategory) => (
-                        <span
-                          key={subcategory}
-                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    {categoryFilters.map((category) => (
+                      <span
+                        key={category}
+                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                      >
+                        {category}
+                        <button
+                          className="ml-1 text-gray-500 hover:text-gray-700"
+                          onClick={() => handleCategoryChange(category)}
                         >
-                          {subcategory}
-                          <button
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                            onClick={() => handleSubcategoryChange(subcategory)}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
+                          ×
+                        </button>
+                      </span>
+                    ))}
 
-                      {brandFilters.map((brand) => (
-                        <span
-                          key={brand}
-                          className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                    {subcategoryFilters.map((subcategory) => (
+                      <span
+                        key={subcategory}
+                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                      >
+                        {subcategory}
+                        <button
+                          className="ml-1 text-gray-500 hover:text-gray-700"
+                          onClick={() => handleSubcategoryChange(subcategory)}
                         >
-                          {brand}
-                          <button
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                            onClick={() => handleBrandChange(brand)}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                          ×
+                        </button>
+                      </span>
+                    ))}
+
+                    {brandFilters.map((brand) => (
+                      <span
+                        key={brand}
+                        className="bg-gray-100 text-xs rounded-full px-2 py-1 flex items-center"
+                      >
+                        {brand}
+                        <button
+                          className="ml-1 text-gray-500 hover:text-gray-700"
+                          onClick={() => handleBrandChange(brand)}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Product Grid */}
@@ -1057,12 +968,14 @@ const Product = () => {
                       <div className="flex justify-center mb-5">
                         <img
                           src={
-                            product.product_image_main || 
-                            (Array.isArray(product.product_image_sub) && product.product_image_sub[0]) ||
-                            (Array.isArray(product.product_image_urls) && product.product_image_urls[0]) ||
+                            product.product_image_main ||
+                            (Array.isArray(product.product_image_sub) &&
+                              product.product_image_sub[0]) ||
+                            (Array.isArray(product.product_image_urls) &&
+                              product.product_image_urls[0]) ||
                             raspberry
                           }
-                          alt={product.product_name || 'Product'}
+                          alt={product.product_name || "Product"}
                           className="w-full h-40 object-contain"
                           onError={(e) => {
                             e.target.src = raspberry;
@@ -1071,17 +984,20 @@ const Product = () => {
                       </div>
                       <div className="">
                         <h2 className="text-[#1e3473] font-semibold h-[84px] text-lg">
-                          {product.product_name || 'Unnamed Product'}
+                          {product.product_name || "Unnamed Product"}
                         </h2>
                         <p className="text-gray-400 text-sm">
-                          {product.category_name || 'Uncategorized'}
+                          {product.category_name || "Uncategorized"}
                         </p>
                         <div className="flex items-center my-3">
                           {Array(5)
                             .fill()
                             .map((_, i) => (
                               <span key={i} className="text-orange-400">
-                                {i < Math.floor(Number(product.review_stars) || 0) ? (
+                                {i <
+                                Math.floor(
+                                  Number(product.review_stars) || 0
+                                ) ? (
                                   <FaStar />
                                 ) : i < (Number(product.review_stars) || 0) ? (
                                   <FaStarHalfAlt />
@@ -1096,13 +1012,26 @@ const Product = () => {
                         </div>
                         <div className="">
                           <span className="text-xl font-semibold">
-                            ₹{(Number(product.discounted_single_product_price) || Number(product.non_discounted_price) || 0).toLocaleString()}
+                            ₹
+                            {(
+                              Number(product.discounted_single_product_price) ||
+                              Number(product.non_discounted_price) ||
+                              0
+                            ).toLocaleString()}
                           </span>
-                          {Number(product.non_discounted_price) && Number(product.discounted_single_product_price) && Number(product.non_discounted_price) > Number(product.discounted_single_product_price) && (
-                            <span className="text-sm line-through text-gray-400 ml-2">
-                              ₹{Number(product.non_discounted_price).toLocaleString()}
-                            </span>
-                          )}
+                          {Number(product.non_discounted_price) &&
+                            Number(product.discounted_single_product_price) &&
+                            Number(product.non_discounted_price) >
+                              Number(
+                                product.discounted_single_product_price
+                              ) && (
+                              <span className="text-sm line-through text-gray-400 ml-2">
+                                ₹
+                                {Number(
+                                  product.non_discounted_price
+                                ).toLocaleString()}
+                              </span>
+                            )}
                         </div>
                       </div>
 
@@ -1196,13 +1125,15 @@ const Product = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Pagination */}
               {displayedProducts.length > productsPerPage && (
                 <div className="flex justify-end mt-8">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                       className={`px-3 py-2 rounded-lg text-sm ${
                         currentPage === 1
@@ -1212,12 +1143,23 @@ const Product = () => {
                     >
                       Previous
                     </button>
-                    
-                    {Array.from({ length: Math.ceil(displayedProducts.length / productsPerPage) }, (_, i) => i + 1)
-                      .filter(page => 
-                        page === 1 || 
-                        page === Math.ceil(displayedProducts.length / productsPerPage) || 
-                        Math.abs(page - currentPage) <= 1
+
+                    {Array.from(
+                      {
+                        length: Math.ceil(
+                          displayedProducts.length / productsPerPage
+                        ),
+                      },
+                      (_, i) => i + 1
+                    )
+                      .filter(
+                        (page) =>
+                          page === 1 ||
+                          page ===
+                            Math.ceil(
+                              displayedProducts.length / productsPerPage
+                            ) ||
+                          Math.abs(page - currentPage) <= 1
                       )
                       .map((page, index, array) => (
                         <React.Fragment key={page}>
@@ -1235,14 +1177,26 @@ const Product = () => {
                             {page}
                           </button>
                         </React.Fragment>
-                      ))
-                    }
-                    
+                      ))}
+
                     <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(displayedProducts.length / productsPerPage)))}
-                      disabled={currentPage === Math.ceil(displayedProducts.length / productsPerPage)}
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(
+                            prev + 1,
+                            Math.ceil(
+                              displayedProducts.length / productsPerPage
+                            )
+                          )
+                        )
+                      }
+                      disabled={
+                        currentPage ===
+                        Math.ceil(displayedProducts.length / productsPerPage)
+                      }
                       className={`px-3 py-2 rounded-lg text-sm ${
-                        currentPage === Math.ceil(displayedProducts.length / productsPerPage)
+                        currentPage ===
+                        Math.ceil(displayedProducts.length / productsPerPage)
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                           : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
