@@ -7,6 +7,7 @@ import { useAdminRouteProtection } from "../../../utils/AuthUtils";
 import UnauthorizedPopup from "../../../utils/UnAuthorizedPopup";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import ImageUpload from "../ImageUpload/ImageUpload.jsx";
 
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -27,6 +28,7 @@ const AddProduct = () => {
 
     product_image_main: null,
     product_image_sub: [],
+    product_image_urls: [],
 
     product_type: "",
     model: "",
@@ -162,7 +164,7 @@ const AddProduct = () => {
       case 3:
         return true; // Product details are mostly optional
       case 4:
-        return formData.product_image_sub.length > 0; // At least one image required
+        return (formData.product_image_urls && formData.product_image_urls.length > 0) || formData.product_image_sub.length > 0; // At least one image required
       case 5:
         return true; // Final step
       default:
@@ -384,7 +386,7 @@ const AddProduct = () => {
       }
 
       // Validate images
-      if (!formData.product_image_sub.length) {
+      if (!formData.product_image_urls || formData.product_image_urls.length === 0) {
         toast.error("Please upload at least one image");
         setLoading(false);
         return;
@@ -411,10 +413,10 @@ const AddProduct = () => {
       formDataToSend.append("SKU", formData.SKU);
       formDataToSend.append("product_name", formData.product_name);
 
-      // Images - Append all images with the same field name "img"
-      formData.product_image_sub.forEach((file) => {
-        formDataToSend.append("img", file);
-      });
+      // Images - Send Cloudinary URLs
+      if (formData.product_image_urls && formData.product_image_urls.length > 0) {
+        formDataToSend.append("product_image_urls", JSON.stringify(formData.product_image_urls));
+      }
 
       // Product Details
       formDataToSend.append("product_type", formData.product_type);
@@ -584,6 +586,7 @@ const AddProduct = () => {
           product_name: "",
           product_image_main: null,
           product_image_sub: [],
+          product_image_urls: [],
           product_type: "",
           model: "",
           product_instock: true,
@@ -1222,57 +1225,58 @@ const AddProduct = () => {
         <label className="block text-sm font-medium mb-4 text-gray-700">
           Product Images *
         </label>
-        <div className="flex flex-col gap-4">
-          <label className="flex flex-col items-center justify-center w-full px-6 py-8 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-            <svg
-              className="w-12 h-12 text-gray-500 mb-3"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              ></path>
-            </svg>
-            <span className="text-lg text-gray-600 mb-2">
-              Click to upload images
-            </span>
-            <span className="text-sm text-gray-500">
-              PNG, JPG, JPEG up to 10MB each
-            </span>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-          </label>
-
-          {previewImages.length > 0 && (
-            <div className="flex gap-3 flex-wrap">
-              {previewImages.map((image, index) => (
-                <div key={index} className="relative group">
-                  <img
-                    src={image.url}
-                    alt="Preview"
-                    className="w-32 h-32 object-cover rounded-lg border border-gray-200"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white h-8 w-8 flex justify-center items-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  >
-                    <IoClose size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ImageUpload
+          uploadType="product"
+          multiple={true}
+          maxFiles={10}
+          onUploadSuccess={(uploadedData) => {
+            if (uploadedData && Array.isArray(uploadedData)) {
+              // Handle array of images
+              const newImages = uploadedData.map(item => ({
+                url: item?.url || item,
+                cloudinary_url: item?.url || item
+              }));
+              setPreviewImages(prev => [...prev, ...newImages]);
+              setFormData(prev => ({
+                ...prev,
+                product_image_urls: [...(prev.product_image_urls || []), ...uploadedData.map(item => item?.url || item)]
+              }));
+            } else if (uploadedData) {
+              // Handle single image or fallback
+              const imageUrl = uploadedData.url || uploadedData;
+              const newImage = {
+                url: imageUrl,
+                cloudinary_url: imageUrl
+              };
+              setPreviewImages(prev => [...prev, newImage]);
+              setFormData(prev => ({
+                ...prev,
+                product_image_urls: [...(prev.product_image_urls || []), imageUrl]
+              }));
+            }
+          }}
+        />
+        
+        {previewImages.length > 0 && (
+          <div className="flex gap-3 flex-wrap mt-4">
+            {previewImages.map((image, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={image.url}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white h-8 w-8 flex justify-center items-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                >
+                  <IoClose size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Additional Information */}
@@ -1547,6 +1551,10 @@ const AddProduct = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      console.log('Current step:', currentStep);
+                      console.log('Form data:', formData);
+                      console.log('Validation result:', validateStep(currentStep));
+                      
                       if (validateStep(currentStep)) {
                         nextStep();
                       } else {

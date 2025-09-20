@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import ImageUpload from "../ImageUpload/ImageUpload.jsx";
 
 // Custom styles for the component
 const styles = {
@@ -649,18 +650,42 @@ const BlogManagement = () => {
 
           <div style={styles.formGroup}>
             <label style={styles.label} htmlFor="featured_image">
-              Featured Image URL
+              Featured Image
             </label>
-            <input
-              id="featured_image"
-              type="url"
-              style={styles.input}
-              value={formData.featured_image_url}
-              onChange={(e) =>
-                setFormData({ ...formData, featured_image_url: e.target.value })
-              }
-              placeholder="Enter image URL"
+            <ImageUpload
+              uploadType="blog"
+              multiple={false}
+              onUploadSuccess={(uploadedData) => {
+                console.log('Blog image upload success:', uploadedData);
+                const imageUrl = uploadedData?.url || (Array.isArray(uploadedData) ? uploadedData[0]?.url : uploadedData);
+                console.log('Setting featured_image_url to:', imageUrl);
+                setFormData({ ...formData, featured_image_url: imageUrl });
+              }}
             />
+            {formData.featured_image_url && (
+              <div style={{ marginTop: '10px' }}>
+                <img 
+                  src={formData.featured_image_url} 
+                  alt="Featured" 
+                  style={{ width: '200px', height: '120px', objectFit: 'cover', borderRadius: '6px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, featured_image_url: '' })}
+                  style={{ 
+                    marginLeft: '10px', 
+                    padding: '4px 8px', 
+                    backgroundColor: '#ef4444', 
+                    color: 'white', 
+                    border: 'none', 
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
           </div>
 
           <div style={styles.formGroup}>

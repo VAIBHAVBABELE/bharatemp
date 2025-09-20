@@ -38,6 +38,7 @@ import ReturnRequest from "./Component/AdminDashboardComponent/ReturnRequestComp
 import NewsUpdates from "./Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx";
 import ContactUs from "./Component/AdminDashboardComponent/ContactUsComponent/contactus.jsx";
 import BlogManagement from "./Component/AdminDashboardComponent/BlogManagement/BlogManagement.jsx";
+// import ImageManagement from "./Component/AdminDashboardComponent/ImageUpload/ImageManagement.jsx"; // Removed - functionality integrated
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import OrdersAndPaymentPolicy from "./pages/OrdersAndPaymentPolicy";
@@ -122,6 +123,7 @@ const AppContent = () => {
             path="/admin-dashboard/blog-management"
             element={<BlogManagement />}
           />
+
           <Route
             path="/admin-dashboard/inventory"
             element={<InventoryManagement />}
