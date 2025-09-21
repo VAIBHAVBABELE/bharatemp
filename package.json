@@ -8,8 +8,11 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "npm rebuild lightningcss"
+    "postinstall": "npm rebuild"
   },
+  "optionalDependencies": {
+  "lightningcss": "1.29.2"
+},
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.5",
     "@tailwindcss/vite": "^4.1.5",
