@@ -444,6 +444,13 @@ const EditProduct = ({
 
       if (response.data.status === "Success") {
         toast.success("Product updated successfully!");
+        
+        // Trigger refresh in products page
+        localStorage.setItem('refreshProducts', 'true');
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('productUpdated'));
+        
         onClose();
         fetchAllProducts();
       }

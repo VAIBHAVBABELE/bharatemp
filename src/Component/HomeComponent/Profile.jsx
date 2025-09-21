@@ -340,23 +340,27 @@ const ProfilePage = () => {
       try {
         setIsLoading(true);
         setError(null);
-        // Ensure editing is false when loading data
         setIsEditing(false);
         
         // Get token from localStorage
         const token = localStorage.getItem("token");
+        console.log("Token from localStorage:", token);
         
         if (!token) {
+          console.log("No token found, redirecting to login");
           navigate("/login");
           return;
         }
         
         // Parse token if stored as JSON string, otherwise use directly
         const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+        console.log("Parsed token:", parsedToken);
         
         // Decode the JWT token to get userId
         const decoded = jwtDecode(parsedToken);
+        console.log("Decoded token:", decoded);
         const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
+        console.log("User ID:", userId);
         
         if (!userId) {
           setError("User ID not found in token");
@@ -364,15 +368,41 @@ const ProfilePage = () => {
           return;
         }
         
+        // Set basic user info from token as fallback
+        const tokenUserData = {
+          firstName: decoded.name?.split(" ")[0] || decoded.firstName || "",
+          lastName: decoded.name?.split(" ")[1] || decoded.lastName || "",
+          email: decoded.email || "",
+          phone: decoded.phone || decoded.mobile || "",
+          address: [],
+        };
+        
+        // Set fallback data first
+        if (tokenUserData.email || tokenUserData.firstName) {
+          setUser(tokenUserData);
+          Object.keys(tokenUserData).forEach(key => {
+            if (key === 'address') {
+              setValue(key, tokenUserData[key].join('\n'));
+            } else {
+              setValue(key, tokenUserData[key]);
+            }
+          });
+        }
+        
         // Fetch user details from API using the userId
+        console.log("Making API call to:", `${backend}/user/${userId}`);
         const response = await axios.get(`${backend}/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${parsedToken}`
           }
-        });        
+        });
+        
+        console.log("API Response:", response);
+        
         // Check if the request was successful
         if (response.status === 200 && response.data) {
           const userData = response.data.data.user;
+          console.log("User data from API:", userData);
           
           // Set user state with API response data
           const formattedUserData = {
@@ -383,6 +413,7 @@ const ProfilePage = () => {
             address: Array.isArray(userData.address) ? userData.address : [],
           };
           
+          console.log("Formatted user data:", formattedUserData);
           setUser(formattedUserData);
           
           // Set form values
@@ -398,7 +429,14 @@ const ProfilePage = () => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setError(error.response?.data?.message || "Failed to fetch user data");
+        console.error("Error response:", error.response);
+        if (error.response?.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+        setError(error.response?.data?.message || error.message || "Failed to fetch user data");
       } finally {
         setIsLoading(false);
       }
@@ -516,6 +554,30 @@ const ProfilePage = () => {
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Error!</strong>
                 <span className="block sm:inline"> {error}</span>
+                <div className="mt-2">
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : !user.firstName && !user.email ? (
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">No User Data!</strong>
+                <span className="block sm:inline"> Unable to load user information. Please try logging in again.</span>
+                <div className="mt-2">
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      navigate("/login");
+                    }} 
+                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                  >
+                    Login Again
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col lg:flex-row gap-10">

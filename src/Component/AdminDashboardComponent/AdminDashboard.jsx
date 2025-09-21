@@ -141,6 +141,23 @@ function AdminDashboard() {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Listen for product changes to refresh dashboard data
+  useEffect(() => {
+    const handleProductChange = () => {
+      getDashboardData();
+    };
+
+    window.addEventListener('productAdded', handleProductChange);
+    window.addEventListener('productUpdated', handleProductChange);
+    window.addEventListener('productDeleted', handleProductChange);
+
+    return () => {
+      window.removeEventListener('productAdded', handleProductChange);
+      window.removeEventListener('productUpdated', handleProductChange);
+      window.removeEventListener('productDeleted', handleProductChange);
+    };
+  }, []);
+
   const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
   return (

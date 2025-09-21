@@ -183,6 +183,13 @@ const AllProducts = () => {
         setLoading(false);
         setSelectedProduct(null);
         toast.success("Product deleted successfully.");
+        
+        // Trigger refresh in products page
+        localStorage.setItem('refreshProducts', 'true');
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('productDeleted'));
+        
         fetchAllProducts();
         closeModalDelete();
       }
@@ -218,6 +225,37 @@ const AllProducts = () => {
   useEffect(() => {
     fetchAllProducts();
     window.scrollTo(0, 0);
+  }, [fetchAllProducts]);
+
+  // Listen for product refresh events
+  useEffect(() => {
+    const handleProductRefresh = () => {
+      fetchAllProducts();
+    };
+
+    // Check for refresh flag in localStorage
+    const checkRefreshFlag = () => {
+      if (localStorage.getItem('refreshProducts') === 'true') {
+        localStorage.removeItem('refreshProducts');
+        fetchAllProducts();
+      }
+    };
+
+    // Check immediately and set up interval
+    checkRefreshFlag();
+    const interval = setInterval(checkRefreshFlag, 1000);
+
+    // Listen for custom events
+    window.addEventListener('productAdded', handleProductRefresh);
+    window.addEventListener('productUpdated', handleProductRefresh);
+    window.addEventListener('productDeleted', handleProductRefresh);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('productAdded', handleProductRefresh);
+      window.removeEventListener('productUpdated', handleProductRefresh);
+      window.removeEventListener('productDeleted', handleProductRefresh);
+    };
   }, [fetchAllProducts]);
 
   // View mode toggle buttons

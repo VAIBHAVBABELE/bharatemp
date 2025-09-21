@@ -508,21 +508,39 @@ const Product = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleBuyNowClick = (e) => {
+  const handleBuyNowClick = (e, product) => {
     e.stopPropagation(); // Prevent click from bubbling up to the card
-    window.location.href = `/checkout`;
-    // handleBuyNow({
-    //   product,
-    //   quantity: 1,
-    //   navigate,
-    //   setLoadingBuyNow: (loading) => {
-    //     setLoadingBuyNow((prev) => ({
-    //       ...prev,
-    //       [product._id]: loading,
-    //     }));
-    //   },
-    //   customShippingFee: 5,
-    // });
+    
+    if (!product) {
+      toast.error("Product not found");
+      return;
+    }
+
+    // Check if product is in stock
+    if (!product.product_instock) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    // Check if requested quantity is available
+    if (product.no_of_product_instock && product.no_of_product_instock < 1) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    const regularItem = {
+      ...product,
+      quantity: 1,
+      price: product.discounted_single_product_price,
+      total: product.discounted_single_product_price * 1,
+      isBulkOrder: false,
+    };
+    
+    addToCart(regularItem);
+    toast.success("Added to cart successfully!");
+    
+    // Navigate to checkout page
+    navigate('/checkout');
   };
 
   return (

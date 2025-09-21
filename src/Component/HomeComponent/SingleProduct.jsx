@@ -191,26 +191,36 @@ export default function ProductCard() {
 
   // Update the handleBuyNow function to use the utility
   const handleBuyNowClick = () => {
-    if (product) {
-      const regularItem = {
-        ...product,
-        quantity: quantity,
-        price: product.discounted_single_product_price,
-        total: product.discounted_single_product_price * quantity,
-        isBulkOrder: false,
-      };
-      addToCart(regularItem);
-      setQuantity(1);
-      toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
+    if (!product) {
+      toast.error("Product not found");
+      return;
     }
-    window.location.href = `/cart`;
-    // handleBuyNow({
-    //   product,
-    //   quantity,
-    //   navigate,
-    //   setLoadingBuyNow,
-    //   customShippingFee: 5,
-    // });
+
+    // Check if product is in stock
+    if (!product.product_instock) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    // Check if requested quantity is available
+    if (product.no_of_product_instock && quantity > product.no_of_product_instock) {
+      toast.error(`Only ${product.no_of_product_instock} items available in stock`);
+      return;
+    }
+
+    const regularItem = {
+      ...product,
+      quantity: quantity,
+      price: product.discounted_single_product_price,
+      total: product.discounted_single_product_price * quantity,
+      isBulkOrder: false,
+    };
+    addToCart(regularItem);
+    setQuantity(1);
+    toast.success(`Added ${quantity} item${quantity > 1 ? "s" : ""} to cart`);
+    
+    // Navigate to checkout page
+    navigate('/checkout');
   };
 
   const incrementQuantity = () => {

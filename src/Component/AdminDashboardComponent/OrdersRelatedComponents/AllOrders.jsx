@@ -442,7 +442,8 @@ const AllOrders = () => {
                             <div className="flex items-center space-x-3">
                               <img
                                 src={
-                                  product.product_id?.image?.[0] ||
+                                  product.product_id?.product_image_main ||
+                                  product.product_id?.product_image_urls?.[0] ||
                                   "/placeholder.webp"
                                 }
                                 alt={product.product_id?.name}

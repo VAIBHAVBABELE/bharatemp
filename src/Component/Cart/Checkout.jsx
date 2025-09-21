@@ -645,8 +645,16 @@ const Checkout = () => {
     }
   }, [selectedAddress, cartItems, totalMRP, access, secret]);
 
+
+
   // Update the handlePayment function to create order and initiate payment
   const handlePayment = async () => {
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty. Please add products to continue.");
+      navigate('/allproducts');
+      return;
+    }
+
     if (addresses.length === 0 || !selectedAddressId) {
       toast.error("Please add a delivery address");
       return;
@@ -669,12 +677,12 @@ const Checkout = () => {
 
       // Prepare order items with warranty information
       const orderItems = cartItems.map((item) => {
-        // Calculate warranty expiry (1 year from now by default)
-
-        // console.log("item", item);
-        const warrantyExpiry = new Date();
-        warrantyExpiry.setFullYear(warrantyExpiry.getFullYear() + 1);
-
+        console.log("Processing cart item:", item);
+        
+        if (!item._id || !item.quantity || item.quantity <= 0) {
+          throw new Error(`Invalid cart item: ${JSON.stringify(item)}`);
+        }
+        
         return {
           product_id: item._id,
           quantity: item.quantity,
@@ -687,7 +695,12 @@ const Checkout = () => {
           product_img_url: item.product_image_main,
         };
       });
+      
+      console.log("Order items prepared:", orderItems);
 
+      // Ensure pincode is exactly 6 digits
+      const validPincode = postalCode && postalCode.length === 6 ? postalCode : "000000";
+      
       const orderData = {
         user_id: userId,
         products: orderItems,
@@ -695,7 +708,7 @@ const Checkout = () => {
         shippingAddress: selectedAddr.fullAddress,
         shippingCost: shippingFee,
         email: userData?.email,
-        pincode: postalCode,
+        pincode: validPincode,
         name: userData ? `${userData.name}` : "",
         city: selectedAddr.city || "City",
         expectedDelivery: expectedDelivery,
@@ -734,6 +747,8 @@ const Checkout = () => {
         FRONTEND_URL: FRONTEND_URL,
       };
 
+      console.log('Sending payment request with data:', paymentData);
+      
       const paymentResponse = await axios.post(
         `${backend}/payment/create-phonepe-payment`,
         paymentData,
@@ -742,28 +757,96 @@ const Checkout = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          timeout: 30000, // 30 second timeout
         }
       );
-      // console.log(paymentResponse)
-      if (
-        paymentResponse.data.data.response.phonepeResponse.redirectUrl
-      ) {
+      
+      console.log("Payment Response:", paymentResponse.data);
+      
+      // Validate payment response
+      if (!paymentResponse.data || paymentResponse.data.status !== 'Success') {
+        console.error("Payment API error:", paymentResponse.data);
+        throw new Error(paymentResponse.data?.data?.message || "Payment service returned an error");
+      }
+      
+      // Check for different possible response structures
+      const phonepeData = paymentResponse.data.data?.response?.phonepeResponse || 
+                         paymentResponse.data.data?.response || 
+                         paymentResponse.data.data;
+      
+      const redirectUrl = phonepeData?.redirectUrl || 
+                         phonepeData?.data?.instrumentResponse?.redirectInfo?.url ||
+                         phonepeData?.instrumentResponse?.redirectInfo?.url;
+      
+      console.log('PhonePe response data:', phonepeData);
+      console.log('Redirect URL found:', redirectUrl);
+      
+      if (redirectUrl) {
         // Set the orderId in state before redirecting
         setOrderId(createdOrderId);
         // Redirect to PhonePe payment page
-        window.location.href = paymentResponse.data.data.response.phonepeResponse.redirectUrl;
+        window.location.href = redirectUrl;
       } else {
-        throw new Error("Invalid payment response");
+        console.error("Full payment response:", JSON.stringify(paymentResponse.data, null, 2));
+        throw new Error("Payment gateway redirect URL not found. Please contact support.");
       }
     } catch (error) {
-      console.error("Payment error:", error);
-      let errorMessage = "Failed to process payment";
-      if (error.response?.data?.message) {
+      console.error("Payment error:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        stack: error.stack
+      });
+      
+      let errorMessage = "Failed to process payment. Please try again.";
+      
+      // Handle different types of errors
+      if (error.response?.status === 500) {
+        errorMessage = "Payment service is temporarily unavailable. Please try again in a few minutes.";
+      } else if (error.response?.status === 400) {
+        errorMessage = "Invalid payment request. Please check your order details.";
+      } else if (error.response?.data?.data?.message) {
+        errorMessage = error.response.data.data.message;
+      } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
         errorMessage = error.message;
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = "Payment request timed out. Please try again.";
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = "Network error. Please check your connection and try again.";
       }
-      toast.error(errorMessage);
+      
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 8000,
+      });
+      
+      // Send payment failure notification
+      if (userData?.email && createdOrderId) {
+        try {
+          await axios.post(
+            `${backend}/payment/send-failure-notification`,
+            {
+              email: userData.email,
+              orderDetails: {
+                orderId: createdOrderId,
+                amount: finalTotal,
+                name: userData.name || `${userData.firstName} ${userData.lastName}`.trim()
+              }
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } catch (notificationError) {
+          console.error('Failed to send failure notification:', notificationError);
+        }
+      }
+      
       setProcessingPayment(false);
     }
   };
@@ -797,6 +880,12 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   }, [navigate]);
 
+  // Debug cart items
+  useEffect(() => {
+    console.log('Cart items in checkout:', cartItems);
+    console.log('Cart items length:', cartItems.length);
+  }, [cartItems]);
+
   // Fetch user details when userId and token are available
   useEffect(() => {
     if (userId && token) {
@@ -810,6 +899,29 @@ const Checkout = () => {
       setShowAddForm(true);
     }
   }, [addresses.length, showAddForm, showEditForm, loading]);
+
+  // Check if cart is empty
+  if (cartItems.length === 0) {
+    return (
+      <div className="bg-white py-6 min-h-screen font-[outfit]">
+        <ToastContainer />
+        <div className="px-4 md:px-10 lg:px-16">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
+              <p className="text-gray-600 mb-6">Add some products to your cart to proceed with checkout.</p>
+              <button
+                onClick={() => navigate('/allproducts')}
+                className="bg-[#f7941d] text-white px-6 py-3 rounded-2xl font-medium hover:bg-[#e88a1a] transition-colors"
+              >
+                Continue Shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white py-6 min-h-screen font-[outfit]">
@@ -1046,9 +1158,11 @@ const Checkout = () => {
               ) : !selectedAddress ? (
                 "Add delivery address to continue"
               ) : (
-                "Continue to Payment"
+                "Proceed to Payment"
               )}
             </button>
+            
+
           </div>
         </div>
       </div>
