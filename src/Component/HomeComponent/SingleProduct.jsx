@@ -1429,51 +1429,7 @@ export default function ProductCard() {
                   </div>
                 </div>
               </div>
-              <div className="p-4">
-                <div className="bg-gradient-to-br from-[#1e3473] to-[#2a4a8a] rounded-2xl p-4 text-white shadow-xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-[#F7941D] rounded-full flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold">
-                        Need Custom Pricing?
-                      </h3>
-                      <p className="text-sm text-blue-100">Get personalized quotes for bulk orders</p>
-                    </div>
-                  </div>
-                  
-                  {bulkQuantity > 0 && (
-                    <div className="bg-blue-800 bg-opacity-30 rounded-lg p-3 border border-blue-400 mb-4">
-                      <p className="text-sm text-blue-100">
-                        <span className="font-medium">Requested Quantity:</span> {bulkQuantity} units
-                      </p>
-                      <p className="text-sm text-blue-100">
-                        <span className="font-medium">Product:</span> {product.product_name}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <button
-                    onClick={handleCustomQuoteRequest}
-                    className="w-full py-3 bg-gradient-to-r from-[#F7941D] to-[#e88a1a] text-white rounded-xl font-medium hover:from-[#e88a1a] hover:to-[#d67c16] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                    </svg>
-                    {isLoggedIn ? 'Request Custom Quote' : 'Login to Request Quote'}
-                  </button>
-                  
-                  <p className="text-xs text-blue-200 text-center mt-3">
-                    {isLoggedIn 
-                      ? 'We\'ll use your account details and respond within 24 hours' 
-                      : 'Please login to submit custom pricing requests'
-                    }
-                  </p>
-                </div>
-              </div>
+
             </div>
           </div>
         </>
