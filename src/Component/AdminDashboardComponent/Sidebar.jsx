@@ -106,12 +106,13 @@ const Sidebar = () => {
           >
             Wholesale Products
           </Link>
+         
           <Link
-            to="/admin-dashboard/wholesale-bulk-orders"
+            to="/admin-dashboard/bulk-order-enquiry"
             onClick={closeNav}
             className="block p-2 md:p-3 hover:bg-gray-700 rounded text-sm md:text-base"
           >
-            Bulk Orders
+            Bulk Order Enquiry
           </Link>
           <Link
             to="/admin-dashboard/area-of-services"

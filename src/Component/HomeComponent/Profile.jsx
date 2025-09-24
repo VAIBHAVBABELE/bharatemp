@@ -281,6 +281,141 @@ const Favorites = () => (
   </div>
 );
 
+const BulkRequest = () => {
+  const [enquiries, setEnquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchUserEnquiries = async (isRefresh = false) => {
+    try {
+      if (isRefresh) setRefreshing(true);
+      
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+      const decoded = jwtDecode(parsedToken);
+      const userEmail = decoded.email;
+
+      const response = await axios.post(`${backend}/bulk-enquiry/user-list`, {
+        filters: { email: userEmail }
+      }, {
+        headers: { 
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.status === 'Success') {
+        setEnquiries(response.data.data.enquiries);
+      }
+    } catch (error) {
+      console.error('Error fetching bulk requests:', error);
+    } finally {
+      setLoading(false);
+      if (isRefresh) setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserEnquiries();
+    
+    // Auto refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchUserEnquiries(true);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending': return 'bg-yellow-100 text-yellow-800';
+      case 'In Progress': return 'bg-blue-100 text-blue-800';
+      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'Rejected': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F7941D]"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Your Bulk Requests</h2>
+        <button
+          onClick={() => fetchUserEnquiries(true)}
+          disabled={refreshing}
+          className="px-4 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e88a1a] disabled:opacity-50 flex items-center gap-2"
+        >
+          {refreshing ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+          ) : (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          )}
+          Refresh
+        </button>
+      </div>
+      {enquiries.length === 0 ? (
+        <div className="text-center py-8 bg-white rounded-lg shadow">
+          <p className="text-gray-500">No bulk requests found</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {enquiries.map((enquiry) => (
+            <div key={enquiry._id} className="bg-white rounded-lg shadow-sm p-6 border">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{enquiry.productName}</h3>
+                  <p className="text-sm text-gray-600">Company: {enquiry.companyName}</p>
+                  {enquiry.lastUpdated && new Date(enquiry.lastUpdated) > new Date(enquiry.createdAt) && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 mt-1">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-1 animate-pulse"></div>
+                      Updated
+                    </span>
+                  )}
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(enquiry.status)}`}>
+                  {enquiry.status}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="text-sm text-gray-600">Quantity: {enquiry.quantity}</p>
+                  <p className="text-sm text-gray-600">Expected Price: {enquiry.expectedPrice || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Timeline: {enquiry.deliveryTimeline || 'Not specified'}</p>
+                  <p className="text-sm text-gray-600">Submitted: {new Date(enquiry.createdAt).toLocaleDateString()}</p>
+                  {enquiry.lastUpdated && new Date(enquiry.lastUpdated) > new Date(enquiry.createdAt) && (
+                    <p className="text-sm text-blue-600 font-medium">Last Updated: {new Date(enquiry.lastUpdated).toLocaleDateString()}</p>
+                  )}
+                </div>
+              </div>
+              
+              {enquiry.description && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-gray-700">Description:</p>
+                  <p className="text-sm text-gray-600">{enquiry.description}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Loyalty = () => (
   <div className="text-center py-8">
     <h2 className="text-2xl font-semibold mb-4">Loyalty Program</h2>
@@ -322,6 +457,7 @@ const ProfilePage = () => {
     { id: "profile", label: "Account Details" },
     { id: "orders", label: "Orders" },
     { id: "addresses", label: "Addresses" },
+    { id: "bulk-request", label: "Bulk Request" },
     { id: "favorites", label: "My Favorites" },
     { id: "loyalty", label: "Loyalty" }
   ];
@@ -538,6 +674,8 @@ const ProfilePage = () => {
         return <Orders />;
       case "addresses":
         return <Addresses user={user} onEdit={() => setActiveSection("profile")} />;
+      case "bulk-request":
+        return <BulkRequest />;
       case "favorites":
         return <Favorites />;
       case "loyalty":

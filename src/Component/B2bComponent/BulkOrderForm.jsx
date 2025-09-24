@@ -33,7 +33,7 @@ const BulkOrderForm = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${backend}/wholesale/bulk-order-request`, {
+      const response = await axios.post(`${backend}/bulk-enquiry/bulk-order-request`, {
         ...formData,
         requestDate: new Date().toISOString(),
         status: 'Pending'
