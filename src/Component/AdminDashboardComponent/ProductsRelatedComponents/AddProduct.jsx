@@ -583,6 +583,11 @@ const AddProduct = () => {
 
         // Trigger refresh in products page
         localStorage.setItem("refreshProducts", "true");
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('productUpdated', {
+          detail: { action: 'added', product: response.data.data }
+        }));
 
         toast.success("Product added successfully", {
           position: "top-right",

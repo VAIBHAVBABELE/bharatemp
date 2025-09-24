@@ -112,7 +112,7 @@ const Product = () => {
     fetchAllProducts();
   }, []);
 
-  // Listen for storage events to refresh when products are added
+  // Listen for storage events and real-time updates to refresh when products are added/updated
   useEffect(() => {
     const checkForRefresh = setInterval(() => {
       if (localStorage.getItem("refreshProducts")) {
@@ -121,8 +121,17 @@ const Product = () => {
       }
     }, 1000);
 
+    // Listen for real-time product updates
+    const handleProductUpdate = (event) => {
+      console.log('Product updated:', event.detail);
+      refreshProducts();
+    };
+
+    window.addEventListener('productUpdated', handleProductUpdate);
+
     return () => {
       clearInterval(checkForRefresh);
+      window.removeEventListener('productUpdated', handleProductUpdate);
     };
   }, [refreshProducts]);
 
@@ -1073,23 +1082,17 @@ const Product = () => {
                             )}
                         </div>
                         
-                        {/* Bulk Pricing Indicator - Only show for products with stock > 10 or admin wholesale rates */}
-                        {((product.no_of_product_instock && product.no_of_product_instock > 10) || 
-                          wholesaleProducts.some(wp => wp.product_id._id === product._id)) && (
-                          <div className="mt-2">
-                            <div className="flex items-center gap-2">
-                              <span className="bg-[#f7941d] text-white text-xs px-2 py-1 rounded-full">
-                                Bulk Discount
-                              </span>
-                              <span className="text-xs text-gray-600">
-                                {wholesaleProducts.some(wp => wp.product_id._id === product._id) 
-                                  ? "Special rates available"
-                                  : "Starting from 5+ units"
-                                }
-                              </span>
-                            </div>
+                        {/* Product Quantity Display */}
+                        <div className="mt-2">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                              Stock Available
+                            </span>
+                            <span className="text-sm font-medium text-gray-700">
+                              {product.no_of_product_instock || 0} units
+                            </span>
                           </div>
-                        )}
+                        </div>
                         
                         {/* Stock Information - Only show Out of Stock */}
                         <div className="mt-2">
@@ -1147,26 +1150,11 @@ const Product = () => {
                           </button>
                         </div>
                         
-                        {/* Bulk Order Button */}
-                        <div className="mt-2">
-                          <button
-                            className={`w-full border border-[#1e3473] py-1 px-3 rounded-2xl text-xs ${
-                              product.product_instock === false || product.no_of_product_instock === 0
-                                ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
-                                : "bg-white text-[#1e3473] hover:bg-[#1e3473] hover:text-white transition-colors"
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (product.product_instock !== false && product.no_of_product_instock !== 0) {
-                                handleProductClick(product);
-                              }
-                            }}
-                            disabled={product.product_instock === false || product.no_of_product_instock === 0}
-                          >
-                            {product.product_instock === false || product.no_of_product_instock === 0
-                              ? "Bulk Orders Unavailable"
-                              : "View Bulk Pricing"}
-                          </button>
+                        {/* Additional Product Info */}
+                        <div className="mt-2 text-center">
+                          <span className="text-xs text-gray-500">
+                            Available: {product.no_of_product_instock || 0} units
+                          </span>
                         </div>
                         <div className="text-sm text-gray-600">
                           <p>

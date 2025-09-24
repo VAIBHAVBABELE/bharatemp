@@ -28,6 +28,23 @@ const WholesaleProductsPage = () => {
     useEffect(() => {
         fetchAllProducts();
         fetchWholesaleProducts();
+        
+        // Listen for real-time product updates
+        const handleProductUpdate = (event) => {
+            console.log('Product updated in WholesaleProducts:', event.detail);
+            fetchAllProducts();
+            fetchWholesaleProducts();
+        };
+
+        window.addEventListener('productUpdated', handleProductUpdate);
+        window.addEventListener('productAdded', handleProductUpdate);
+        window.addEventListener('productDeleted', handleProductUpdate);
+
+        return () => {
+            window.removeEventListener('productUpdated', handleProductUpdate);
+            window.removeEventListener('productAdded', handleProductUpdate);
+            window.removeEventListener('productDeleted', handleProductUpdate);
+        };
     }, []);
 
     async function fetchAllProducts() {
@@ -94,6 +111,12 @@ const WholesaleProductsPage = () => {
                 if (response.data.status === "Success") {
                     toast.success("Wholesale product deleted successfully.");
                     fetchWholesaleProducts();
+                    
+                    // Trigger refresh in user products page
+                    localStorage.setItem('refreshProducts', 'true');
+                    window.dispatchEvent(new CustomEvent('productUpdated', {
+                        detail: { action: 'wholesale_deleted', wholesaleId: wholesaleToDelete }
+                    }));
                 }
             } else if (productToDelete) {
                 const response = await axios.post(`${backend}/product/${productToDelete}/remove`, {}, {
@@ -170,6 +193,12 @@ const WholesaleProductsPage = () => {
                 setLoading(false);
                 fetchWholesaleProducts();
                 setEditingWholesale(null);
+                
+                // Trigger refresh in user products page
+                localStorage.setItem('refreshProducts', 'true');
+                window.dispatchEvent(new CustomEvent('productUpdated', {
+                    detail: { action: 'wholesale_updated', wholesaleId: editingWholesale._id }
+                }));
             }
         } catch (error) {
             console.error("Error updating wholesale product:", error);
@@ -302,6 +331,12 @@ const WholesaleProductsPage = () => {
                 setLoading(false);
                 fetchWholesaleProducts();
                 setSelectedProduct(null);
+                
+                // Trigger refresh in user products page
+                localStorage.setItem('refreshProducts', 'true');
+                window.dispatchEvent(new CustomEvent('productUpdated', {
+                    detail: { action: 'wholesale_added', productId: selectedProduct._id }
+                }));
             }
         } catch (error) {
             console.error("Error saving wholesale data:", error);

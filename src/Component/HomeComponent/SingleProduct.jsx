@@ -218,7 +218,35 @@ export default function ProductCard() {
     };
 
     getProducts();
-  }, []);
+
+    // Listen for real-time product updates
+    const handleProductUpdate = (event) => {
+      console.log('Product updated in SingleProduct:', event.detail);
+      // If current product was updated, refetch its data
+      if (event.detail.productId === id) {
+        const fetchProductData = async () => {
+          try {
+            const response = await axios.get(`${backend}/product/${id}`);
+            if (response.data.status === "Success" && response.data.data.product) {
+              setProduct(response.data.data.product);
+              await fetchWholesaleData(response.data.data.product._id, response.data.data.product);
+            }
+          } catch (err) {
+            console.error("Error refetching product:", err);
+          }
+        };
+        fetchProductData();
+      }
+      // Also refresh the products list
+      getProducts();
+    };
+
+    window.addEventListener('productUpdated', handleProductUpdate);
+
+    return () => {
+      window.removeEventListener('productUpdated', handleProductUpdate);
+    };
+  }, [id]);
 
   // Navigate back to products page
   const handleBack = () => {
@@ -860,6 +888,23 @@ export default function ProductCard() {
               </span>
             </h1>
           </div>
+          
+          {/* Product Quantity Display */}
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7"></path>
+                </svg>
+              </div>
+              <div>
+                <span className="text-blue-800 font-semibold text-lg">
+                  {product.no_of_product_instock || 0} units available
+                </span>
+                <p className="text-blue-600 text-sm">Current stock quantity</p>
+              </div>
+            </div>
+          </div>
 
           {/* Rating Section */}
           <div className="flex items-center gap-2 mb-2">
@@ -915,17 +960,20 @@ export default function ProductCard() {
             <div className="flex items-center gap-4">
               <button
                 onClick={handleAddToCart}
-                className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
+                className="px-8 py-3 bg-[#F7941D] cursor-pointer text-white rounded-3xl font-medium hover:bg-[#e88a1a] transition-colors"
+                disabled={!product.product_instock || product.no_of_product_instock === 0}
               >
                 Add to Cart
               </button>
-
-              <button
-                onClick={handleBulkOrderClick}
-                className="px-6 py-2 bg-[#F7941D] cursor-pointer text-white rounded-3xl"
-              >
-                Bulk Orders
-              </button>
+              
+              {product.no_of_product_instock > 10 && (
+                <button
+                  onClick={handleBulkOrderClick}
+                  className="px-6 py-3 border border-[#1e3473] text-[#1e3473] rounded-3xl font-medium hover:bg-[#1e3473] hover:text-white transition-colors"
+                >
+                  Bulk Orders
+                </button>
+              )}
             </div>
 
             {/* Add Quantity Selector */}

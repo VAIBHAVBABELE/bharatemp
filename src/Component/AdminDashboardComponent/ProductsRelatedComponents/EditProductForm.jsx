@@ -449,7 +449,9 @@ const EditProduct = ({
         localStorage.setItem('refreshProducts', 'true');
         
         // Dispatch custom event to notify other components
-        window.dispatchEvent(new CustomEvent('productUpdated'));
+        window.dispatchEvent(new CustomEvent('productUpdated', {
+          detail: { action: 'updated', productId: selectedProduct._id, product: response.data.data }
+        }));
         
         onClose();
         fetchAllProducts();
