@@ -41,11 +41,16 @@ const PhonePePaymentStatus = () => {
         }
 
         // Verify payment with backend
+        const merchantTransactionId = searchParams.get('merchantTransactionId') || 
+                                     searchParams.get('merchant_transaction_id') || 
+                                     paymentId;
+        
         const verificationData = {
           paymentId: paymentId,
-          transactionId: transactionId,
-          merchantTransactionId: searchParams.get('merchantTransactionId') || paymentId
+          merchantTransactionId: merchantTransactionId
         };
+        
+        console.log('Verifying payment with data:', verificationData);
 
         const response = await axios.post(
           `${backend}/payment/verify-phonepe-payment`,
@@ -58,23 +63,26 @@ const PhonePePaymentStatus = () => {
           }
         );
 
+        console.log('Payment verification response:', response.data);
+        
         if (response.data?.status === 'Success') {
-          const { response: verificationResponse } = response.data.data;
+          const verificationResult = response.data.data;
           
-          if (verificationResponse.success) {
+          if (verificationResult.message?.includes('Successfully') || verificationResult.data?.success) {
             setPaymentStatus('SUCCESS');
-            setOrderDetails(verificationResponse.orderDetails);
+            setOrderDetails({
+              orderId: verificationResult.orderId,
+              totalAmount: verificationResult.data?.amount || 'N/A'
+            });
             toast.success('Payment successful!');
+            
+            // Clear any pending payment data
+            sessionStorage.removeItem('pendingPayment');
           } else {
             setPaymentStatus('FAILED');
             toast.error('Payment verification failed');
           }
         } else {
-          const responseStatus = verificationResponse.status || 'FAILED';
-          if (responseStatus === 'CANCELLED') {
-            navigate(`/phonepe-payment-cancel/${paymentId}?${searchParams.toString()}`);
-            return;
-          }
           setPaymentStatus('FAILED');
           toast.error('Payment verification failed');
         }

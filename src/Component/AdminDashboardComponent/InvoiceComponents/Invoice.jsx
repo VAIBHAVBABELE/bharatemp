@@ -35,7 +35,7 @@ function Invoice() {
                 filters: {},
             }, {
                 headers: {
-                    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('token'))}`
+                    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('adminToken') || localStorage.getItem('token'))}`
                 }
             });
 
@@ -61,7 +61,12 @@ function Invoice() {
             setLoading(true);
             setDownloadingId(invoiceId);
 
-            const response = await axios.post(`${backend}/invoice/${invoiceId}/download-invoice`, {}, { responseType: "blob" });
+            const response = await axios.post(`${backend}/invoice/${invoiceId}/download-invoice`, {}, { 
+                responseType: "blob",
+                headers: {
+                    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('adminToken') || localStorage.getItem('token'))}`
+                }
+            });
 
             if (response.status === 200) {
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
@@ -144,10 +149,14 @@ function Invoice() {
 
                                     <div className="mb-4">
                                         <div className="flex mb-2 flex-col">
-                                            {invoice.user_Id?.name && (
+                                            {(invoice.user_Id?.name || invoice.user_Id?.firstName || invoice.user_Id?.lastName) && (
                                                 <p className="text-sm text-gray-600 flex items-center mt-1">
                                                     <FaUser className="mr-2 text-gray-600 flex-shrink-0" />
-                                                    <span className="font-medium truncate">{invoice.user_Id?.name || 'N/A'}</span>
+                                                    <span className="font-medium truncate">
+                                                        {invoice.user_Id?.name || 
+                                                         `${invoice.user_Id?.firstName || ''} ${invoice.user_Id?.lastName || ''}`.trim() || 
+                                                         'N/A'}
+                                                    </span>
                                                 </p>
                                             )}
                                             {invoice.user_Id?.phone && (

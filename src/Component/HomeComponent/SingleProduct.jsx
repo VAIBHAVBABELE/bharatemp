@@ -540,16 +540,13 @@ export default function ProductCard() {
             discount: selectedPriceBreak.discount || 0
           };
           
-          // Initiate PhonePe payment for bulk order
-          try {
-            setLoadingBuyNow(true);
-            await initiatePhonePePayment(bulkItem);
-          } catch (error) {
-            console.error('Payment initiation failed:', error);
-            toast.error('Payment initiation failed. Please try again.');
-          } finally {
-            setLoadingBuyNow(false);
-          }
+          // Add bulk item to cart and navigate to checkout
+          addToCart(bulkItem);
+          setShowBulkOrder(false);
+          toast.success(`Added ${bulkQuantity} items to cart with bulk pricing`);
+          
+          // Navigate to checkout for payment
+          navigate('/checkout');
         } else {
           toast.error(
             `Please enter a quantity between ${minQty} and ${maxQty === Infinity ? "∞" : maxQty}`
@@ -610,36 +607,53 @@ export default function ProductCard() {
         product_img_url: orderItem.product_image_main,
       };
 
-      // Create order first
+      // Create order first with proper user details
+      const userAddress = userData.address && userData.address.length > 0 ? userData.address[0] : "";
+      const addressParts = userAddress.split(",").map(part => part.trim());
+      const pincode = userAddress.match(/\b\d{6}\b/)?.[0] || "000000";
+      const city = addressParts.length > 1 ? addressParts[addressParts.length - 2] : "City";
+      const state = addressParts.length > 2 ? addressParts[addressParts.length - 1] : "State";
+      
       const orderData = {
         user_id: userId,
         products: [backendOrderItem],
         totalPrice: orderItem.total,
-        shippingAddress: userData.address?.[0] || "",
+        shippingAddress: userAddress || `${userData.name || 'Customer'}, ${userData.phone || ''}, ${city}, ${state}, ${pincode}`,
         shippingCost: 0, // Free shipping for bulk orders
         email: userData.email,
-        pincode: userData.address?.[0]?.match(/\b\d{6}\b/)?.[0] || "000000",
-        name: userData ? `${userData.name}` : "",
-        city: userData.address?.[0]?.split(",").slice(-2, -1)[0]?.trim() || "City",
+        pincode: pincode,
+        name: userData.name || "Customer",
+        phone: userData.phone || "",
+        city: city,
+        state: state,
         expectedDelivery: expectedDelivery,
-        orderType: 'bulk'
+        orderType: 'bulk',
+        status: 'pending'
+        // payment_status will be set by backend to UNPAID constant
       };
 
+      console.log('Sending order data to backend:', JSON.stringify(orderData, null, 2));
+      
       const orderResponse = await axios.post(
         `${backend}/order/new`,
-        { order: orderData },
+        orderData, // Send directly, not wrapped in { order: orderData }
         {
           headers: {
             Authorization: `Bearer ${parsedToken}`,
+            "Content-Type": "application/json",
           },
         }
       );
+      
+      console.log('Order creation response:', orderResponse.data);
 
       if (!orderResponse.data?.data?.order?._id) {
-        throw new Error('Failed to create order');
+        console.error('Order creation failed:', orderResponse.data);
+        throw new Error(orderResponse.data?.data?.message || 'Failed to create order');
       }
 
       const createdOrderId = orderResponse.data.data.order._id;
+      console.log('Order created successfully with ID:', createdOrderId);
 
       // Prepare PhonePe payment data
       const paymentData = {

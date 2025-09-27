@@ -102,6 +102,8 @@ const OrderSuccess = () => {
         return;
       }
 
+      console.log('Verifying payment with ID:', id);
+      
       const response = await axios.post(
         `${backend}/payment/verify-phonepe-payment`,
         {
@@ -113,8 +115,11 @@ const OrderSuccess = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          timeout: 30000
         }
       );
+      
+      console.log('Payment verification response:', response.data);
 
       if (response.data.status === "Success") {
         const responseData = response.data.data.response;
@@ -123,15 +128,20 @@ const OrderSuccess = () => {
         if (responseData.status === 'CANCELLED') {
           setVerificationStatus("cancelled");
           localStorage.removeItem("cart");
+          toast.error("Payment was cancelled by user");
           
-          // Redirect to cancellation page with details
-          const cancelParams = new URLSearchParams({
-            paymentId: responseData.paymentId || id,
-            amount: responseData.amount || '0',
-            reason: 'Payment cancelled by user'
-          });
-          
-          navigate(`/payment-cancelled/${responseData.orderId}?${cancelParams.toString()}`);
+          // Redirect to home or show cancellation message
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
+          return;
+        }
+        
+        // Check if payment failed
+        if (responseData.status === 'FAILED') {
+          setVerificationStatus("failed");
+          localStorage.removeItem("cart");
+          toast.error("Payment verification failed");
           return;
         }
         
@@ -262,14 +272,45 @@ const OrderSuccess = () => {
           }
         }
       } else {
-        setVerificationStatus("failed");
-        localStorage.removeItem("cart");
-        toast.error(response.data.message || "Payment verification failed");
+        // Handle non-success responses
+        const responseData = response.data.data?.response;
+        
+        if (responseData?.status === 'CANCELLED') {
+          setVerificationStatus("cancelled");
+          localStorage.removeItem("cart");
+          toast.error("Payment was cancelled");
+        } else {
+          setVerificationStatus("failed");
+          localStorage.removeItem("cart");
+          toast.error(response.data.message || "Payment verification failed");
+        }
       }
     } catch (error) {
       console.error("Payment verification error:", error);
       setVerificationStatus("failed");
-      toast.error(error.response?.data?.message || "Payment verification failed");
+      
+      // Handle different types of errors
+      let errorMessage = "Payment verification failed";
+      
+      if (error.code === 'ECONNABORTED') {
+        errorMessage = "Payment verification timeout. Please check your order status.";
+      } else if (error.response?.status === 500) {
+        errorMessage = "Payment service temporarily unavailable. Please contact support.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
+      
+      // Show error message and provide manual retry option
+      console.log('Payment verification failed for ID:', id);
+      
+      // Don't auto-redirect, let user decide
+      // setTimeout(() => {
+      //   navigate(`/payment-retry/${id}`);
+      // }, 3000);
     }
   };
 
@@ -301,12 +342,14 @@ const OrderSuccess = () => {
           {verificationStatus === "verifying" && "Verifying your payment..."}
           {verificationStatus === "success" && "Your Order is successfully Placed"}
           {verificationStatus === "failed" && "Payment Verification Failed"}
+          {verificationStatus === "cancelled" && "Payment Cancelled"}
         </h1>
 
         <p className="text-[#383838] mt-2 text-sm sm:text-[24px]">
           {verificationStatus === "verifying" && "Please wait while we confirm your payment"}
           {verificationStatus === "success" && "Your product will be delivered in 3–5 working days"}
           {verificationStatus === "failed" && "Please contact support if payment was deducted"}
+          {verificationStatus === "cancelled" && "Your payment was cancelled. You can try again."}
         </p>
 
         {verificationStatus === "success" && (

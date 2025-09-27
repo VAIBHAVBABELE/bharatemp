@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const checkAdminAccess = (requiredRole = ["SubAdmin","SuperAdmin"]) => {
-  const token = JSON.parse(localStorage.getItem('token'));
+  const token = JSON.parse(localStorage.getItem('adminToken') || localStorage.getItem('token') || 'null');
   if (!token) return false;
   
   const decodedToken = jwtDecode(token);
@@ -16,7 +16,7 @@ export const useAdminRouteProtection = (requiredRole = ["SubAdmin","SuperAdmin"]
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem('token'));
+    const token = JSON.parse(localStorage.getItem('adminToken') || localStorage.getItem('token') || 'null');
     if (!token) {
       navigate('/admin-login');
       return;

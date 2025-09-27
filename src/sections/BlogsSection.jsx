@@ -13,7 +13,7 @@ const BlogsSection = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${backend}/blog/published?pageNum=1&pageSize=3`
+        `${backend}/blog/published?pageNum=1&pageSize=4`
       );
 
       if (response.data.status === "Success") {
@@ -53,14 +53,14 @@ const BlogsSection = () => {
               Stay updated with our latest insights and tutorials
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse"
               >
-                <div className="h-48 bg-gray-300"></div>
-                <div className="p-6">
+                <div className="h-40 bg-gray-300"></div>
+                <div className="p-4">
                   <div className="h-4 bg-gray-300 rounded mb-3"></div>
                   <div className="h-4 bg-gray-300 rounded mb-3 w-3/4"></div>
                   <div className="h-3 bg-gray-300 rounded mb-2"></div>
@@ -100,7 +100,7 @@ const BlogsSection = () => {
         {/* Blogs Grid */}
         {blogs.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               {blogs.map((blog) => (
                 <div
                   key={blog._id}
@@ -108,7 +108,7 @@ const BlogsSection = () => {
                 >
                   {/* Featured Image */}
                   {blog.featured_image_url && (
-                    <div className="h-48 overflow-hidden">
+                    <div className="h-40 overflow-hidden">
                       <img
                         src={blog.featured_image_url}
                         alt={blog.title}
@@ -118,7 +118,7 @@ const BlogsSection = () => {
                   )}
 
                   {/* Content */}
-                  <div className="p-6">
+                  <div className="p-4">
                     {/* Tags */}
                     {blog.tags && blog.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
@@ -139,14 +139,14 @@ const BlogsSection = () => {
                     )}
 
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
                       {blog.title}
                     </h3>
 
                     {/* Excerpt */}
                     {blog.excerpt && (
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                        {truncateText(blog.excerpt, 120)}
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {truncateText(blog.excerpt, 80)}
                       </p>
                     )}
 
@@ -159,7 +159,7 @@ const BlogsSection = () => {
                     {/* Read More Link */}
                     <Link
                       to={`/blog/${blog.slug}`}
-                      className="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                      className="inline-block mt-3 text-blue-600 hover:text-blue-800 font-medium text-sm"
                     >
                       Read More →
                     </Link>

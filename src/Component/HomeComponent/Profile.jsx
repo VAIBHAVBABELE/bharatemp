@@ -28,88 +28,125 @@ const OrderModal = ({ order, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-transparent bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4 shadow-2xl">
-      <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
-          <h3 className="text-xl font-semibold">Order Details</h3>
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="sticky top-0 bg-white p-6 border-b border-gray-200 flex justify-between items-center rounded-t-2xl">
+          <h3 className="text-2xl font-bold text-gray-900">Order Details</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
           >
-            <FaTimes size={30} />
+            <FaTimes size={20} className="text-gray-600" />
           </button>
         </div>
         
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-8">
           {/* Order Summary */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <h4 className="font-medium">Order #{order._id.slice(-6)}</h4>
-              <span className="font-bold text-lg text-[#F7941D]">
-                ₹{calculateTotalPrice().toFixed(2)}
-              </span>
+          <div className="bg-gradient-to-r from-[#F7941D] to-[#e38616] p-6 rounded-xl text-white">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h4 className="text-xl font-bold">Order #{order._id.slice(-8).toUpperCase()}</h4>
+                <p className="text-white/90 mt-1">
+                  Placed on: {formatDate(order.created_at)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-white/90 text-sm">Total Amount</p>
+                <span className="text-2xl font-bold">
+                  ₹{calculateTotalPrice().toFixed(2)}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-gray-600">
-              Placed on: {formatDate(order.created_at)}
-            </p>
-            <div className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-gray-100">
-              {order.status}
-            </div>
-          </div>
-
-          {/* Shipping Details */}
-          <div>
-            <h4 className="font-medium mb-2">Shipping Details</h4>
-            <div className="bg-gray-50 p-4 rounded-lg space-y-1">
-              <p className="text-sm"><span className="font-medium">Name:</span> {order.name}</p>
-              <p className="text-sm"><span className="font-medium">Email:</span> {order.email}</p>
-              <p className="text-sm"><span className="font-medium">Address:</span> {order.shippingAddress}</p>
-              <p className="text-sm"><span className="font-medium">City:</span> {order.city}</p>
-              <p className="text-sm"><span className="font-medium">Pincode:</span> {order.pincode}</p>
+            <div className="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-white/20 backdrop-blur-sm">
+              Status: {order.status}
             </div>
           </div>
 
-          {/* Delivery Info */}
-          <div>
-            <h4 className="font-medium mb-2">Delivery Information</h4>
-            <div className="bg-gray-50 p-4 rounded-lg space-y-1">
-              <p className="text-sm"><span className="font-medium">Expected Delivery:</span> {formatDate(order.expectedDelivery)}</p>
-              <p className="text-sm"><span className="font-medium">Shipping Cost:</span> ₹{order.shippingCost}</p>
+          {/* Shipping & Delivery Details */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Shipping Details */}
+            <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+              <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Shipping Details
+              </h4>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium text-gray-800">Name:</span> <span className="text-gray-700">{order.user_id?.name || order.user_id?.firstName && order.user_id?.lastName ? `${order.user_id.firstName} ${order.user_id.lastName}`.trim() : order.name || 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">Email:</span> <span className="text-gray-700">{order.user_id?.email || order.email || 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">Address:</span> <span className="text-gray-700">{order.shippingAddress || 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">City:</span> <span className="text-gray-700">{order.city || 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">Pincode:</span> <span className="text-gray-700">{order.pincode || 'N/A'}</span></p>
+              </div>
+            </div>
+
+            {/* Delivery Info */}
+            <div className="bg-green-50 p-5 rounded-xl border border-green-100">
+              <h4 className="font-semibold text-green-900 mb-3 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10m6-10v10m-6 0h6" />
+                </svg>
+                Delivery Information
+              </h4>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium text-gray-800">Expected Delivery:</span> <span className="text-gray-700">{order.expectedDelivery ? formatDate(order.expectedDelivery) : 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">Shipping Cost:</span> <span className="text-gray-700">₹{order.shippingCost || 0}</span></p>
+                <p><span className="font-medium text-gray-800">Payment Status:</span> <span className={`font-semibold ${order.payment_status === 'Paid' ? 'text-green-600' : 'text-red-600'}`}>{order.payment_status || 'Pending'}</span></p>
+              </div>
             </div>
           </div>
 
           {/* Products */}
           <div>
-            <h4 className="font-medium mb-2">Products</h4>
+            <h4 className="font-medium mb-4">Products Ordered</h4>
             <div className="space-y-4">
               {order.products.map((item) => (
-                <div key={item._id} className="bg-gray-50 p-4 rounded-lg flex gap-4">
-                  <div className="w-24 h-24 flex-shrink-0">
-                    <img
-                      src={item.product_id.product_image_main}
-                      alt={item.product_id.product_name}
-                      className="w-full h-full object-contain rounded"
-                    />
-                  </div>
-                  <div className="flex-grow space-y-2">
-                    <h5 className="font-medium">{item.product_id.product_name}</h5>
-                    <p className="text-sm"><span className="font-medium">SKU:</span> {item.product_id.SKU}</p>
-                    <p className="text-sm"><span className="font-medium">Quantity:</span> {item.quantity}</p>
-                    <p className="text-sm"><span className="font-medium">Price:</span> ₹{item.product_id.discounted_single_product_price}</p>
+                <div key={item._id} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-20 flex-shrink-0">
+                      <img
+                        src={item.product_id.product_image_main}
+                        alt={item.product_id.product_name}
+                        className="w-full h-full object-contain rounded-lg border border-gray-100"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <h5 className="font-semibold text-gray-900 mb-2 line-clamp-2">{item.product_id.product_name}</h5>
+                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                        <p><span className="font-medium text-gray-800">SKU:</span> {item.product_id?.SKU || item.product_id?.sku || 'N/A'}</p>
+                        <p><span className="font-medium text-gray-800">Qty:</span> {item.quantity}</p>
+                        <p><span className="font-medium text-gray-800">Unit Price:</span> ₹{item.product_id?.discounted_single_product_price || item.product_id?.price || 0}</p>
+                        <p><span className="font-medium text-gray-800">Total:</span> ₹{((item.product_id?.discounted_single_product_price || item.product_id?.price || 0) * item.quantity).toFixed(2)}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Return Request Button */}
-          {order.status === 'Delivered' && !order.return_request && (
-            <div className="pt-4 border-t">
-              <button className="w-full bg-[#F7941D] text-white py-2 rounded-lg hover:bg-[#e38616] transition-colors">
-                Request Return
+          {/* Action Buttons */}
+          <div className="pt-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button 
+                className="flex-1 bg-red-500 text-white py-3 px-6 rounded-xl font-medium hover:bg-red-600 transition-colors duration-200 shadow-sm hover:shadow-md"
+                onClick={() => console.log('Cancel Order clicked')}
+              >
+                Cancel Order
+              </button>
+              <button 
+                className="flex-1 bg-[#F7941D] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#e38616] transition-colors duration-200 shadow-sm hover:shadow-md"
+                onClick={() => console.log('Return Order clicked')}
+              >
+                Return Order
               </button>
             </div>
-          )}
+            <p className="text-xs text-gray-500 text-center mt-3">
+              Note: Buttons are for display only. Functionality will be added later.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -416,6 +453,288 @@ const BulkRequest = () => {
   );
 };
 
+const HelpSupport = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    category: '',
+    priority: 'Medium',
+    description: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const categories = [
+    'Order Issue',
+    'Payment Issue', 
+    'Product Issue',
+    'Delivery Issue',
+    'Account Issue',
+    'Other'
+  ];
+
+  const priorities = ['Low', 'Medium', 'High', 'Urgent'];
+
+  useEffect(() => {
+    // Auto-fill user data from token
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+        const decoded = jwtDecode(parsedToken);
+        setFormData(prev => ({
+          ...prev,
+          name: decoded.name || `${decoded.firstName || ''} ${decoded.lastName || ''}`.trim(),
+          email: decoded.email || '',
+          phone: decoded.phone || decoded.mobile || ''
+        }));
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+
+      const response = await axios.post(
+        `${backend}/complaint/create`,
+        { complaint: formData },
+        {
+          headers: {
+            Authorization: `Bearer ${parsedToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.status === 'Success') {
+        setSubmitted(true);
+        toast.success('Your complaint has been submitted successfully!');
+        setFormData({
+          ...formData,
+          subject: '',
+          category: '',
+          priority: 'Medium',
+          description: ''
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting complaint:', error);
+      toast.error('Failed to submit complaint. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="text-center py-12">
+        <div className="bg-green-50 border border-green-200 rounded-xl p-8 max-w-md mx-auto">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-green-800 mb-2">Request Submitted!</h3>
+          <p className="text-green-600 mb-4">We've received your complaint and will get back to you soon.</p>
+          <button
+            onClick={() => setSubmitted(false)}
+            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Submit Another Request
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Help & Support</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          We're here to help! Whether you have questions about your order, need technical support, 
+          or want to provide feedback, our team is ready to assist you.
+        </p>
+      </div>
+
+      {/* Help Options */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-blue-50 p-6 rounded-xl text-center">
+          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 className="font-semibold text-blue-900 mb-2">Email Support</h3>
+          <p className="text-blue-700 text-sm">support@bharatronix.com</p>
+        </div>
+        
+        <div className="bg-green-50 p-6 rounded-xl text-center">
+          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </div>
+          <h3 className="font-semibold text-green-900 mb-2">Phone Support</h3>
+          <p className="text-green-700 text-sm">+91 9310433937</p>
+        </div>
+        
+        <div className="bg-purple-50 p-6 rounded-xl text-center">
+          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="font-semibold text-purple-900 mb-2">Response Time</h3>
+          <p className="text-purple-700 text-sm">Within 24 hours</p>
+        </div>
+      </div>
+
+      {/* Support Form */}
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-6">Submit a Support Request</h3>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+                placeholder="Enter your full name"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+                placeholder="Enter your email"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+                placeholder="Enter your phone number"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+              >
+                <option value="">Select a category</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+              <input
+                type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+                placeholder="Brief description of your issue"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+              <select
+                name="priority"
+                value={formData.priority}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all"
+              >
+                {priorities.map(priority => (
+                  <option key={priority} value={priority}>{priority}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F7941D] focus:border-transparent transition-all resize-none"
+              placeholder="Please provide detailed information about your issue or question..."
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-[#F7941D] text-white px-8 py-3 rounded-xl font-medium hover:bg-[#e38616] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  Submitting...
+                </>
+              ) : (
+                'Submit Request'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Loyalty = () => (
   <div className="text-center py-8">
     <h2 className="text-2xl font-semibold mb-4">Loyalty Program</h2>
@@ -459,6 +778,7 @@ const ProfilePage = () => {
     { id: "addresses", label: "Addresses" },
     { id: "bulk-request", label: "Bulk Request" },
     { id: "favorites", label: "My Favorites" },
+    { id: "help-support", label: "Help & Support" },
     { id: "loyalty", label: "Loyalty" }
   ];
 
@@ -678,6 +998,8 @@ const ProfilePage = () => {
         return <BulkRequest />;
       case "favorites":
         return <Favorites />;
+      case "help-support":
+        return <HelpSupport />;
       case "loyalty":
         return <Loyalty />;
       default:

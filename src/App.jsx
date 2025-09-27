@@ -34,6 +34,7 @@ import AreaOfServices from "./Component/AdminDashboardComponent/AreaOfServices/A
 import InventoryManagement from "./Component/AdminDashboardComponent/InventoryManagement/Inventory.jsx";
 import Invoice from "./Component/AdminDashboardComponent/InvoiceComponents/Invoice.jsx";
 import AllComplaintRaised from "./Component/AdminDashboardComponent/ComplaintRaisedComponents/AllComplaintRaised.jsx";
+import Complaints from "./Component/AdminDashboardComponent/Complaints.jsx";
 import ReturnRequest from "./Component/AdminDashboardComponent/ReturnRequestComponents/ReturnRequest.jsx";
 import NewsUpdates from "./Component/AdminDashboardComponent/NewsAndUpdatesComponents/NewsUpdates.jsx";
 import ContactUs from "./Component/AdminDashboardComponent/ContactUsComponent/contactus.jsx";
@@ -59,6 +60,8 @@ import ShopByBrand from "./pages/ShopByBrand.jsx";
 import PaymentCancelled from "./pages/PaymentCancelled.jsx";
 import PhonePePaymentStatus from "./pages/PhonePePaymentStatus.jsx";
 import PhonePayCancel from "./pages/PhonePayCancel.jsx";
+import PaymentRetry from "./pages/PaymentRetry.jsx";
+import PaymentFallback from "./pages/PaymentFallback.jsx";
 
 const AppContent = () => {
   const location = useLocation();
@@ -81,6 +84,8 @@ const AppContent = () => {
         <Route path="/phonepe-payment-status/:paymentId" element={<PhonePePaymentStatus />} />
         <Route path="/phonepe-payment-cancel/:paymentId?" element={<PhonePayCancel />} />
         <Route path="/payment-cancelled/:orderId?" element={<PaymentCancelled />} />
+        <Route path="/payment-retry/:orderId" element={<PaymentRetry />} />
+        <Route path="/payment-fallback" element={<PaymentFallback />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/b2bpage" element={<Ouronline />} />
         <Route path="/subcategory" element={<Subcategory />} />
@@ -141,7 +146,7 @@ const AppContent = () => {
           />
           <Route
             path="/admin-dashboard/complaints"
-            element={<AllComplaintRaised />}
+            element={<Complaints />}
           />
           <Route path="/admin-dashboard/contactus" element={<ContactUs />} />
         </Route>

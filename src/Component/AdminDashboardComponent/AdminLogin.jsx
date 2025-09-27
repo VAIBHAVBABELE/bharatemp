@@ -22,7 +22,8 @@ function AdminLogin() {
             const response = await axios.post(`${backend}/admin/login`, formData)
             if (response.data.status === 'Success') {
                 const token = response.data.data.admin.token
-                localStorage.setItem("token", JSON.stringify(token))
+                localStorage.setItem("adminToken", JSON.stringify(token))
+                localStorage.setItem("token", JSON.stringify(token)) // Backward compatibility
                 toast.success("Login Successfull")
                 setFormData({
                     email: "",

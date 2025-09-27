@@ -427,10 +427,10 @@ const AllOrders = () => {
                                 </div>
                                 <div>
                                   <div className="text-sm font-semibold text-gray-900">
-                                    {order.name}
+                                    {order.user_id?.name || (order.user_id?.firstName && order.user_id?.lastName ? `${order.user_id.firstName} ${order.user_id.lastName}`.trim() : order.name) || 'N/A'}
                                   </div>
                                   <div className="text-sm text-gray-500">
-                                    {order.email}
+                                    {order.user_id?.email || order.email || 'N/A'}
                                   </div>
                                 </div>
                               </div>
@@ -471,22 +471,22 @@ const AllOrders = () => {
                           <td className="px-4 lg:px-6 py-4 text-sm text-center">
                             <span
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                product.extended_warranty > 0
+                                (product.extended_warranty || 0) > 0
                                   ? "bg-green-100 text-green-800"
                                   : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {product.extended_warranty > 0 ? "Yes" : "No"}
+                              {(product.extended_warranty || 0) > 0 ? "Yes" : "No"}
                             </span>
                           </td>
 
                           {/* Total Warranty */}
                           <td className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900">
-                            {product.total_warranty >= 12
-                              ? `${(product.total_warranty / 12).toFixed(
-                                  1
-                                )} Years`
-                              : `${product.total_warranty} Months`}
+                            {product.total_warranty ? 
+                              (product.total_warranty >= 12
+                                ? `${(product.total_warranty / 12).toFixed(1)} Years`
+                                : `${product.total_warranty} Months`)
+                              : 'N/A'}
                           </td>
 
                           {/* Order-level Data */}
@@ -496,7 +496,7 @@ const AllOrders = () => {
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order?.user_id?.phone}
+                                {order?.user_id?.phone || order?.phone || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
@@ -510,31 +510,31 @@ const AllOrders = () => {
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order.dispatchCenter}
+                                {order.dispatchCenter || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order.originCenter}
+                                {order.originCenter || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order.returnCenter}
+                                {order.returnCenter || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order.facilityCity}
+                                {order.facilityCity || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order.facilityState}
+                                {order.facilityState || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}

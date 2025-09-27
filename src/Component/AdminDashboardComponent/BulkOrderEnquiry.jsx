@@ -7,6 +7,9 @@ const backend = import.meta.env.VITE_BACKEND;
 const BulkOrderEnquiry = () => {
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [emailModal, setEmailModal] = useState({ show: false, enquiry: null });
+  const [emailMessage, setEmailMessage] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     fetchEnquiries();
@@ -72,6 +75,49 @@ const BulkOrderEnquiry = () => {
     } catch (error) {
       toast.error('Failed to update status');
     }
+  };
+
+  const sendEmail = async () => {
+    if (!emailMessage.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      let token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login first');
+        return;
+      }
+      
+      try {
+        token = JSON.parse(token);
+      } catch (e) {
+        // Token is already a string
+      }
+      
+      await axios.post(`${backend}/bulk-enquiry/${emailModal.enquiry._id}/send-email`, 
+        { message: emailMessage },
+        { headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } }
+      );
+      
+      toast.success('Email sent successfully');
+      setEmailModal({ show: false, enquiry: null });
+      setEmailMessage('');
+    } catch (error) {
+      toast.error('Failed to send email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const openEmailModal = (enquiry) => {
+    setEmailModal({ show: true, enquiry });
+    setEmailMessage('');
   };
 
   const getStatusColor = (status) => {
@@ -184,6 +230,13 @@ const BulkOrderEnquiry = () => {
                       <option value="Completed">Completed</option>
                       <option value="Rejected">Rejected</option>
                     </select>
+                    <button
+                      onClick={() => openEmailModal(enquiry)}
+                      className="px-3 py-1 bg-[#F7941D] text-white rounded text-xs hover:bg-[#e8850a] transition-colors flex items-center space-x-1"
+                    >
+                      <span>📧</span>
+                      <span>Send Email</span>
+                    </button>
                   </div>
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     <span>📧 {enquiry.email}</span>
@@ -207,6 +260,58 @@ const BulkOrderEnquiry = () => {
           )}
         </div>
       </div>
+
+      {/* Email Modal */}
+      {emailModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-[#1E3473]">Send Email Response</h3>
+              <button
+                onClick={() => setEmailModal({ show: false, enquiry: null })}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {emailModal.enquiry && (
+              <div className="mb-4 p-3 bg-gray-50 rounded">
+                <p className="text-sm text-gray-600">To: <span className="font-medium">{emailModal.enquiry.email}</span></p>
+                <p className="text-sm text-gray-600">Company: <span className="font-medium">{emailModal.enquiry.companyName}</span></p>
+                <p className="text-sm text-gray-600">Product: <span className="font-medium">{emailModal.enquiry.productName}</span></p>
+              </div>
+            )}
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Message:</label>
+              <textarea
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                placeholder="Enter your response message..."
+                rows={6}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F7941D] focus:border-transparent"
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setEmailModal({ show: false, enquiry: null })}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={sendEmail}
+                disabled={sendingEmail}
+                className="px-4 py-2 bg-[#F7941D] text-white rounded hover:bg-[#e8850a] disabled:opacity-50"
+              >
+                {sendingEmail ? 'Sending...' : 'Send Email'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

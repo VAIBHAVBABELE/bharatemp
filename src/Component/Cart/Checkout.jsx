@@ -52,7 +52,7 @@ const AddressForm = ({
           <input
             type="text"
             name="city"
-            placeholder="City, State"
+            placeholder="Enter city"
             className={`w-full border ${
               errors?.city ? "border-red-500" : "border-gray-300"
             } rounded-lg p-2`}
@@ -61,6 +61,22 @@ const AddressForm = ({
           />
           {errors?.city && (
             <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+          )}
+        </div>
+        <div className="flex-1">
+          <label className="block text-gray-700 mb-1">State</label>
+          <input
+            type="text"
+            name="state"
+            placeholder="Enter state"
+            className={`w-full border ${
+              errors?.state ? "border-red-500" : "border-gray-300"
+            } rounded-lg p-2`}
+            value={address.state}
+            onChange={onInputChange}
+          />
+          {errors?.state && (
+            <p className="text-red-500 text-xs mt-1">{errors.state}</p>
           )}
         </div>
         <div className="w-1/3">
@@ -147,6 +163,7 @@ const Checkout = () => {
   const [newAddress, setNewAddress] = useState({
     address: "",
     city: "",
+    state: "",
     postalCode: "",
     companyName: "",
     gstNumber: "",
@@ -248,7 +265,7 @@ const Checkout = () => {
     toast.dismiss();
 
     try {
-      const fullAddress = `${address.address}, ${address.city}, ${address.postalCode}`;
+      const fullAddress = `${address.address}, ${address.city}${address.state ? `, ${address.state}` : ''}, ${address.postalCode}`;
 
       const response = await axios.post(
         `${backend}/user/${userId}/update-address`,
@@ -318,38 +335,32 @@ const Checkout = () => {
             // Initialize address components
             let streetAddress = "";
             let city = "";
+            let state = "";
 
-            if (parts.length >= 2) {
-              // Last non-empty part before postal code is typically the city
+            if (parts.length >= 3) {
+              // Last part is state, second last is city
+              state = parts[parts.length - 1];
+              city = parts[parts.length - 2];
+              streetAddress = parts.slice(0, -2).join(", ");
+            } else if (parts.length >= 2) {
+              // Last part is city, no state
               city = parts[parts.length - 1];
-              // Everything else is the street address
               streetAddress = parts.slice(0, -1).join(", ");
             } else {
-              // If we don't have enough parts, use the whole string as street address
+              // Use the whole string as street address
               streetAddress = parts.join(", ");
             }
 
             // Clean up any trailing/leading commas and extra spaces
             streetAddress = streetAddress.replace(/,\s*$/, "").trim();
             city = city.replace(/,\s*$/, "").trim();
-
-            // If we still don't have a city but have a street address
-            if (!city && streetAddress) {
-              const addressParts = streetAddress.split(" ");
-              if (addressParts.length > 2) {
-                // Use the last part as city if it's not the postal code
-                const lastPart = addressParts[addressParts.length - 1];
-                if (lastPart !== postalCode) {
-                  city = lastPart;
-                  streetAddress = addressParts.slice(0, -1).join(" ");
-                }
-              }
-            }
+            state = state.replace(/,\s*$/, "").trim();
 
             return {
               id: index + 1,
               address: streetAddress || addr, // Fallback to full address if parsing fails
               city: city || "City", // Provide default value
+              state: state || "", // State field
               postalCode: postalCode || "000000", // Provide default value
               fullAddress: addr, // Keep original full address
               companyName: user.companyName || "",
@@ -386,8 +397,8 @@ const Checkout = () => {
       id: newId,
       name: userName,
       ...newAddress,
-      // Combine city and postal code for display
-      fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+      // Combine address components for display
+      fullAddress: `${newAddress.address}, ${newAddress.city}${newAddress.state ? `, ${newAddress.state}` : ''}, ${newAddress.postalCode}`,
       gstNumber: newAddress.gstNumber,
       companyName: newAddress.companyName,
       isSelected: false,
@@ -399,6 +410,7 @@ const Checkout = () => {
     setNewAddress({
       address: "",
       city: "",
+      state: "",
       postalCode: "",
       companyName: "",
       gstNumber: "",
@@ -432,6 +444,7 @@ const Checkout = () => {
       setNewAddress({
         address: addressToEdit.address,
         city: cityValue,
+        state: addressToEdit.state || "",
         postalCode: postalCodeValue,
         companyName: addressToEdit.companyName,
         gstNumber: addressToEdit.gstNumber,
@@ -458,9 +471,10 @@ const Checkout = () => {
           name: userName,
           address: newAddress.address,
           city: newAddress.city,
+          state: newAddress.state,
           postalCode: newAddress.postalCode,
           // Update the combined address
-          fullAddress: `${newAddress.address}, ${newAddress.city}, ${newAddress.postalCode}`,
+          fullAddress: `${newAddress.address}, ${newAddress.city}${newAddress.state ? `, ${newAddress.state}` : ''}, ${newAddress.postalCode}`,
           gstNumber: newAddress.gstNumber,
           companyName: newAddress.companyName,
         };
@@ -479,6 +493,7 @@ const Checkout = () => {
     setNewAddress({
       address: "",
       city: "",
+      state: "",
       postalCode: "",
       companyName: "",
       gstNumber: "",
@@ -500,7 +515,7 @@ const Checkout = () => {
 
       // Update in backend first - send empty string to remove the address
       const success = await updateUserAddress(
-        { address: "", city: "", postalCode: "" },
+        { address: "", city: "", state: "", postalCode: "" },
         indexToRemove
       );
 
@@ -662,21 +677,25 @@ const Checkout = () => {
       setProcessingPayment(true);
       
       // Validate stock for all products before creating order
+      console.log('Validating stock for cart items before order creation...');
+      
       for (const item of cartItems) {
         try {
           const response = await axios.get(`${backend}/product/${item._id}`);
           const product = response.data?.data?.product;
           
           if (!product || !product.product_instock || product.no_of_product_instock < item.quantity) {
-            toast.error('Product is out of stock', {
+            toast.error(`${product?.product_name || 'Product'} is out of stock or insufficient quantity available`, {
               position: "top-right",
               autoClose: 5000,
             });
             throw new Error('Stock validation failed');
           }
+          
+          console.log(`Stock validated for ${product.product_name}: ${product.no_of_product_instock} available, ${item.quantity} requested`);
         } catch (stockError) {
           if (stockError.message !== 'Stock validation failed') {
-            toast.error('Product is out of stock', {
+            toast.error('Unable to validate product stock. Please try again.', {
               position: "top-right",
               autoClose: 5000,
             });
@@ -684,6 +703,8 @@ const Checkout = () => {
           throw new Error('Stock validation failed');
         }
       }
+      
+      console.log('All products stock validated successfully. Proceeding with order creation...');
 
       // Get the selected address details
       const selectedAddr = addresses.find(
@@ -726,6 +747,16 @@ const Checkout = () => {
       // Ensure pincode is exactly 6 digits
       const validPincode = postalCode && postalCode.length === 6 ? postalCode : "000000";
       
+      // Extract state from city field if it contains comma-separated values
+      let cityName = selectedAddr.city || "City";
+      let stateName = "";
+      
+      if (cityName.includes(',')) {
+        const parts = cityName.split(',').map(part => part.trim());
+        cityName = parts[0] || "City";
+        stateName = parts[1] || "";
+      }
+      
       const orderData = {
         user_id: userId,
         products: orderItems,
@@ -733,9 +764,13 @@ const Checkout = () => {
         shippingAddress: selectedAddr.fullAddress,
         shippingCost: shippingFee,
         email: userData?.email,
+        phone: userData?.phone,
         pincode: validPincode,
-        name: userData ? `${userData.name}` : "",
-        city: selectedAddr.city || "City",
+        name: `${userData?.firstName || ''} ${userData?.lastName || ''}`.trim() || userData?.name || 'Guest User',
+        firstName: userData?.firstName || 'Guest',
+        lastName: userData?.lastName || 'User',
+        city: cityName,
+        state: stateName,
         expectedDelivery: expectedDelivery,
         hasBulkItems: cartItems.some(item => item.isBulkOrder),
         bulkOrderCount: cartItems.filter(item => item.isBulkOrder).length,
@@ -763,8 +798,10 @@ const Checkout = () => {
       }
 
       const createdOrderId = orderResponse.data.data.order._id;
+      console.log('Order created successfully with ID:', createdOrderId);
+      setOrderId(createdOrderId);
 
-      // Initiate PhonePe payment with the newly created orderId
+      // Use PhonePe payment gateway
       const FRONTEND_URL = window.location.origin;
 
       const paymentData = {
@@ -774,7 +811,7 @@ const Checkout = () => {
         FRONTEND_URL: FRONTEND_URL,
       };
 
-      console.log('Sending payment request with data:', paymentData);
+      console.log('Sending PhonePe payment request with data:', paymentData);
       
       const paymentResponse = await axios.post(
         `${backend}/payment/create-phonepe-payment`,
@@ -784,27 +821,40 @@ const Checkout = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          timeout: 30000, // 30 second timeout
+          timeout: 30000,
         }
       );
-      // console.log(paymentResponse)
-      if (paymentResponse.data.data.response.phonepeResponse.redirectUrl) {
-        // Set the orderId in state before redirecting
-        setOrderId(createdOrderId);
+      console.log('PhonePe payment response:', paymentResponse.data);
+      
+      if (paymentResponse.data?.status === "Success" && paymentResponse.data?.data?.response) {
+        const { response } = paymentResponse.data.data;
+        const phonepeResponse = response.phonepeResponse;
         
-        // Store payment details for potential cancellation handling
-        sessionStorage.setItem('pendingPayment', JSON.stringify({
-          orderId: createdOrderId,
-          paymentId: paymentResponse.data.data.response.payment._id,
-          amount: finalTotal
-        }));
+        let redirectUrl = null;
         
-        // Redirect to PhonePe payment page
-        window.location.href =
-          paymentResponse.data.data.response.phonepeResponse.redirectUrl;
+        if (phonepeResponse?.data?.instrumentResponse?.redirectInfo?.url) {
+          redirectUrl = phonepeResponse.data.instrumentResponse.redirectInfo.url;
+        } else if (phonepeResponse?.redirectUrl) {
+          redirectUrl = phonepeResponse.redirectUrl;
+        } else if (phonepeResponse?.data?.redirectUrl) {
+          redirectUrl = phonepeResponse.data.redirectUrl;
+        }
+        
+        if (redirectUrl) {
+          sessionStorage.setItem('pendingPayment', JSON.stringify({
+            orderId: createdOrderId,
+            paymentId: response.payment._id,
+            amount: finalTotal,
+            timestamp: Date.now()
+          }));
+          
+          console.log('Redirecting to PhonePe payment page:', redirectUrl);
+          window.location.href = redirectUrl;
+        } else {
+          throw new Error("Payment gateway redirect URL not found.");
+        }
       } else {
-        console.error("Full payment response:", JSON.stringify(paymentResponse.data, null, 2));
-        throw new Error("Payment gateway redirect URL not found. Please contact support.");
+        throw new Error("Failed to initialize PhonePe payment.");
       }
     } catch (error) {
       
@@ -816,10 +866,14 @@ const Checkout = () => {
         return;
       }
       
-      // Handle other errors
+      // Handle payment gateway errors
       if (error.response?.status === 500) {
-        errorMessage = "Payment service is temporarily unavailable. Please try again.";
-      } else if (error.response?.status === 400) {
+        console.error('Payment gateway error:', error);
+        errorMessage = "Payment service temporarily unavailable. Please try again later.";
+      }
+      
+      // Handle other errors
+      if (error.response?.status === 400) {
         errorMessage = "Invalid payment request. Please check your order details.";
       } else if (error.message) {
         errorMessage = error.message;
@@ -834,30 +888,7 @@ const Checkout = () => {
         });
       }
       
-      // Send payment failure notification
-      if (userData?.email && createdOrderId) {
-        try {
-          await axios.post(
-            `${backend}/payment/send-failure-notification`,
-            {
-              email: userData.email,
-              orderDetails: {
-                orderId: createdOrderId,
-                amount: finalTotal,
-                name: userData.name || `${userData.firstName} ${userData.lastName}`.trim()
-              }
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-        } catch (notificationError) {
-          console.error('Failed to send failure notification:', notificationError);
-        }
-      }
+      console.error('Payment gateway error:', error);
       
       setProcessingPayment(false);
     }
@@ -1060,6 +1091,7 @@ const Checkout = () => {
                         setNewAddress({
                           address: "",
                           city: "",
+                          state: "",
                           postalCode: "",
                           companyName: "",
                           gstNumber: "",
@@ -1084,6 +1116,7 @@ const Checkout = () => {
                       setNewAddress({
                         address: "",
                         city: "",
+                        state: "",
                         postalCode: "",
                         companyName: "",
                         gstNumber: "",
