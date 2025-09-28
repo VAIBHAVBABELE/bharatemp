@@ -4,11 +4,15 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaCopy, FaCheck } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 const backend = import.meta.env.VITE_BACKEND;
 
-const OrderModal = ({ order, onClose }) => {
+const OrderModal = ({ order, onClose, onOrderUpdate }) => {
+  const [cancelling, setCancelling] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [copied, setCopied] = useState(false);
+  
   const formatDate = (dateString) => {
     const options = { 
       year: 'numeric', 
@@ -18,6 +22,90 @@ const OrderModal = ({ order, onClose }) => {
       minute: '2-digit'
     };
     return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+  
+  // Check if order can be cancelled
+  const canCancelOrder = (order) => {
+    const cancellableStatuses = ['Pending', 'Processing'];
+    const orderAge = Date.now() - new Date(order.created_at).getTime();
+    const maxCancelTime = 24 * 60 * 60 * 1000; // 24 hours
+    
+    return cancellableStatuses.includes(order.status) && orderAge < maxCancelTime;
+  };
+  
+  // Copy Order ID to clipboard
+  const copyOrderId = async () => {
+    if (order._id) {
+      try {
+        await navigator.clipboard.writeText(order._id);
+        setCopied(true);
+        toast.success('Order ID copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = order._id;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopied(true);
+        toast.success('Order ID copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      }
+    }
+  };
+  
+  // Handle order cancellation
+  const handleCancelOrder = async () => {
+    try {
+      setCancelling(true);
+      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required. Please login again.");
+        return;
+      }
+      
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+      
+      const response = await axios.post(
+        `${backend}/order/${order._id}/cancel`,
+        {
+          reason: 'User requested cancellation'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${parsedToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      if (response.data.status === 'Success') {
+        toast.success('Order cancelled successfully!');
+        setShowCancelConfirm(false);
+        onClose();
+        if (onOrderUpdate) onOrderUpdate();
+      } else {
+        toast.error(response.data.data?.message || 'Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Cancel order error:', error);
+      
+      let errorMessage = 'Failed to cancel order';
+      if (error.response?.data?.data?.message) {
+        errorMessage = error.response.data.data.message;
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Authentication failed. Please login again.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'You can only cancel your own orders.';
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setCancelling(false);
+    }
   };
 
   // Calculate total price from products
@@ -44,8 +132,30 @@ const OrderModal = ({ order, onClose }) => {
           {/* Order Summary */}
           <div className="bg-gradient-to-r from-[#F7941D] to-[#e38616] p-6 rounded-xl text-white">
             <div className="flex justify-between items-start mb-4">
-              <div>
-                <h4 className="text-xl font-bold">Order #{order._id.slice(-8).toUpperCase()}</h4>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h4 className="text-xl font-bold">Order #{order._id.slice(-8).toUpperCase()}</h4>
+                  <button
+                    onClick={copyOrderId}
+                    className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm"
+                    title="Copy full Order ID"
+                  >
+                    {copied ? (
+                      <>
+                        <FaCheck className="text-green-300" />
+                        <span className="text-xs">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaCopy />
+                        <span className="text-xs">Copy ID</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-white/90 text-sm">
+                  Full ID: {order._id}
+                </p>
                 <p className="text-white/90 mt-1">
                   Placed on: {formatDate(order.created_at)}
                 </p>
@@ -74,7 +184,7 @@ const OrderModal = ({ order, onClose }) => {
                 Shipping Details
               </h4>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium text-gray-800">Name:</span> <span className="text-gray-700">{order.user_id?.name || order.user_id?.firstName && order.user_id?.lastName ? `${order.user_id.firstName} ${order.user_id.lastName}`.trim() : order.name || 'N/A'}</span></p>
+                <p><span className="font-medium text-gray-800">Name:</span> <span className="text-gray-700">{order.user_id?.name || order.name || 'Guest User'}</span></p>
                 <p><span className="font-medium text-gray-800">Email:</span> <span className="text-gray-700">{order.user_id?.email || order.email || 'N/A'}</span></p>
                 <p><span className="font-medium text-gray-800">Address:</span> <span className="text-gray-700">{order.shippingAddress || 'N/A'}</span></p>
                 <p><span className="font-medium text-gray-800">City:</span> <span className="text-gray-700">{order.city || 'N/A'}</span></p>
@@ -130,25 +240,92 @@ const OrderModal = ({ order, onClose }) => {
           {/* Action Buttons */}
           <div className="pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row gap-3">
-              <button 
-                className="flex-1 bg-red-500 text-white py-3 px-6 rounded-xl font-medium hover:bg-red-600 transition-colors duration-200 shadow-sm hover:shadow-md"
-                onClick={() => console.log('Cancel Order clicked')}
-              >
-                Cancel Order
-              </button>
-              <button 
-                className="flex-1 bg-[#F7941D] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#e38616] transition-colors duration-200 shadow-sm hover:shadow-md"
-                onClick={() => console.log('Return Order clicked')}
-              >
-                Return Order
-              </button>
+              {canCancelOrder(order) && (
+                <button 
+                  className="flex-1 bg-red-500 text-white py-3 px-6 rounded-xl font-medium hover:bg-red-600 transition-colors duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setShowCancelConfirm(true)}
+                  disabled={cancelling}
+                >
+                  {cancelling ? 'Cancelling...' : 'Cancel Order'}
+                </button>
+              )}
+              {order.status === 'Delivered' && !order.return_request && (
+                <button 
+                  className="flex-1 bg-[#F7941D] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#e38616] transition-colors duration-200 shadow-sm hover:shadow-md"
+                  onClick={() => {
+                    // Check if order is eligible for return (within 15 days)
+                    const orderDate = new Date(order.created_at);
+                    const currentDate = new Date();
+                    const daysDiff = Math.floor((currentDate - orderDate) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysDiff <= 15) {
+                      // Navigate to track order page where return functionality is available
+                      window.location.href = '/track-order';
+                    } else {
+                      toast.error('Return period has expired. Returns are only available within 15 days of delivery.');
+                    }
+                  }}
+                >
+                  Return Order
+                </button>
+              )}
+              {order.return_request && (
+                <div className="flex-1 bg-orange-100 text-orange-800 py-3 px-6 rounded-xl font-medium text-center">
+                  Return Request Submitted
+                </div>
+              )}
             </div>
-            <p className="text-xs text-gray-500 text-center mt-3">
-              Note: Buttons are for display only. Functionality will be added later.
-            </p>
+            {!canCancelOrder(order) && order.status !== 'Delivered' && (
+              <p className="text-sm text-gray-500 text-center mt-3">
+                {order.status === 'Cancelled' ? 'Order has been cancelled' :
+                 order.status === 'Shipped' ? 'Order is already shipped and cannot be cancelled' :
+                 order.status === 'Delivered' ? 'Order has been delivered' :
+                 'Order cannot be cancelled at this time'}
+              </p>
+            )}
           </div>
         </div>
       </div>
+      
+      {/* Cancel Confirmation Modal */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Cancel Order?</h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to cancel this order? This action cannot be undone.
+                {order.payment_status === 'Paid' && (
+                  <span className="block mt-2 text-sm text-blue-600">
+                    Your payment will be refunded within 5-7 business days.
+                  </span>
+                )}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="flex-1 px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  disabled={cancelling}
+                >
+                  Keep Order
+                </button>
+                <button
+                  onClick={handleCancelOrder}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={cancelling}
+                >
+                  {cancelling ? 'Cancelling...' : 'Yes, Cancel'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -157,6 +334,45 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+      const decoded = jwtDecode(parsedToken);
+      const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
+
+      const response = await axios.post(
+        `${backend}/order/my-orders`,
+        { userId },
+        {
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${parsedToken}`
+          }
+        }
+      );
+
+      if (response.data && response.data.status === "Success") {
+        const sortedOrders = response.data.data.sort((a, b) => 
+          new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setOrders(sortedOrders);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to fetch orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleOrderUpdate = () => {
+    fetchOrders();
+  };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -182,42 +398,20 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
-        const decoded = jwtDecode(parsedToken);
-        const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
-
-        const response = await axios.post(
-          `${backend}/order/my-orders`,
-          { userId },
-          {
-            headers: { 
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${parsedToken}`
-            }
-          }
-        );
-
-        if (response.data && response.data.status === "Success") {
-          const sortedOrders = response.data.data.sort((a, b) => 
-            new Date(b.createdAt) - new Date(a.createdAt)
-          );
-          setOrders(sortedOrders);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        toast.error("Failed to fetch orders");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
-  }, []);
+    
+    // Auto-refresh every 30 seconds if enabled
+    let interval;
+    if (autoRefresh) {
+      interval = setInterval(() => {
+        fetchOrders();
+      }, 30000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [autoRefresh]);
 
 
   if (loading) {
@@ -230,7 +424,26 @@ const Orders = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold mb-6">Your Orders</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Your Orders</h2>
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={autoRefresh}
+              onChange={(e) => setAutoRefresh(e.target.checked)}
+              className="rounded"
+            />
+            Auto-refresh (30s)
+          </label>
+          <button
+            onClick={fetchOrders}
+            className="px-4 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e88a1a] text-sm"
+          >
+            Refresh Now
+          </button>
+        </div>
+      </div>
       {orders.length === 0 ? (
         <div className="text-center py-8 bg-white rounded-lg shadow">
           <p className="text-gray-500">No orders found</p>
@@ -275,6 +488,7 @@ const Orders = () => {
         <OrderModal
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
+          onOrderUpdate={handleOrderUpdate}
         />
       )}
     </div>
@@ -311,12 +525,7 @@ const Addresses = ({ user, onEdit }) => (
   </div>
 );
 
-const Favorites = () => (
-  <div className="text-center py-8">
-    <h2 className="text-2xl font-semibold mb-4">Your Favorites</h2>
-    <p className="text-gray-500">Favorites feature coming soon!</p>
-  </div>
-);
+
 
 const BulkRequest = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -735,6 +944,141 @@ const HelpSupport = () => {
   );
 };
 
+const ReturnRequests = () => {
+  const [returnRequests, setReturnRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReturnRequests = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+      const decoded = jwtDecode(parsedToken);
+      const userId = decoded.id || decoded.userId || decoded._id || decoded.sub;
+
+      const response = await axios.post(
+        `${backend}/returnRequest/list`,
+        {
+          pageNum: 1,
+          pageSize: 50,
+          filters: { user_id: userId }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${parsedToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.status === 'Success') {
+        setReturnRequests(response.data.data.returnRequestList || []);
+      }
+    } catch (error) {
+      console.error('Error fetching return requests:', error);
+      toast.error('Failed to fetch return requests');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReturnRequests();
+  }, []);
+
+  const getStatusColor = (status, refundStatus) => {
+    if (refundStatus) return 'bg-green-100 text-green-800';
+    if (status) return 'bg-blue-100 text-blue-800';
+    return 'bg-yellow-100 text-yellow-800';
+  };
+
+  const getStatusText = (status, refundStatus) => {
+    if (refundStatus) return 'Refund Completed';
+    if (status) return 'Approved - Processing Refund';
+    return 'Pending Review';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F7941D]"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold">Your Return Requests</h2>
+        <button
+          onClick={fetchReturnRequests}
+          className="px-4 py-2 bg-[#F7941D] text-white rounded-lg hover:bg-[#e88a1a] text-sm"
+        >
+          Refresh
+        </button>
+      </div>
+      
+      {returnRequests.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <div className="text-gray-400 mb-4">📦</div>
+          <h3 className="text-lg font-medium text-gray-500 mb-2">No Return Requests</h3>
+          <p className="text-gray-400">You haven't submitted any return requests yet.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {returnRequests.map((request) => (
+            <div key={request._id} className="bg-white rounded-lg shadow-sm p-6 border">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Order #{request.order_id._id.slice(-8).toUpperCase()}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Requested on: {new Date(request.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status, request.refund_status)}`}>
+                  {getStatusText(request.status, request.refund_status)}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="text-sm text-gray-600">Refund Amount: <span className="font-medium text-green-600">₹{request.refund_amount?.toFixed(2)}</span></p>
+                  <p className="text-sm text-gray-600">Return Reason: <span className="font-medium">{request.return_reason}</span></p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Items: {request.order_id.products?.length || 0} product(s)</p>
+                  <p className="text-sm text-gray-600">Order Date: {new Date(request.order_id.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+              
+              {request.order_id.products && (
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Products:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {request.order_id.products.map((item, index) => (
+                      <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded text-sm">
+                        <img
+                          src={item.product_id.product_image_main}
+                          alt={item.product_id.product_name}
+                          className="w-8 h-8 object-contain rounded"
+                        />
+                        <span>{item.product_id.product_name} x {item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Loyalty = () => (
   <div className="text-center py-8">
     <h2 className="text-2xl font-semibold mb-4">Loyalty Program</h2>
@@ -775,9 +1119,9 @@ const ProfilePage = () => {
   const navItems = [
     { id: "profile", label: "Account Details" },
     { id: "orders", label: "Orders" },
+    { id: "return-requests", label: "Return Requests" },
     { id: "addresses", label: "Addresses" },
     { id: "bulk-request", label: "Bulk Request" },
-    { id: "favorites", label: "My Favorites" },
     { id: "help-support", label: "Help & Support" },
     { id: "loyalty", label: "Loyalty" }
   ];
@@ -992,12 +1336,12 @@ const ProfilePage = () => {
     switch (activeSection) {
       case "orders":
         return <Orders />;
+      case "return-requests":
+        return <ReturnRequests />;
       case "addresses":
         return <Addresses user={user} onEdit={() => setActiveSection("profile")} />;
       case "bulk-request":
         return <BulkRequest />;
-      case "favorites":
-        return <Favorites />;
       case "help-support":
         return <HelpSupport />;
       case "loyalty":

@@ -19,6 +19,7 @@ const backend = import.meta.env.VITE_BACKEND;
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("ALL");
+  const [paymentFilter, setPaymentFilter] = useState("ALL");
   const [loading, setLoading] = useState(false);
   const [sort, setSort] = useState("NEWEST");
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +29,10 @@ const AllOrders = () => {
   const [newStatus, setNewStatus] = useState("");
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOrders, setSelectedOrders] = useState([]);
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkStatus, setBulkStatus] = useState("");
+  const [bulkUpdating, setBulkUpdating] = useState(false);
   const itemsPerPage = 5;
 
   const fetchOrders = useCallback(async () => {
@@ -40,6 +45,7 @@ const AllOrders = () => {
           pageSize: itemsPerPage,
           filters: {
             status: filter !== "ALL" ? filter : undefined,
+            payment_status: paymentFilter !== "ALL" ? paymentFilter : undefined,
             search: searchTerm || undefined,
           },
         },
@@ -68,7 +74,7 @@ const AllOrders = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, filter, sort, searchTerm]);
+  }, [currentPage, itemsPerPage, filter, paymentFilter, sort, searchTerm]);
 
   // Separate sort handler
   const handleSortChange = (newSort) => {
@@ -85,7 +91,7 @@ const AllOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [filter, sort, currentPage, fetchOrders]);
+  }, [filter, paymentFilter, sort, currentPage, fetchOrders]);
 
   // Debounced search effect
   useEffect(() => {
@@ -106,37 +112,166 @@ const AllOrders = () => {
     }
   }, [searchTerm, fetchOrders]);
 
+  // Bulk update function
+  const handleBulkUpdate = async () => {
+    if (selectedOrders.length === 0 || !bulkStatus) {
+      toast.error('Please select orders and status');
+      return;
+    }
+    
+    setBulkUpdating(true);
+    let successCount = 0;
+    let failCount = 0;
+    
+    try {
+      const promises = selectedOrders.map(async (orderId) => {
+        try {
+          const token = localStorage.getItem("token");
+          const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+          
+          await axios.post(
+            `${backend}/order/${orderId}/update`,
+            { status: bulkStatus },
+            {
+              headers: {
+                Authorization: `Bearer ${parsedToken}`,
+                'Content-Type': 'application/json'
+              },
+              timeout: 10000
+            }
+          );
+          successCount++;
+        } catch (error) {
+          failCount++;
+          console.error(`Failed to update order ${orderId}:`, error);
+        }
+      });
+      
+      await Promise.all(promises);
+      
+      if (successCount > 0) {
+        toast.success(`${successCount} orders updated successfully!`);
+        await fetchOrders();
+      }
+      if (failCount > 0) {
+        toast.warning(`${failCount} orders failed to update`);
+      }
+      
+      setSelectedOrders([]);
+      setShowBulkModal(false);
+    } catch (error) {
+      toast.error('Bulk update failed');
+    } finally {
+      setBulkUpdating(false);
+    }
+  };
+  
+  // Toggle order selection
+  const toggleOrderSelection = (orderId) => {
+    setSelectedOrders(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+  
+  // Select all orders
+  const toggleSelectAll = () => {
+    if (selectedOrders.length === orders.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(orders.map(order => order._id));
+    }
+  };
+
   // Update order status function
   async function updateOrderStatus(order, newStatus) {
     try {
+      console.log('Updating order status:', {
+        orderId: order._id,
+        currentStatus: order.status,
+        newStatus: newStatus
+      });
+      
       toast.dismiss();
       setLoading(true);
       setUpdatingStatus(true);
+      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required. Please login again.");
+        return false;
+      }
+      
+      const parsedToken = token.startsWith('"') ? JSON.parse(token) : token;
+      
+      // Debug token
+      console.log('Using token:', parsedToken.substring(0, 20) + '...');
+      console.log('API URL:', `${backend}/order/${order._id}/update`);
+      
       const response = await axios.post(
         `${backend}/order/${order._id}/update`,
         {
-          status: newStatus,
-          order: order,
+          status: newStatus
         },
         {
           headers: {
-            Authorization: `Bearer ${JSON.parse(
-              localStorage.getItem("token")
-            )}`,
+            Authorization: `Bearer ${parsedToken}`,
+            'Content-Type': 'application/json'
           },
+          timeout: 10000 // 10 second timeout
         }
       );
 
+      console.log('Update response:', response.data);
+
       if (response.data.status === "Success") {
-        setLoading(false);
         await fetchOrders();
-        toast.success("Order status updated successfully!");
+        toast.success(`Order status updated to ${newStatus} successfully!`);
         return true;
+      } else {
+        toast.error(response.data.data?.message || "Failed to update order status.");
+        return false;
       }
-      return false;
     } catch (error) {
-      console.error("Error updating order status:", error);
-      toast.error("Failed to update order status.");
+      console.error("Full error object:", error);
+      console.error("Error response:", error.response);
+      console.error("Error config:", error.config);
+      
+      let errorMessage = "Failed to update order status.";
+      
+      if (error.code === 'ECONNABORTED') {
+        errorMessage = "Request timeout. Please try again.";
+      } else if (error.response) {
+        // Server responded with error status
+        console.log('Server response status:', error.response.status);
+        console.log('Server response data:', error.response.data);
+        
+        const serverMessage = error.response.data?.data?.message || error.response.data?.message;
+        if (serverMessage) {
+          errorMessage = serverMessage;
+        } else if (error.response.status === 401) {
+          errorMessage = "Authentication failed. Please login again.";
+          // Clear invalid token
+          localStorage.removeItem("token");
+          setTimeout(() => window.location.href = '/admin/login', 2000);
+        } else if (error.response.status === 403) {
+          errorMessage = "You don't have permission to update orders.";
+        } else if (error.response.status === 404) {
+          errorMessage = "Order not found.";
+        } else if (error.response.status >= 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+      } else if (error.request) {
+        // Network error
+        console.log('Network error - no response received');
+        errorMessage = "Network error. Please check your connection and server status.";
+      } else {
+        console.log('Request setup error:', error.message);
+        errorMessage = `Request error: ${error.message}`;
+      }
+      
+      toast.error(errorMessage);
       return false;
     } finally {
       setUpdatingStatus(false);
@@ -200,6 +335,69 @@ const AllOrders = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Bulk Update Modal */}
+      {showBulkModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl transform transition-all duration-300 scale-100">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">
+                Bulk Update Orders ({selectedOrders.length})
+              </h3>
+              <button
+                onClick={() => setShowBulkModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <FaTimesCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Update Status for {selectedOrders.length} orders:
+                </label>
+                <select
+                  value={bulkStatus}
+                  onChange={(e) => setBulkStatus(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="">Select new status</option>
+                  <option value="Pending">🟡 Pending</option>
+                  <option value="Shipped">🚚 Shipped</option>
+                  <option value="Delivered">✅ Delivered</option>
+                  <option value="Cancelled">❌ Cancelled</option>
+                  <option value="Returned">↩️ Returned</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-8">
+              <button
+                onClick={() => setShowBulkModal(false)}
+                className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+                disabled={bulkUpdating}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkUpdate}
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={bulkUpdating || !bulkStatus}
+              >
+                {bulkUpdating ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Updating...
+                  </div>
+                ) : (
+                  `Update ${selectedOrders.length} Orders`
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Status Update Modal */}
       {showStatusModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -248,6 +446,23 @@ const AllOrders = () => {
               </button>
               <button
                 onClick={async () => {
+                  // Check for potentially invalid transitions
+                  const invalidTransitions = {
+                    'Cancelled': ['Pending', 'Shipped', 'Delivered'],
+                    'Delivered': ['Pending', 'Shipped'],
+                    'Returned': ['Pending', 'Shipped', 'Delivered']
+                  };
+                  
+                  const currentStatus = selectedOrder?.status;
+                  const isInvalidTransition = invalidTransitions[currentStatus]?.includes(newStatus);
+                  
+                  if (isInvalidTransition) {
+                    const confirmed = window.confirm(
+                      `Warning: Changing status from ${currentStatus} to ${newStatus} is unusual. Are you sure you want to proceed?`
+                    );
+                    if (!confirmed) return;
+                  }
+                  
                   const success = await updateOrderStatus(
                     selectedOrder,
                     newStatus
@@ -302,6 +517,19 @@ const AllOrders = () => {
                     Pending
                   </span>
                 </div>
+                {selectedOrders.length > 0 && (
+                  <div className="flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full shadow-sm border">
+                    <span className="text-sm font-medium text-blue-700">
+                      {selectedOrders.length} Selected
+                    </span>
+                    <button
+                      onClick={() => setShowBulkModal(true)}
+                      className="ml-2 px-3 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700"
+                    >
+                      Bulk Update
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -344,6 +572,21 @@ const AllOrders = () => {
                 </div>
 
                 <div className="relative">
+                  <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <select
+                    value={paymentFilter}
+                    onChange={(e) => setPaymentFilter(e.target.value)}
+                    className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white transition-all duration-200"
+                  >
+                    <option value="ALL">All Payments</option>
+                    <option value="Paid">💳 Paid</option>
+                    <option value="Unpaid">⏳ Unpaid</option>
+                    <option value="Failed">❌ Failed</option>
+                    <option value="Cancelled">🚫 Cancelled</option>
+                  </select>
+                </div>
+
+                <div className="relative">
                   <FaSort className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <select
                     value={sort}
@@ -366,6 +609,17 @@ const AllOrders = () => {
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
                   {[
+                    { label: (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedOrders.length === orders.length && orders.length > 0}
+                          onChange={toggleSelectAll}
+                          className="rounded"
+                        />
+                        <span>Select</span>
+                      </div>
+                    ), width: "min-w-[80px]" },
                     { label: "Order Details", width: "min-w-[200px]" },
                     { label: "Product", width: "min-w-[280px]" },
                     { label: "Qty", width: "min-w-[80px]" },
@@ -373,6 +627,7 @@ const AllOrders = () => {
                     { label: "Total Warranty", width: "min-w-[120px]" },
                     { label: "Phone", width: "min-w-[120px]" },
                     { label: "Total", width: "min-w-[100px]" },
+                    { label: "Payment", width: "min-w-[100px]" },
                     { label: "Dispatch", width: "min-w-[120px]" },
                     { label: "Origin", width: "min-w-[120px]" },
                     { label: "Return", width: "min-w-[120px]" },
@@ -396,7 +651,7 @@ const AllOrders = () => {
                   // Skeleton Loading
                   Array.from({ length: 5 }).map((_, index) => (
                     <tr key={index} className="animate-pulse">
-                      {Array.from({ length: 14 }).map((_, cellIndex) => (
+                      {Array.from({ length: 15 }).map((_, cellIndex) => (
                         <td key={cellIndex} className="px-4 lg:px-6 py-4">
                           <div className="h-4 bg-gray-200 rounded w-full"></div>
                         </td>
@@ -411,6 +666,21 @@ const AllOrders = () => {
                           key={product._id}
                           className="hover:bg-gray-50 transition-colors duration-200"
                         >
+                          {/* Checkbox */}
+                          {index === 0 && (
+                            <td
+                              rowSpan={order.products.length}
+                              className="px-4 lg:px-6 py-4 align-top text-center"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedOrders.includes(order._id)}
+                                onChange={() => toggleOrderSelection(order._id)}
+                                className="rounded"
+                              />
+                            </td>
+                          )}
+                          
                           {/* Order Details */}
                           {index === 0 && (
                             <td
@@ -427,7 +697,7 @@ const AllOrders = () => {
                                 </div>
                                 <div>
                                   <div className="text-sm font-semibold text-gray-900">
-                                    {order.user_id?.name || (order.user_id?.firstName && order.user_id?.lastName ? `${order.user_id.firstName} ${order.user_id.lastName}`.trim() : order.name) || 'N/A'}
+                                    {order.user_id?.name || order.name || 'Guest User'}
                                   </div>
                                   <div className="text-sm text-gray-500">
                                     {order.user_id?.email || order.email || 'N/A'}
@@ -496,7 +766,7 @@ const AllOrders = () => {
                                 rowSpan={order.products.length}
                                 className="px-4 lg:px-6 py-4 text-sm text-center font-medium text-gray-900"
                               >
-                                {order?.user_id?.phone || order?.phone || 'N/A'}
+                                {order.user_id?.phone || order.phone || 'N/A'}
                               </td>
                               <td
                                 rowSpan={order.products.length}
@@ -504,6 +774,20 @@ const AllOrders = () => {
                               >
                                 <span className="text-lg font-bold text-green-600">
                                   ₹{order.totalPrice.toLocaleString("en-IN")}
+                                </span>
+                              </td>
+                              <td
+                                rowSpan={order.products.length}
+                                className="px-4 lg:px-6 py-4 text-center"
+                              >
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  order.payment_status === 'Paid' ? 'bg-green-100 text-green-800' :
+                                  order.payment_status === 'Unpaid' ? 'bg-yellow-100 text-yellow-800' :
+                                  order.payment_status === 'Failed' ? 'bg-red-100 text-red-800' :
+                                  order.payment_status === 'Cancelled' ? 'bg-gray-100 text-gray-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {order.payment_status || 'Unpaid'}
                                 </span>
                               </td>
                               <td
@@ -569,7 +853,7 @@ const AllOrders = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={14} className="text-center py-16">
+                    <td colSpan={16} className="text-center py-16">
                       <div className="flex flex-col items-center justify-center space-y-4">
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                           <FaBox className="w-8 h-8 text-gray-400" />

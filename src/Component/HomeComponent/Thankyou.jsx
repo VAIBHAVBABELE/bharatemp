@@ -5,6 +5,7 @@ import thanku from '../../assets/thanku.webp';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
+import { FaCopy, FaCheck, FaShippingFast } from "react-icons/fa";
 
 const OrderSuccess = () => {
   const [verificationStatus, setVerificationStatus] = useState("verifying");
@@ -12,10 +13,34 @@ const OrderSuccess = () => {
   const [orderId, setOrderId] = useState(null);
   const [userData, setUserData] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [copied, setCopied] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
   const backend = import.meta.env.VITE_BACKEND;
+
+  // Copy Order ID to clipboard
+  const copyOrderId = async () => {
+    if (orderId) {
+      try {
+        await navigator.clipboard.writeText(orderId);
+        setCopied(true);
+        toast.success('Order ID copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = orderId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopied(true);
+        toast.success('Order ID copied to clipboard!');
+        setTimeout(() => setCopied(false), 2000);
+      }
+    }
+  };
 
   // Fetch user details
   const fetchUserDetails = async (userId, token) => {
@@ -345,6 +370,60 @@ const OrderSuccess = () => {
           {verificationStatus === "cancelled" && "Payment Cancelled"}
         </h1>
 
+        {/* Order ID Display for Success */}
+        {verificationStatus === "success" && orderId && (
+          <div className="mt-6 mb-4">
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 max-w-md mx-auto">
+              <h2 className="text-lg font-semibold text-green-800 mb-3 flex items-center justify-center gap-2">
+                <FaCheck className="text-green-600" />
+                Order Confirmed!
+              </h2>
+              
+              <div className="bg-white rounded-lg p-4 border border-green-200">
+                <p className="text-sm font-medium text-gray-600 mb-2">Your Order ID:</p>
+                <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border">
+                  <span className="font-mono text-lg font-bold text-[#1e3473] break-all">
+                    #{orderId.slice(-8).toUpperCase()}
+                  </span>
+                  <button
+                    onClick={copyOrderId}
+                    className="ml-3 flex items-center gap-2 px-3 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-[#162554] transition-colors text-sm font-medium"
+                  >
+                    {copied ? (
+                      <>
+                        <FaCheck className="text-green-300" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <FaCopy />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  💡 Save this ID to track your order anytime
+                </p>
+              </div>
+              
+              {/* Order Summary */}
+              {orderDetails && (
+                <div className="mt-4 text-sm text-gray-600">
+                  <div className="flex justify-between items-center">
+                    <span>Total Amount:</span>
+                    <span className="font-semibold text-green-700">₹{orderDetails.totalPrice?.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-1">
+                    <span>Items:</span>
+                    <span>{orderDetails.products?.length || 0} product(s)</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <p className="text-[#383838] mt-2 text-sm sm:text-[24px]">
           {verificationStatus === "verifying" && "Please wait while we confirm your payment"}
           {verificationStatus === "success" && "Your product will be delivered in 3–5 working days"}
@@ -353,12 +432,19 @@ const OrderSuccess = () => {
         </p>
 
         {verificationStatus === "success" && (
-          <div className="mt-6">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate("/track-order")}
+              className="px-6 py-3 bg-[#F7941D] text-white rounded-lg hover:bg-[#e38616] transition-colors flex items-center justify-center gap-2 font-medium"
+            >
+              <FaShippingFast />
+              Track Order
+            </button>
             <button
               onClick={() => navigate("/profile?section=orders")}
-              className="px-6 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-[#162554] transition-colors"
+              className="px-6 py-3 bg-[#1e3473] text-white rounded-lg hover:bg-[#162554] transition-colors font-medium"
             >
-              View Orders
+              View All Orders
             </button>
           </div>
         )}
