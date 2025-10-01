@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   FaSearch,
   FaBars,
@@ -58,7 +58,8 @@ const Navbar = () => {
   const [categories, setCategories] = useState([]);
   const currentLocation = useLocation();
   const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [user, setUser] = useState(null); // <-- Add this line
+  const [user, setUser] = useState(null);
+  const categoriesTimeoutRef = useRef(null); // For 5-second delay
 
   // Helper to check if pincode exists
   const isPincodeAvailable = (zipcode) => {
@@ -397,12 +398,20 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".categories-dropdown-container")) {
         setShowCategoriesDropdown(false);
+        // Clear timeout when clicking outside
+        if (categoriesTimeoutRef.current) {
+          clearTimeout(categoriesTimeoutRef.current);
+        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      // Cleanup timeout on unmount
+      if (categoriesTimeoutRef.current) {
+        clearTimeout(categoriesTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -466,6 +475,22 @@ const Navbar = () => {
       `/allproducts?category=${category}&subcategory=${subcategory.toLowerCase()}`
     );
     setShowCategoriesDropdown(false);
+  };
+
+  // Categories dropdown hover handlers with 5-second delay
+  const handleCategoriesMouseEnter = () => {
+    // Clear any existing timeout
+    if (categoriesTimeoutRef.current) {
+      clearTimeout(categoriesTimeoutRef.current);
+    }
+    setShowCategoriesDropdown(true);
+  };
+
+  const handleCategoriesMouseLeave = () => {
+    // Start 5-second timer
+    categoriesTimeoutRef.current = setTimeout(() => {
+      setShowCategoriesDropdown(false);
+    }, 5000);
   };
 
   return (
@@ -810,8 +835,8 @@ const Navbar = () => {
             <div
               className="relative group categories-dropdown-container"
               style={{ position: "static" }}
-              onMouseEnter={() => setShowCategoriesDropdown(true)}
-              onMouseLeave={() => setShowCategoriesDropdown(false)}
+              onMouseEnter={handleCategoriesMouseEnter}
+              onMouseLeave={handleCategoriesMouseLeave}
             >
               <Link
                 to="/product"
@@ -823,7 +848,11 @@ const Navbar = () => {
 
               {/* Categories Dropdown */}
               {showCategoriesDropdown && (
-                <div className="absolute left-0 right-0 top-full bg-white shadow-xl border-t-2 border-blue-800 z-99">
+                <div 
+                  className="absolute left-0 right-0 top-full bg-white shadow-xl border-t-2 border-blue-800 z-99"
+                  onMouseEnter={handleCategoriesMouseEnter}
+                  onMouseLeave={handleCategoriesMouseLeave}
+                >
                   <div className="max-w-[2000px] mx-auto">
                     <div className="flex">
                       {/* Left Side - Category List */}
