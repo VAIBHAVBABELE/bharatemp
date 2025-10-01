@@ -62,7 +62,9 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setGoogleLoading(true);
-      window.location.href = `${backend}/auth/google`;
+      // Redirect to backend Google OAuth endpoint
+      const redirectUrl = `${backend}/auth/google`;
+      window.location.href = redirectUrl;
     } catch (error) {
       console.error('Google sign-in error:', error);
       toast.error('Failed to initiate Google sign-in');

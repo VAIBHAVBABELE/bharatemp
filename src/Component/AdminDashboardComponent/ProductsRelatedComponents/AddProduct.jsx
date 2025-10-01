@@ -111,9 +111,16 @@ const AddProduct = () => {
     const updatedFileList = formData.product_image_sub.filter(
       (_, i) => i !== index
     );
+    const updatedImageUrls = formData.product_image_urls.filter(
+      (_, i) => i !== index
+    );
 
     setPreviewImages(updatedImages);
-    setFormData((prev) => ({ ...prev, product_image_sub: updatedFileList }));
+    setFormData((prev) => ({ 
+      ...prev, 
+      product_image_sub: updatedFileList,
+      product_image_urls: updatedImageUrls
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -1270,33 +1277,43 @@ const AddProduct = () => {
           multiple={true}
           maxFiles={10}
           onUploadSuccess={(uploadedData) => {
+            console.log('Frontend received uploadedData:', uploadedData);
             if (uploadedData && Array.isArray(uploadedData)) {
               // Handle array of images
-              const newImages = uploadedData.map((item) => ({
-                url: item?.url || item,
-                cloudinary_url: item?.url || item,
-              }));
+              const newImages = uploadedData.map((item) => {
+                const imageUrl = item?.url || item;
+                console.log('Processing array image URL:', imageUrl);
+                // Fix URL path separators
+                const fixedUrl = imageUrl.replace(/\\/g, '/');
+                return {
+                  url: fixedUrl,
+                  cloudinary_url: fixedUrl,
+                };
+              });
               setPreviewImages((prev) => [...prev, ...newImages]);
               setFormData((prev) => ({
                 ...prev,
                 product_image_urls: [
                   ...(prev.product_image_urls || []),
-                  ...uploadedData.map((item) => item?.url || item),
+                  ...uploadedData.map((item) => (item?.url || item).replace(/\\/g, '/')),
                 ],
               }));
             } else if (uploadedData) {
               // Handle single image or fallback
               const imageUrl = uploadedData.url || uploadedData;
+              console.log('Processing single image URL:', imageUrl);
+              // Fix URL path separators
+              const fixedUrl = imageUrl.replace(/\\/g, '/');
               const newImage = {
-                url: imageUrl,
-                cloudinary_url: imageUrl,
+                url: fixedUrl,
+                cloudinary_url: fixedUrl,
               };
               setPreviewImages((prev) => [...prev, newImage]);
               setFormData((prev) => ({
                 ...prev,
                 product_image_urls: [
                   ...(prev.product_image_urls || []),
-                  imageUrl,
+                  fixedUrl,
                 ],
               }));
             }
