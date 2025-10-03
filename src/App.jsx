@@ -24,7 +24,7 @@ import ResetPassword from "./Component/ResetPassword";
 import AdminLogin from "./Component/AdminDashboardComponent/AdminLogin.jsx";
 import AdminDashboard from "./Component/AdminDashboardComponent/AdminDashboard.jsx";
 import Admin from "./Admin.jsx";
-import AddProduct from "./Component/AdminDashboardComponent/ProductsRelatedComponents/AddProduct.jsx";
+import AddProduct from "./Component/AdminDashboardComponent/ProductsRelatedComponents/AddProductComplete.jsx";
 import AllProducts from "./Component/AdminDashboardComponent/ProductsRelatedComponents/AllProducts.jsx";
 import AllOrders from "./Component/AdminDashboardComponent/OrdersRelatedComponents/AllOrders.jsx";
 import DiscountCoupon from "./Component/AdminDashboardComponent/DiscountCoupan/DiscountCoupon.jsx";
