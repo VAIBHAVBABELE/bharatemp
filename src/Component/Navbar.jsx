@@ -496,8 +496,16 @@ const Navbar = () => {
   return (
     <>
       {/* Top Blue Bar */}
-      <div className="bg-[#1E3473] text-white text-sm px-4 md:px-12 lg:px-16 py-2 flex justify-between items-center font-[Outfit]">
-        <div className="space-x-8 text-[15px] hidden md:flex">
+      <div className="bg-[#1E3473] text-white text-xs sm:text-sm px-2 sm:px-4 md:px-12 lg:px-16 py-2 flex justify-between items-center font-[Outfit]">
+        {/* Mobile: Show only phone */}
+        <div className="flex md:hidden items-center">
+          <Link to="tel:+91 9403893115" className="hover:text-[#F7941D] text-xs">
+            📞 +91 94038 93115
+          </Link>
+        </div>
+        
+        {/* Desktop: Show email and phone */}
+        <div className="space-x-4 lg:space-x-8 text-[13px] lg:text-[15px] hidden md:flex">
           <a
             href="https://mail.google.com/mail/?extsrc=mailto&url=mailto%3Asupport%40bharatronix.com%3Fsubject%3DSupport%2520Request%26body%3DHello%2520Bharatronix%2520Team%252C%250A%250AI%2527d%2520like%2520to%2520request%2520support%2520regarding%253A%250A%250A%250AThanks%252C%250A%255BYour%2520Name%255D"
             target="_blank"
@@ -506,54 +514,55 @@ const Navbar = () => {
           >
             Support@bharatronix.com
           </a>
-          {/* <Link to="/services" className="hover:text-[#F7941D]">Services</Link>
-          <Link to="/gift-cards" className="hover:text-[#F7941D]">Gift Cards</Link> */}
           <Link to="tel:+91 9403893115" className="hover:text-[#F7941D]">
             +91 94038 93115
           </Link>
         </div>
-        <div className="hidden lg:flex items-center text-[15px] gap-2">
-          <FaBolt className="text-[#F7941D] w-5 h-5 rotate-20" />
+        
+        {/* Express delivery - hidden on mobile */}
+        <div className="hidden lg:flex items-center text-[13px] lg:text-[15px] gap-2">
+          <FaBolt className="text-[#F7941D] w-4 h-4 lg:w-5 lg:h-5 rotate-20" />
           <span>24 hours Express delivery</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 pl-40 ">
+        {/* Social Icons - Responsive */}
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <Link
             to="https://www.instagram.com/bharatronix/?hl=en"
-            className="text-white "
+            className="text-white hover:text-[#F7941D] transition-colors"
           >
-            <FaInstagram alt="Instagram" className="w-6 h-6" />
+            <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Link>
           <Link
             to="https://www.facebook.com/profile.php?id=61579174892065#"
-            className="text-white "
+            className="text-white hover:text-[#F7941D] transition-colors"
           >
-            <SlSocialFacebook alt=" Facebook" className="w-6 h-6" />
+            <SlSocialFacebook className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Link>
           <Link
             to="https://www.youtube.com/@BharatroniX2024"
-            className="text-white "
+            className="text-white hover:text-[#F7941D] transition-colors"
           >
-            <FiYoutube alt=" Facebook" className="w-6 h-6" />
+            <FiYoutube className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Link>
-          <Link to="https://x.com/bharatroni68370" className="text-white ">
-            <FaXTwitter alt="Twitter" className="w-6 h-6" />
+          <Link to="https://x.com/bharatroni68370" className="text-white hover:text-[#F7941D] transition-colors">
+            <FaXTwitter className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
           </Link>
         </div>
       </div>
 
       {/* Main Navbar */}
       <div className="bg-white border-b shadow-sm font-inter">
-        <div className="flex items-center justify-between px-4 py-1 lg:px-16 md:px-12">
+        <div className="flex items-center justify-between px-2 sm:px-4 py-2 lg:px-16 md:px-12">
           {/* Logo and Location Section */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center w-56 gap-3 md:w-48">
-              <img src={logo} alt="Logo" className="h-16 w-80" />
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="Logo" className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto max-w-[120px] sm:max-w-[160px] md:max-w-[200px] lg:max-w-[280px]" />
             </Link>
 
-            {/* Location Selector */}
-            <div className="relative hidden lg:block location-dropdown-container">
+            {/* Location Selector - Hidden on mobile, show on tablet+ */}
+            <div className="relative hidden md:block location-dropdown-container">
               <div
                 onClick={() => setShowLocationDropdown((prev) => !prev)}
                 className="flex items-start gap-2 cursor-pointer"
@@ -744,32 +753,32 @@ const Navbar = () => {
           </div>
 
           {/* Right Icons */}
-          <div className="flex items-center gap-4 text-gray-600">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-gray-600">
+            <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
               {/* Shopping Bag Icon */}
               <div
-                className="relative p-2 border border-gray-300 cursor-pointer rounded-3xl"
+                className="relative p-1.5 sm:p-2 border border-gray-300 cursor-pointer rounded-2xl sm:rounded-3xl hover:border-[#F7941D] transition-colors"
                 onClick={() => navigate("/cart")}
               >
-                <img src={cart} className="w-7 h-7" alt="Cart" />
+                <img src={cart} className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" alt="Cart" />
                 {uniqueItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#F7941D] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-[#F7941D] text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-medium">
                     {uniqueItems}
                   </span>
                 )}
               </div>
 
-              {/* Divider */}
-              <div className="w-[2px] h-6 bg-gray-300"></div>
+              {/* Divider - Hidden on mobile */}
+              <div className="w-[2px] h-6 bg-gray-300 hidden sm:block"></div>
 
               {/* User Icon or Auth Buttons */}
               {user ? (
-                <div className="relative p-2 border border-gray-300 cursor-pointer rounded-3xl profile-dropdown-container">
+                <div className="relative p-1.5 sm:p-2 border border-gray-300 cursor-pointer rounded-2xl sm:rounded-3xl profile-dropdown-container hover:border-[#F7941D] transition-colors">
                   <div
                     className="cursor-pointer"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                   >
-                    <img src={avatar} className="w-7 h-7" alt="User" />
+                    <img src={avatar} className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" alt="User" />
                   </div>
                   {showProfileDropdown && (
                     <div className="absolute right-0 z-50 w-48 py-1 mt-2 bg-white rounded-md shadow-lg">
@@ -797,25 +806,30 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div className="items-center hidden gap-2 md:flex">
+                <div className="items-center hidden sm:flex gap-1 md:gap-2">
                   <button
                     onClick={() => navigate("/login")}
-                    className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
+                    className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer transition-colors"
                   >
                     Login
                   </button>
                   <button
                     onClick={() => navigate("/signup")}
-                    className="px-4 py-2 text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer"
+                    className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-[#1E3473] text-white rounded-full hover:bg-[#F7941D] cursor-pointer transition-colors"
                   >
                     Sign Up
                   </button>
                 </div>
               )}
             </div>
+            {/* Mobile Menu Button */}
             <div className="md:hidden">
-              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Toggle mobile menu"
+              >
+                {mobileMenuOpen ? <FaTimes size={20} className="text-gray-700" /> : <FaBars size={20} className="text-gray-700" />}
               </button>
             </div>
           </div>
@@ -992,30 +1006,30 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="px-4 py-4 space-y-3 text-sm bg-white shadow-md md:hidden">
+          <div className="px-4 py-4 space-y-4 text-sm bg-white shadow-lg border-t md:hidden">
             {/* Mobile Search Bar Section */}
             <div className="flex items-center w-full gap-2">
               {/* Search Bar with Suggestions */}
               <div className="relative flex-1 search-container">
                 <form
                   onSubmit={handleSearch}
-                  className="flex items-center justify-between flex-1 px-4 py-2 bg-gray-100 rounded-full"
+                  className="flex items-center justify-between flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus-within:border-[#F7941D] transition-colors"
                 >
                   <input
                     type="text"
-                    placeholder="Search by name, category, brand..."
-                    className="flex-1 text-sm bg-transparent outline-none"
+                    placeholder="Search products..."
+                    className="flex-1 text-sm bg-transparent outline-none placeholder-gray-500"
                     value={searchQuery}
                     onChange={handleSearchInputChange}
                     onKeyPress={handleKeyPress}
                   />
                   <button
                     type="submit"
-                    className="bg-[#F7941D] w-7 h-7 rounded-full flex items-center justify-center"
+                    className="bg-[#F7941D] w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#e6851a] transition-colors"
                   >
-                    <FaSearch size={15} className="text-white" />
+                    <FaSearch size={14} className="text-white" />
                   </button>
                 </form>
 
@@ -1072,16 +1086,12 @@ const Navbar = () => {
               {/* Voice Search Button */}
               <button
                 type="button"
-                className={`relative bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors ${
-                  isListening ? "ring-2 ring-[#F7941D]" : ""
+                className={`relative bg-gray-50 border border-gray-200 w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors ${
+                  isListening ? "ring-2 ring-[#F7941D] bg-orange-50" : ""
                 }`}
                 onClick={startVoiceSearch}
               >
-                <FaMicrophone
-                  className={`h-5 w-5 ${
-                    isListening ? "text-[#F7941D]" : "text-gray-600"
-                  }`}
-                />
+                <img src={mic} alt="Voice Search" className="w-6 h-6" />
                 {isListening && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full animate-ping bg-[#F7941D] opacity-20"></div>
@@ -1091,42 +1101,153 @@ const Navbar = () => {
                 )}
               </button>
             </div>
+            
+            {/* Mobile Location Selector */}
+            <div className="relative location-dropdown-container">
+              <div
+                onClick={() => setShowLocationDropdown((prev) => !prev)}
+                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-[#F7941D] transition-colors"
+              >
+                <img src={location1} className="w-5 h-5" alt="Location" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-[#F7941D] truncate">
+                      {isGettingLocation ? "Getting location..." : location}
+                    </span>
+                    <FaChevronDown className="text-xs text-blue-900 flex-shrink-0" />
+                  </div>
+                  <span className="text-xs text-[#1E3473] truncate">
+                    {stringForDelivery}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Mobile Location Dropdown */}
+              {showLocationDropdown && (
+                <div className="absolute z-40 mt-2 w-full bg-white border border-gray-200 shadow-lg rounded-lg max-h-[300px] overflow-y-auto">
+                  {/* Current Location Button */}
+                  <div className="p-3 border-b border-gray-200">
+                    <button
+                      onClick={getCurrentLocation}
+                      disabled={isGettingLocation}
+                      className="flex items-center w-full gap-2 px-3 py-2 font-medium text-blue-700 transition-colors rounded-lg bg-blue-50 hover:bg-blue-100 disabled:opacity-50"
+                    >
+                      <FaCrosshairs className="w-4 h-4" />
+                      {isGettingLocation
+                        ? "Getting location..."
+                        : "Use my current location"}
+                    </button>
+                  </div>
+                  
+                  {/* Popular Locations */}
+                  <div className="p-3">
+                    <div className="mb-2 text-sm font-medium text-gray-700">
+                      Popular Locations:
+                    </div>
+                    {locations.slice(0, 5).map((loc) => (
+                      <div
+                        key={loc}
+                        onClick={() => handleLocationSelect(loc)}
+                        className="px-3 py-2 text-sm text-gray-700 rounded-lg cursor-pointer hover:bg-gray-100"
+                      >
+                        {loc}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
-            <div className="flex flex-col items-center gap-2 text-center">
+            {/* Mobile Navigation Links */}
+            <div className="space-y-1">
               <Link
                 to="/"
-                className="block py-2 font-bold hover:text-[#F7941D]"
+                className="flex items-center gap-3 px-4 py-3 font-semibold text-gray-800 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                HOME
+                🏠 HOME
               </Link>
-              {/* <Link to="/product" className="block py-2 text-gray-600 hover:text-[#F7941D]">
-              All Products
-            </Link> */}
-              {navItems.map((item) => (
-                <div key={item.key} className="py-1">
-                  <p className="font-semibold text-gray-700">{item.name}</p>
-                  {item.items.map((subItem, idx) => (
-                    <Link
-                      to={item.links[idx]}
-                      key={idx}
-                      className="block py-1 text-gray-600 hover:text-[#F7941D]"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {subItem}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-              {/* <Link to="/pcb" className="block py-2 hover:text-[#F7941D]">
-              PCB
-            </Link> */}
+              
+              <Link
+                to="/product"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                📦 All Categories
+              </Link>
+              
+              <Link
+                to="/shopbybrand"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🏷️ Shop By Brands
+              </Link>
+              
               <Link
                 to="/b2bpage"
-                className="block py-2 text-gray-600 hover:text-[#F7941D]"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                B2B Enquiry
+                🏢 B2B Enquiry
+              </Link>
+              
+              <Link
+                to="/track-order"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <img src={truck} alt="Track" className="w-5 h-5" /> Track Order
               </Link>
             </div>
+            
+            {/* Mobile Auth Buttons */}
+            {!user && (
+              <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => {
+                    navigate("/login");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 px-4 py-3 text-sm font-medium bg-[#1E3473] text-white rounded-lg hover:bg-[#F7941D] transition-colors"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/signup");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 px-4 py-3 text-sm font-medium border border-[#1E3473] text-[#1E3473] rounded-lg hover:bg-[#1E3473] hover:text-white transition-colors"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+            
+            {/* Mobile User Menu */}
+            {user && (
+              <div className="pt-4 border-t border-gray-200 space-y-1">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-[#F7941D] transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <img src={avatar} className="w-5 h-5" alt="Profile" /> Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    setUser(null);
+                    setMobileMenuOpen(false);
+                    window.location.href = "/";
+                  }}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-left text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

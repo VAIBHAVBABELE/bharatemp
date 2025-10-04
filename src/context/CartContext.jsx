@@ -31,14 +31,14 @@ const cartReducer = (state, action) => {
         const existingItem = updatedCartItems[existingItemIndex];
         const addedQuantity = action.payload.quantity || 1;
         const updatedQuantity = existingItem.quantity + addedQuantity;
-        // Use the new price if provided, otherwise keep existing price
-        const updatedPrice = action.payload.price || existingItem.price;
+        // FIXED: Always keep the original price, never update it
+        const originalPrice = existingItem.price;
 
         updatedCartItems[existingItemIndex] = {
           ...existingItem,
           quantity: updatedQuantity,
-          price: updatedPrice,
-          total: updatedQuantity * updatedPrice,
+          price: originalPrice, // Keep original price
+          total: updatedQuantity * originalPrice,
         };
 
         return {
@@ -46,18 +46,20 @@ const cartReducer = (state, action) => {
           cartItems: updatedCartItems,
         };
       } else {
+        // FIXED: Set price once and never change it
+        const finalPrice = action.payload.isBulkOrder 
+          ? action.payload.price 
+          : (action.payload.price || action.payload.discounted_single_product_price);
+        
         const newItem = {
           ...action.payload,
           quantity: action.payload.quantity || 1,
-          price:
-            action.payload.price ||
-            action.payload.discounted_single_product_price,
-          total:
-            (action.payload.price ||
-              action.payload.discounted_single_product_price) *
-            (action.payload.quantity || 1),
+          price: finalPrice, // Set price once
+          total: finalPrice * (action.payload.quantity || 1),
           isBulkOrder: !!action.payload.isBulkOrder,
           bulkRange: action.payload.bulkRange || "",
+          // Store original price for reference
+          originalPrice: action.payload.discounted_single_product_price,
         };
 
         return {
@@ -131,10 +133,18 @@ const cartReducer = (state, action) => {
         couponDiscount: 0,
       };
 
+    case "LOAD_CART":
+      return {
+        ...state,
+        cartItems: action.payload.cartItems,
+        appliedCoupon: action.payload.appliedCoupon,
+        couponDiscount: action.payload.couponDiscount,
+      };
+
     case "CALCULATE_TOTALS": {
       const { totalItems, totalAmount } = state.cartItems.reduce(
         (acc, item) => {
-          // Use the stored price for calculations
+          // FIXED: Always use the stored price, never recalculate
           const itemPrice = item.price;
           acc.totalItems += item.quantity;
           acc.totalAmount += itemPrice * item.quantity;
@@ -184,15 +194,18 @@ export const CartProvider = ({ children }) => {
           }
         });
 
-        // Set the cart state with the saved cart
-        Object.entries(parsedCart).forEach(([key, value]) => {
-          if (key === "cartItems" && Array.isArray(value)) {
-            dispatch({ type: "CLEAR_CART" });
-            value.forEach((item) => {
-              dispatch({ type: "ADD_TO_CART", payload: item });
-            });
-          }
-        });
+        // FIXED: Load cart items directly without re-adding to preserve prices
+        if (parsedCart.cartItems && Array.isArray(parsedCart.cartItems)) {
+          // Directly set the cart items with their original prices
+          dispatch({ 
+            type: "LOAD_CART", 
+            payload: {
+              cartItems: parsedCart.cartItems,
+              appliedCoupon: parsedCart.appliedCoupon || null,
+              couponDiscount: parsedCart.couponDiscount || 0
+            }
+          });
+        }
 
         // Recalculate totals
         dispatch({ type: "CALCULATE_TOTALS" });

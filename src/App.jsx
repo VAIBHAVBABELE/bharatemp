@@ -168,16 +168,16 @@ const AppContent = () => {
         <Route path="/warranty-policy" element={<WarrantyPolicy />} />
       </Routes>
       {!isAdmin && <Footer />}
-      {/* Floating WhatsApp Icon */}
+      {/* Floating WhatsApp Icon - Responsive */}
       {!isAdmin && (
         <a
           href="https://wa.link/594khg"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed z-50 bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-4 flex items-center justify-center transition-all duration-300"
+          className="fixed z-50 bottom-4 right-4 sm:bottom-6 sm:right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-3 sm:p-4 flex items-center justify-center transition-all duration-300 hover:scale-110"
           aria-label="Chat with us on WhatsApp"
         >
-          <FaWhatsapp className="text-3xl" />
+          <FaWhatsapp className="text-2xl sm:text-3xl" />
         </a>
       )}
     </div>

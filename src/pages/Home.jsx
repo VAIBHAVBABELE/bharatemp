@@ -133,10 +133,10 @@ const ProductSlider = () => {
 
   return (
     <div className="overflow-hidden">
-      <div className="px-4 md:px-10 pt-6">
-        {/* top section */}
-        <div className="py-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+      <div className="px-2 sm:px-4 md:px-6 lg:px-10 pt-4 sm:pt-6">
+        {/* Top Categories Section */}
+        <div className="py-2 sm:py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
             {cardData.map((card, index) => (
               <Link
                 to={`/allproducts?category=${encodeURIComponent(
@@ -145,102 +145,83 @@ const ProductSlider = () => {
                 key={index}
                 className="group"
               >
-                <div className="relative overflow-hidden rounded-2xl">
-                  {/* Spinning gradient border */}
-                  {/* <div 
-                    className="absolute inset-[-8px] bg-gradient-to-r from-[#1E3473] via-[#F7941D] to-[#1E3473]"
-                    style={{
-                      backgroundSize: '200% 100%',
-                      animation: 'moveGradient 2s linear infinite'
-                    }}
-                  /> */}
-
+                <div className="relative overflow-hidden rounded-xl sm:rounded-2xl">
                   {/* Main content */}
-                  <div className="relative m-[2px] bg-[#fff] border-1 border-[#E0E0E0]  rounded-2xl px-3 flex flex-col md:flex-row items-center justify-between transition-all duration-300">
-                    <div>
-                      <h2 className="text-sm mt-4 lg:mt-0 lg:text-lg font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300">
-                        {card.title}
-                      </h2>
-                    </div>
-                    <div className="flex items-center justify-center w-20 h-20 ">
+                  <div className="relative bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:border-[#F7941D]">
+                    <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 mb-2">
                       <img
                         src={card.image}
                         alt={card.title}
-                        className="w-16 h-16 object-cover"
+                        className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-cover"
                       />
                     </div>
+                    <div className="text-center">
+                      <h2 className="text-xs sm:text-sm lg:text-base font-semibold text-blue-900 group-hover:text-[#F7941D] transition-colors duration-300 leading-tight">
+                        {card.title}
+                      </h2>
+                    </div>
                   </div>
-
-                  {/* Add the keyframes style */}
-                  {/* <style jsx>{`
-                    @keyframes moveGradient {
-                      0% {
-                        background-position: 0% 0%;
-                      }
-                      100% {
-                        background-position: 200% 0%;
-                      }
-                    }
-                  `}</style> */}
                 </div>
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="bg-[#000127] w-full xl:h-[500px] h-auto lg:px-20 md:px-12 px-4 rounded-2xl py-10 flex flex-col lg:flex-row gap-8 relative overflow-hidden">
+        {/* Hero Section */}
+        <div className="bg-[#000127] w-full rounded-xl sm:rounded-2xl py-6 sm:py-8 lg:py-10 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col lg:flex-row gap-6 lg:gap-8 relative overflow-hidden min-h-[400px] sm:min-h-[450px] lg:min-h-[500px]">
           {/* Left: Text Section */}
-          <div className=" lg:w-1/2 w-full lg:text-left flex flex-col justify-center">
-            <h2 className="md:text-[32px] text-[20px] text-[#FFFFFF] font-semibold mb-2">
-              Rasberry Pie
+          <div className="lg:w-1/2 w-full flex flex-col justify-center z-20 relative">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-[32px] text-white font-semibold mb-1 sm:mb-2">
+              Raspberry Pi
             </h2>
-            <h1 className="lg:text-[72px] text-[36px] font-bold leading-tight text-[#FFFFFF] mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[72px] font-bold leading-tight text-white mb-2 sm:mb-4">
               Model 5
             </h1>
-            <p className="text-[#999999] text-[16px] lg:pt-8 pt-4 mb-1">
+            <p className="text-gray-400 text-sm sm:text-base lg:text-lg pt-2 sm:pt-4 lg:pt-8 mb-1">
               BE THE FIRST TO OWN
             </p>
-            <p className="text-[20px] text-[#FFFFFF] mt-1 mb-2">From</p>
-            <div className="flex gap-6 items-center mb-6">
-              <span className="text-[36px] text-[#FFFFFF] font-bold">₹399</span>
+            <p className="text-base sm:text-lg lg:text-xl text-white mt-1 mb-2">From</p>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-[36px] text-white font-bold">₹399</span>
               <Link
                 to="/product"
-                className="bg-[#1e3473] hover:bg-orange-600 text-white py-3 px-6 rounded-full text-[14px] lg:text-[18px] font-medium transition-colors duration-200"
+                className="bg-[#1e3473] hover:bg-orange-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-full text-sm sm:text-base lg:text-lg font-medium transition-colors duration-200 inline-block"
               >
                 Discover Now
               </Link>
             </div>
-            {/* Icons */}
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
-              <div className="flex items-center gap-3 font-[outfit]">
-                <img src={vector1} className="w-8 h-8" alt="100% Original" />
+            
+            {/* Features Grid */}
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pt-4">
+              <div className="flex items-center gap-2 sm:gap-3 font-[outfit]">
+                <img src={vector1} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" alt="100% Original" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                  <h3 className="text-white text-xs sm:text-sm lg:text-[14px] font-semibold leading-tight">
                     100% Original Products
                   </h3>
-                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                  <p className="text-white text-xs sm:text-[11px] leading-tight opacity-80">
                     Shop worry-free with 100% original products
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 font-[outfit]">
-                <img src={vector2} className="w-8 h-8" alt="Secure Payment" />
+              <div className="flex items-center gap-2 sm:gap-3 font-[outfit]">
+                <img src={vector2} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" alt="Secure Payment" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                  <h3 className="text-white text-xs sm:text-sm lg:text-[14px] font-semibold leading-tight">
                     Secure Payment
                   </h3>
-                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                  <p className="text-white text-xs sm:text-[11px] leading-tight opacity-80">
                     Secure and seamless payments, every time
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 font-[outfit]">
-                <img src={vector3} className="w-8 h-8" alt="24x7 Support" />
+              <div className="flex items-center gap-2 sm:gap-3 font-[outfit] sm:col-span-2 lg:col-span-1">
+                <img src={vector3} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" alt="24x7 Support" />
                 <div>
-                  <h3 className="text-[#FFFFFF] text-[14px] font-semibold">
+                  <h3 className="text-white text-xs sm:text-sm lg:text-[14px] font-semibold leading-tight">
                     24×7 Technical support
                   </h3>
-                  <p className="text-[#FFFFFF] text-[11px] leading-tight">
+                  <p className="text-white text-xs sm:text-[11px] leading-tight opacity-80">
                     We're always here – round-the-clock technical assistance
                   </p>
                 </div>
@@ -249,34 +230,49 @@ const ProductSlider = () => {
           </div>
 
           {/* Right: Image Section */}
-          <div className="absolute right-0 bottom-0 hidden lg:flex h-full items-end">
-            <div className="relative lg:w-[680px] w-[320px] h-full flex items-end">
+          <div className="lg:w-1/2 w-full flex items-center justify-center lg:justify-end relative">
+            {/* Mobile/Tablet Image */}
+            <div className="lg:hidden w-full max-w-[300px] sm:max-w-[400px] relative">
               <img
                 src={image7}
-                className="object-contain rounded-2xl relative z-40 w-full h-auto"
+                className="w-full h-auto object-contain rounded-xl"
                 alt="Raspberry Pi Model 5"
               />
-              <img
-                src={blue}
-                className="absolute top-0 right-60 w-full h-[800px] z-10"
-                alt=""
-              />
+            </div>
+            
+            {/* Desktop Image */}
+            <div className="hidden lg:flex absolute right-0 bottom-0 h-full items-end">
+              <div className="relative w-[500px] xl:w-[680px] h-full flex items-end">
+                <img
+                  src={image7}
+                  className="object-contain rounded-2xl relative z-40 w-full h-auto"
+                  alt="Raspberry Pi Model 5"
+                />
+                <img
+                  src={blue}
+                  className="absolute top-0 right-40 xl:right-60 w-full h-[600px] xl:h-[800px] z-10 opacity-80"
+                  alt=""
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10  py-8 ">
+        {/* Features Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 py-6 sm:py-8">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 px-4  py-2 rounded-2xl  border-1 border-[#E0E0E0] shadow-sm"
+              className="flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300"
             >
-              <img src={feature.img} className="  p-2 w-20 h-20 rounded-lg" />
-              <div>
-                <h3 className="text-sm font-bold text-blue-900">
+              <div className="flex-shrink-0">
+                <img src={feature.img} className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 p-1 sm:p-2 rounded-lg" alt={feature.title} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xs sm:text-sm lg:text-base font-bold text-blue-900 leading-tight mb-1">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-orange-500">{feature.subtitle}</p>
+                <p className="text-xs sm:text-sm text-orange-500 leading-tight">{feature.subtitle}</p>
               </div>
             </div>
           ))}
