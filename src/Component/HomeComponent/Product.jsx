@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import raspberry from "../../assets/rasperrybi.svg";
 import { IoFilter } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { useCart } from "../../context/CartContext";
@@ -85,19 +84,17 @@ const Product = () => {
       setLoading(true);
       const result = await fetchProductsDynamic({
         pageSize: 1000,
-        useMockData: true,
+        useMockData: false,
         ...options,
       });
 
-      if (result.success) {
+      if (result.success && result.products.length > 0) {
         setAllProducts(result.products);
-        console.log(`Fetched ${result.products.length} products successfully`);
-        if (result.isMockData) {
-          console.log("Using mock data as fallback");
-        }
+        console.log(`Fetched ${result.products.length} products from database`);
       } else {
-        console.error("Failed to fetch products:", result.error);
+        console.error("No products found in database:", result.error);
         setAllProducts([]);
+        toast.error("No products available. Please check back later.");
       }
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -1019,14 +1016,12 @@ const Product = () => {
                             product.product_image_main ||
                             (Array.isArray(product.product_image_sub) &&
                               product.product_image_sub[0]) ||
-                            (Array.isArray(product.product_image_urls) &&
-                              product.product_image_urls[0]) ||
-                            raspberry
+                            "/api/placeholder/400/300"
                           }
                           alt={product.product_name || "Product"}
                           className="w-full h-40 object-contain"
                           onError={(e) => {
-                            e.target.src = raspberry;
+                            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='18' fill='%236b7280' text-anchor='middle' dy='.3em'%3EProduct Image%3C/text%3E%3C/svg%3E";
                           }}
                         />
                       </div>

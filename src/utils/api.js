@@ -1,5 +1,4 @@
 // API utility functions for fetching data from the backend
-import { mockProducts } from "../mockData/products";
 import axios from "axios";
 
 // Base URL for API calls
@@ -20,7 +19,7 @@ export const fetchProductsDynamic = async (options = {}) => {
     priceMax = null,
     sortBy = "",
     sortOrder = "asc",
-    useMockData = true,
+    useMockData = false,
   } = options;
 
   // Build dynamic filters object
@@ -98,72 +97,8 @@ export const fetchProductsDynamic = async (options = {}) => {
   } catch (error) {
     console.error("Failed to fetch products dynamically:", error);
 
-    // Return mock data if API fails and useMockData is true
-    if (useMockData) {
-      console.log("Falling back to mock data");
-      let filteredMockProducts = [...mockProducts];
-
-      // Apply filters to mock data
-      if (search && search.trim()) {
-        const searchLower = search.toLowerCase().trim();
-        filteredMockProducts = filteredMockProducts.filter(
-          (product) =>
-            product.product_name?.toLowerCase().includes(searchLower) ||
-            product.category_name?.toLowerCase().includes(searchLower) ||
-            product.brand_name?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      if (category && category.trim()) {
-        filteredMockProducts = filteredMockProducts.filter(
-          (product) =>
-            product.category_name?.toLowerCase() ===
-            category.toLowerCase().trim()
-        );
-      }
-
-      if (brand && brand.trim()) {
-        filteredMockProducts = filteredMockProducts.filter(
-          (product) =>
-            product.brand_name?.toLowerCase() === brand.toLowerCase().trim()
-        );
-      }
-
-      if (priceMin !== null && priceMin >= 0) {
-        filteredMockProducts = filteredMockProducts.filter(
-          (product) =>
-            (product.discounted_single_product_price ||
-              product.non_discounted_price) >= priceMin
-        );
-      }
-
-      if (priceMax !== null && priceMax > 0) {
-        filteredMockProducts = filteredMockProducts.filter(
-          (product) =>
-            (product.discounted_single_product_price ||
-              product.non_discounted_price) <= priceMax
-        );
-      }
-
-      // Apply pagination to mock data
-      const startIndex = (pageNum - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedProducts = filteredMockProducts.slice(
-        startIndex,
-        endIndex
-      );
-
-      return {
-        success: true,
-        products: paginatedProducts,
-        totalCount: filteredMockProducts.length,
-        pageNum,
-        pageSize,
-        hasMore: endIndex < filteredMockProducts.length,
-        filters: dynamicFilters,
-        isMockData: true,
-      };
-    }
+    // No fallback to mock data - only use database data
+    console.log("Database connection failed. No products available.");
 
     return {
       success: false,
@@ -180,7 +115,7 @@ export const fetchProductsDynamic = async (options = {}) => {
 
 // Function to fetch all products (legacy compatibility)
 export const fetchProducts = async () => {
-  const result = await fetchProductsDynamic({ pageSize: 1000 });
+  const result = await fetchProductsDynamic({ pageSize: 1000, useMockData: false });
   return result.success ? result.products : [];
 };
 

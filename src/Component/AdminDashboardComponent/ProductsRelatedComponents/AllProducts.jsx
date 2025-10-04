@@ -27,6 +27,7 @@ const AllProducts = () => {
   const [totalProducts, setTotalProducts] = useState([]);
   const [showOutOfStock, setShowOutOfStock] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("price");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
@@ -38,7 +39,7 @@ const AllProducts = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal state
   const [loading, setLoading] = useState(false);
   const [editPopUp, setEditPopUp] = useState(false);
-  const productsPerPage = 6;
+  const productsPerPage = 8;
   const { showPopup, closePopup, isAuthorized } = useAdminRouteProtection([
     "SuperAdmin",
   ]);
@@ -79,15 +80,16 @@ const AllProducts = () => {
     setEditPopUp(false);
   };
 
-  // Filtering logic
+  // Optimized filtering logic with debounced search
   const filteredProducts = products.filter((product) => {
-    // Search query matching
-    const searchLower = searchQuery.toLowerCase().trim();
+    // Search query matching with debounced search
+    const searchLower = debouncedSearchQuery.toLowerCase().trim();
     const matchesSearch =
       searchLower === "" ||
       product?.product_name?.toLowerCase().includes(searchLower) ||
       product?.category_name?.toLowerCase().includes(searchLower) ||
-      product?.brand_name?.toLowerCase().includes(searchLower);
+      product?.brand_name?.toLowerCase().includes(searchLower) ||
+      product?.SKU?.toLowerCase().includes(searchLower);
 
     // Category filtering - show only products of selected category
     const matchesCategory =
@@ -249,26 +251,31 @@ const AllProducts = () => {
       });
       console.log('📦 API Response:', response.data);
       if (response.data.status === "Success" || response.data.status === "SUCCESS") {
-        setLoading(false);
         const products = response.data.data.products || [];
         setTotalProducts(response.data.data.totalCount || 0);
         setProducts(products);
         console.log('✅ Products loaded:', products.length, 'of', response.data.data.totalCount);
       } else {
         console.log('❌ Unexpected response status:', response.data.status);
-        setLoading(false);
+        toast.error("Failed to load products");
       }
     } catch (error) {
       console.error("❌ Error fetching products:", error);
       console.error("❌ Error response:", error.response?.data);
+      toast.error("Failed to fetch products. Please try again.");
+    } finally {
       setLoading(false);
-      toast.error("Failed to fetch products");
     }
   }, [currentPage, productsPerPage]);
 
+  // Debounce search query for better performance
   useEffect(() => {
-    fetchAllProducts();
-  }, [fetchAllProducts]);
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchAllProducts();
@@ -767,16 +774,36 @@ const AllProducts = () => {
         {/* Filters Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-8 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="p-2 border rounded-md"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by name, category, brand, or SKU..."
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                  }}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
             <select
               className="p-2 border rounded-md"
@@ -852,12 +879,52 @@ const AllProducts = () => {
           )}
         </div>
 
+        {/* Search Results Info */}
+        {debouncedSearchQuery && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-blue-800 font-medium">
+                {filteredProducts.length} results found for "{debouncedSearchQuery}"
+              </span>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                }}
+                className="ml-auto text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                Clear search
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Products Display */}
         {paginatedProducts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-16 text-gray-500">
             <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-xl font-semibold mb-2">No products found</h3>
-            <p>No products match your current criteria</p>
+            <h3 className="text-xl font-semibold mb-2">
+              {debouncedSearchQuery ? "No products found" : "No products available"}
+            </h3>
+            <p className="text-gray-400">
+              {debouncedSearchQuery 
+                ? `No products match "${debouncedSearchQuery}"` 
+                : "No products match your current criteria"}
+            </p>
+            {debouncedSearchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setCurrentPage(1);
+                }}
+                className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Clear search and show all products
+              </button>
+            )}
           </div>
         ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
