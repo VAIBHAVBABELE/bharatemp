@@ -433,8 +433,13 @@ const BlogPost = () => {
               <div className="flex-1">
                 {blog.content && (
                   <div
-                    className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-700 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100"
+                    className="blog-content"
                     dangerouslySetInnerHTML={renderContent(blog.content)}
+                    style={{
+                      lineHeight: '1.8',
+                      fontSize: '16px',
+                      color: '#374151'
+                    }}
                   />
                 )}
               </div>
@@ -649,10 +654,116 @@ const BlogPost = () => {
           </svg>
         </button>
 
-        {/* Print Styles */}
+        {/* Content and Print Styles */}
         <style
           dangerouslySetInnerHTML={{
             __html: `
+            .blog-content h1 {
+              font-size: 2rem;
+              font-weight: bold;
+              color: #1f2937;
+              margin: 1.5rem 0 1rem 0;
+              line-height: 1.2;
+            }
+            .blog-content h2 {
+              font-size: 1.75rem;
+              font-weight: bold;
+              color: #1f2937;
+              margin: 1.25rem 0 0.75rem 0;
+              line-height: 1.3;
+            }
+            .blog-content h3 {
+              font-size: 1.5rem;
+              font-weight: 600;
+              color: #1f2937;
+              margin: 1rem 0 0.5rem 0;
+              line-height: 1.4;
+            }
+            .blog-content h4 {
+              font-size: 1.25rem;
+              font-weight: 600;
+              color: #1f2937;
+              margin: 0.75rem 0 0.5rem 0;
+            }
+            .blog-content h5 {
+              font-size: 1.125rem;
+              font-weight: 600;
+              color: #1f2937;
+              margin: 0.75rem 0 0.5rem 0;
+            }
+            .blog-content h6 {
+              font-size: 1rem;
+              font-weight: 600;
+              color: #1f2937;
+              margin: 0.5rem 0 0.25rem 0;
+            }
+            .blog-content p {
+              margin: 1rem 0;
+              line-height: 1.8;
+              color: #374151;
+            }
+            .blog-content strong {
+              font-weight: bold;
+              color: #1f2937;
+            }
+            .blog-content em {
+              font-style: italic;
+            }
+            .blog-content u {
+              text-decoration: underline;
+            }
+            .blog-content ol {
+              list-style-type: decimal;
+              margin: 1rem 0;
+              padding-left: 2rem;
+            }
+            .blog-content ul {
+              list-style-type: disc;
+              margin: 1rem 0;
+              padding-left: 2rem;
+            }
+            .blog-content li {
+              margin: 0.5rem 0;
+              line-height: 1.6;
+            }
+            .blog-content a {
+              color: #3b82f6;
+              text-decoration: underline;
+            }
+            .blog-content a:hover {
+              color: #1d4ed8;
+            }
+            .blog-content img {
+              max-width: 100%;
+              height: auto;
+              margin: 1rem 0;
+              border-radius: 0.5rem;
+            }
+            .blog-content pre {
+              background-color: #1f2937;
+              color: #f9fafb;
+              padding: 1rem;
+              border-radius: 0.5rem;
+              overflow-x: auto;
+              margin: 1rem 0;
+              font-family: 'Courier New', monospace;
+            }
+            .blog-content blockquote {
+              border-left: 4px solid #3b82f6;
+              padding-left: 1rem;
+              margin: 1rem 0;
+              font-style: italic;
+              color: #6b7280;
+            }
+            .blog-content div[style*="text-align: center"] {
+              text-align: center;
+            }
+            .blog-content div[style*="text-align: right"] {
+              text-align: right;
+            }
+            .blog-content div[style*="text-align: left"] {
+              text-align: left;
+            }
             @media print {
               .progress-bar,
               .share-modal,

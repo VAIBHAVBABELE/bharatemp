@@ -13,9 +13,9 @@
     "@cashfreepayments/cashfree-js": "^1.0.5",
     "axios": "^1.9.0",
     "gsap": "^3.13.0",
-    "papaparse": "^5.5.3",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.509.0",
+    "papaparse": "^5.5.3",
     "pg-sdk-node": "https://phonepe.mycloudrepo.io/public/repositories/phonepe-pg-sdk-node/releases/v2/phonepe-pg-sdk-node.tgz",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -30,8 +30,8 @@
     "xlsx": "^0.18.5"
   },
   "engines": {
-  "node": "20.x"
-},
+    "node": "20.x"
+  },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@types/react": "^19.0.10",

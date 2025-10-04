@@ -80,17 +80,8 @@ const AllProducts = () => {
     setEditPopUp(false);
   };
 
-  // Optimized filtering logic with debounced search
+  // Client-side filtering for category and stock
   const filteredProducts = products.filter((product) => {
-    // Search query matching with debounced search
-    const searchLower = debouncedSearchQuery.toLowerCase().trim();
-    const matchesSearch =
-      searchLower === "" ||
-      product?.product_name?.toLowerCase().includes(searchLower) ||
-      product?.category_name?.toLowerCase().includes(searchLower) ||
-      product?.brand_name?.toLowerCase().includes(searchLower) ||
-      product?.SKU?.toLowerCase().includes(searchLower);
-
     // Category filtering - show only products of selected category
     const matchesCategory =
       selectedCategory === "all" ||
@@ -101,7 +92,7 @@ const AllProducts = () => {
       ? true
       : product?.no_of_product_instock > 0;
 
-    return matchesSearch && matchesCategory && stockCheck;
+    return matchesCategory && stockCheck;
   });
 
   // Sorting logic
@@ -141,9 +132,9 @@ const AllProducts = () => {
     return "In Stock";
   };
 
-  // Pagination
+  // Pagination - use filtered products count for accurate pagination
   const totalPages = Math.ceil(totalProducts / productsPerPage);
-  const paginatedProducts = sortedProducts; // Use all filtered products since we have server pagination
+  const paginatedProducts = sortedProducts;
 
   // Bulk actions
   const toggleProductSelection = (productId) => {
@@ -242,40 +233,72 @@ const AllProducts = () => {
   const fetchAllProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const url = `${backend}/product/allProduct?page=${currentPage}&limit=${productsPerPage}`;
-      console.log('🔄 Fetching products from:', url);
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
-        },
-      });
-      console.log('📦 API Response:', response.data);
-      if (response.data.status === "Success" || response.data.status === "SUCCESS") {
-        const products = response.data.data.products || [];
-        setTotalProducts(response.data.data.totalCount || 0);
-        setProducts(products);
-        console.log('✅ Products loaded:', products.length, 'of', response.data.data.totalCount);
+      
+      // For search, fetch all products and filter client-side for better reliability
+      if (debouncedSearchQuery.trim()) {
+        // Fetch all products for search
+        const response = await axios.get(`${backend}/product/allProduct?page=1&limit=1000`, {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+          },
+        });
+        
+        if (response.data.status === "Success" || response.data.status === "SUCCESS") {
+          const allProducts = response.data.data.products || [];
+          
+          // Client-side search filtering
+          const searchLower = debouncedSearchQuery.toLowerCase().trim();
+          const searchResults = allProducts.filter((product) => 
+            product?.product_name?.toLowerCase().includes(searchLower) ||
+            product?.category_name?.toLowerCase().includes(searchLower) ||
+            product?.brand_name?.toLowerCase().includes(searchLower) ||
+            product?.SKU?.toLowerCase().includes(searchLower)
+          );
+          
+          // Apply pagination to search results
+          const startIndex = (currentPage - 1) * productsPerPage;
+          const endIndex = startIndex + productsPerPage;
+          const paginatedResults = searchResults.slice(startIndex, endIndex);
+          
+          setProducts(paginatedResults);
+          setTotalProducts(searchResults.length);
+          console.log('🔍 Search results:', searchResults.length, 'total, showing', paginatedResults.length);
+        }
       } else {
-        console.log('❌ Unexpected response status:', response.data.status);
-        toast.error("Failed to load products");
+        // Normal pagination without search
+        const response = await axios.get(`${backend}/product/allProduct?page=${currentPage}&limit=${productsPerPage}`, {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+          },
+        });
+        
+        if (response.data.status === "Success" || response.data.status === "SUCCESS") {
+          const products = response.data.data.products || [];
+          setTotalProducts(response.data.data.totalCount || 0);
+          setProducts(products);
+          console.log('✅ Products loaded:', products.length, 'of', response.data.data.totalCount);
+        }
       }
     } catch (error) {
       console.error("❌ Error fetching products:", error);
-      console.error("❌ Error response:", error.response?.data);
       toast.error("Failed to fetch products. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [currentPage, productsPerPage]);
+  }, [currentPage, productsPerPage, debouncedSearchQuery]);
 
-  // Debounce search query for better performance
+  // Debounce search query for better performance and reset page
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
+      // Reset to page 1 when search changes
+      if (searchQuery !== debouncedSearchQuery) {
+        setCurrentPage(1);
+      }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, debouncedSearchQuery]);
 
   useEffect(() => {
     fetchAllProducts();
@@ -345,9 +368,12 @@ const AllProducts = () => {
       <div className="relative group">
         <div className="h-56 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
           <img
-            src={product.product_image_main}
-            alt={product.product_name}
+            src={product.product_image_main || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='18' fill='%236b7280' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E"}
+            alt={product.product_name || "Product"}
             className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='18' fill='%236b7280' text-anchor='middle' dy='.3em'%3EImage Error%3C/text%3E%3C/svg%3E";
+            }}
           />
           <div className="absolute top-3 left-3">
             <input
@@ -390,14 +416,14 @@ const AllProducts = () => {
       <div className="p-5">
         <div className="mb-3">
           <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2 leading-tight">
-            {product.product_name}
+            {product.product_name || "Unnamed Product"}
           </h3>
           <div className="flex items-center gap-2">
             <span className="text-sm text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">
-              {product.category_name}
+              {product.category_name || "Uncategorized"}
             </span>
             <span className="text-xs text-gray-500">
-              SKU: {product.SKU}
+              SKU: {product.SKU || "N/A"}
             </span>
           </div>
         </div>
@@ -544,9 +570,12 @@ const AllProducts = () => {
           >
             <div className="relative">
               <img
-                src={allImages[currentImageIndex]}
-                alt={selectedProduct.product_name}
+                src={allImages[currentImageIndex] || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='256' viewBox='0 0 400 256'%3E%3Crect width='400' height='256' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='18' fill='%236b7280' text-anchor='middle' dy='.3em'%3ENo Image Available%3C/text%3E%3C/svg%3E"}
+                alt={selectedProduct.product_name || "Product"}
                 className="w-full h-64 object-cover rounded-md"
+                onError={(e) => {
+                  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='256' viewBox='0 0 400 256'%3E%3Crect width='400' height='256' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='18' fill='%236b7280' text-anchor='middle' dy='.3em'%3EImage Load Error%3C/text%3E%3C/svg%3E";
+                }}
               />
 
               {currentImageIndex > 0 && (
@@ -694,13 +723,16 @@ const AllProducts = () => {
           className="form-checkbox h-5 w-5 text-blue-600 rounded"
         />
         <img
-          src={product.product_image_main}
-          alt={product.product_name}
+          src={product.product_image_main || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='12' fill='%236b7280' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E"}
+          alt={product.product_name || "Product"}
           className="w-24 h-24 object-cover rounded-md"
+          onError={(e) => {
+            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-size='12' fill='%236b7280' text-anchor='middle' dy='.3em'%3EError%3C/text%3E%3C/svg%3E";
+          }}
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">{product.product_name}</h3>
+            <h3 className="text-lg font-semibold">{product.product_name || "Unnamed Product"}</h3>
             <span
               className={`px-2 py-1 rounded-full text-xs ${
                 getStockStatus(product.no_of_product_instock) === "Out of Stock"
@@ -714,7 +746,7 @@ const AllProducts = () => {
               {getStockStatus(product.no_of_product_instock)}
             </span>
           </div>
-          <div className="text-sm text-gray-500">{product.category_name}</div>
+          <div className="text-sm text-gray-500">{product.category_name || "Uncategorized"}</div>
           <div className="flex items-center gap-4 mt-2">
             <span className="text-xl font-bold text-blue-600">
               ₹
@@ -777,8 +809,10 @@ const AllProducts = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search by name, category, brand, or SKU..."
-                className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="🔍 Search products by name, category, brand, or SKU..."
+                className={`w-full p-3 pl-10 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  searchQuery ? 'border-blue-300 bg-blue-50' : 'border-gray-300'
+                }`}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -786,9 +820,13 @@ const AllProducts = () => {
                 }}
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                {loading && searchQuery ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                ) : (
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                )}
               </div>
               {searchQuery && (
                 <button
@@ -796,9 +834,10 @@ const AllProducts = () => {
                     setSearchQuery("");
                     setCurrentPage(1);
                   }}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-100 rounded-r-lg transition-colors"
+                  title="Clear search"
                 >
-                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -884,10 +923,10 @@ const AllProducts = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2">
               <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <span className="text-blue-800 font-medium">
-                {filteredProducts.length} results found for "{debouncedSearchQuery}"
+                {totalProducts} results found for "{debouncedSearchQuery}" {totalPages > 1 && `(page ${currentPage} of ${totalPages})`}
               </span>
               <button
                 onClick={() => {
@@ -911,7 +950,7 @@ const AllProducts = () => {
             </h3>
             <p className="text-gray-400">
               {debouncedSearchQuery 
-                ? `No products match "${debouncedSearchQuery}"` 
+                ? `No products found matching "${debouncedSearchQuery}" across all pages` 
                 : "No products match your current criteria"}
             </p>
             {debouncedSearchQuery && (

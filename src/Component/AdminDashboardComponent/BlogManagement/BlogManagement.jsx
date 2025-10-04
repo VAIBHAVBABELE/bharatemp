@@ -1,6 +1,7 @@
-import  { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import ImageUpload from "../ImageUpload/ImageUpload.jsx";
+import RichTextEditor from "../RichTextEditor/RichTextEditor.jsx";
 
 // Custom styles for the component
 const styles = {
@@ -176,6 +177,9 @@ const styles = {
   modalHeader: {
     padding: "20px 24px",
     borderBottom: "1px solid #e5e7eb",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   modalTitle: {
     fontSize: "20px",
@@ -636,15 +640,10 @@ const BlogManagement = () => {
             <label style={styles.label} htmlFor="content">
               Content *
             </label>
-            <textarea
-              id="content"
-              style={{ ...styles.textarea, minHeight: "200px" }}
+            <RichTextEditor
               value={formData.content}
-              onChange={(e) =>
-                setFormData({ ...formData, content: e.target.value })
-              }
-              placeholder="Enter post content"
-              required
+              onChange={(content) => setFormData({ ...formData, content })}
+              placeholder="Enter post content with rich formatting..."
             />
           </div>
 
@@ -1030,6 +1029,26 @@ const BlogManagement = () => {
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div style={styles.modalHeader}>
               <h2 style={styles.modalTitle}>Create New Blog Post</h2>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px'
+                }}
+                title="Close"
+              >
+                ×
+              </button>
             </div>
             <div style={styles.modalBody}>
               {renderFormFields()}
@@ -1055,6 +1074,26 @@ const BlogManagement = () => {
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div style={styles.modalHeader}>
               <h2 style={styles.modalTitle}>Edit Blog Post</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px'
+                }}
+                title="Close"
+              >
+                ×
+              </button>
             </div>
             <div style={styles.modalBody}>
               {renderFormFields()}
