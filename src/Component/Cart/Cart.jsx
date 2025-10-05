@@ -372,7 +372,7 @@ const Cart = () => {
               )}
             </div>
 
-            <div className="mt-6 flex justify-between items-center">
+            <div className="mt-6 flex justify-between items-center flex-wrap gap-2">
               <button
                 onClick={() => {
                   clearCart();
@@ -382,12 +382,50 @@ const Cart = () => {
               >
                 Clear Cart
               </button>
-              <button
-                onClick={() => navigate("/product")}
-                className="px-4 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-blue-800 transition-colors"
-              >
-                Continue Shopping
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const hasEligibleProducts = cartItems.some(item => item.no_of_product_instock > 10);
+                    if (hasEligibleProducts) {
+                      // Navigate to first eligible product for bulk order
+                      const eligibleProduct = cartItems.find(item => item.no_of_product_instock > 10);
+                      navigate(`/product/${eligibleProduct._id}`);
+                    } else {
+                      // Show nice popup instead of error
+                      const modal = document.createElement('div');
+                      modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4';
+                      modal.innerHTML = `
+                        <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+                          <div class="text-center">
+                            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7" />
+                              </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">No Bulk Orders Available</h3>
+                            <p class="text-gray-600 mb-6">None of the products in your cart have sufficient stock (10+ units) for bulk ordering.</p>
+                            <button onclick="this.closest('.fixed').remove()" class="px-6 py-2 bg-[#f7941d] text-white rounded-lg hover:bg-[#e88a1a] transition-colors">Got it</button>
+                          </div>
+                        </div>
+                      `;
+                      document.body.appendChild(modal);
+                    }
+                  }}
+                  className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
+                    cartItems.some(item => item.no_of_product_instock > 10)
+                      ? "border-[#f7941d] text-[#f7941d] hover:bg-[#f7941d] hover:text-white cursor-pointer"
+                      : "border-gray-300 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Bulk Order
+                </button>
+                <button
+                  onClick={() => navigate("/product")}
+                  className="px-4 py-2 bg-[#1e3473] text-white rounded-lg hover:bg-blue-800 transition-colors"
+                >
+                  Continue Shopping
+                </button>
+              </div>
             </div>
           </div>
 

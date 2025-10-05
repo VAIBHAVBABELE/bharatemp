@@ -45,10 +45,10 @@ const SideCart = ({ isOpen, onClose }) => {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 font-[Outfit]"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998] font-[Outfit]"
             onClick={onClose}
           />
-          <div className="fixed right-0 top-0 h-full w-full md:w-[500px] bg-white z-50 shadow-xl rounded-l-3xl transform transition-transform duration-300 ease-in-out">
+          <div className="fixed right-0 top-0 h-full w-full md:w-[500px] bg-white z-[9999] shadow-xl rounded-l-3xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="px-6 py-4">
@@ -136,21 +136,58 @@ const SideCart = ({ isOpen, onClose }) => {
                   <span className="text-lg font-bold text-[#2F294D]">Total Amount</span>
                   <span className="text-xl font-bold text-[#2F294D]">₹{summary.total}</span>
                 </div>
-                <div className="flex gap-4 mt-6">
+                <div className="flex gap-2 mt-6">
                   <Link
                     to="/checkout"
                     onClick={onClose}
-                    className="flex-1 px-6 py-3 bg-[#F7941D] text-white rounded-xl font-medium text-center"
+                    className="flex-1 px-4 py-3 bg-[#F7941D] text-white rounded-xl font-medium text-center text-sm"
                   >
                     Checkout
                   </Link>
                   <Link
                     to="/cart"
                     onClick={onClose}
-                    className="flex-1 px-6 py-3 bg-[#1e3473] text-white rounded-xl font-medium text-center"
+                    className="flex-1 px-4 py-3 bg-[#1e3473] text-white rounded-xl font-medium text-center text-sm"
                   >
                     Buy Now
                   </Link>
+                  <button
+                    onClick={() => {
+                      const hasEligibleProducts = cartItems.some(item => item.no_of_product_instock > 10);
+                      if (hasEligibleProducts) {
+                        onClose();
+                        // Navigate to first eligible product for bulk order
+                        const eligibleProduct = cartItems.find(item => item.no_of_product_instock > 10);
+                        window.location.href = `/product/${eligibleProduct._id}`;
+                      } else {
+                        // Show nice popup instead of error
+                        const modal = document.createElement('div');
+                        modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center p-4';
+                        modal.innerHTML = `
+                          <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+                            <div class="text-center">
+                              <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7" />
+                                </svg>
+                              </div>
+                              <h3 class="text-xl font-bold text-gray-900 mb-2">No Bulk Orders Available</h3>
+                              <p class="text-gray-600 mb-6">None of the products in your cart have sufficient stock (10+ units) for bulk ordering.</p>
+                              <button onclick="this.closest('.fixed').remove()" class="px-6 py-2 bg-[#f7941d] text-white rounded-lg hover:bg-[#e88a1a] transition-colors">Got it</button>
+                            </div>
+                          </div>
+                        `;
+                        document.body.appendChild(modal);
+                      }
+                    }}
+                    className={`flex-1 px-4 py-3 border rounded-xl font-medium text-center text-sm transition-colors ${
+                      cartItems.some(item => item.no_of_product_instock > 10)
+                        ? "border-[#1e3473] text-[#1e3473] hover:bg-[#1e3473] hover:text-white cursor-pointer"
+                        : "border-gray-300 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Bulk Order
+                  </button>
                 </div>
               </div>
             </div>

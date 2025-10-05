@@ -98,6 +98,7 @@ export default function ProductCard() {
   const [bulkPrices, setBulkPrices] = useState([]);
   const [wholesaleData, setWholesaleData] = useState(null);
   const [showFloatingCart, setShowFloatingCart] = useState(false);
+  const [showStockModal, setShowStockModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart, isInCart, getItemQuantity } = useCart();
@@ -980,14 +981,22 @@ export default function ProductCard() {
                 Add to Cart
               </button>
               
-              {product.no_of_product_instock > 10 && (
-                <button
-                  onClick={handleBulkOrderClick}
-                  className="px-6 py-3 border border-[#1e3473] text-[#1e3473] rounded-3xl font-medium hover:bg-[#1e3473] hover:text-white transition-colors"
-                >
-                  Bulk Orders
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  if (product.no_of_product_instock > 10) {
+                    handleBulkOrderClick();
+                  } else {
+                    setShowStockModal(true);
+                  }
+                }}
+                className={`px-6 py-3 border rounded-3xl font-medium transition-colors ${
+                  product.no_of_product_instock > 10
+                    ? "border-[#1e3473] text-[#1e3473] hover:bg-[#1e3473] hover:text-white cursor-pointer"
+                    : "border-gray-300 text-gray-400 cursor-pointer"
+                }`}
+              >
+                Bulk Orders
+              </button>
             </div>
 
             {/* Add Quantity Selector */}
@@ -1221,6 +1230,43 @@ export default function ProductCard() {
           </div>
         </div>
       </div>
+
+      {/* Stock Modal */}
+      {showStockModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl transform transition-all">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Insufficient Stock</h3>
+              <p className="text-gray-600 mb-6">
+                This product has only <span className="font-semibold text-orange-600">{product.no_of_product_instock || 0} units</span> available.
+                <br />Bulk orders require minimum <span className="font-semibold">10+ units</span> in stock.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowStockModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Got it
+                </button>
+                <button
+                  onClick={() => {
+                    setShowStockModal(false);
+                    navigate('/product');
+                  }}
+                  className="flex-1 px-4 py-2 bg-[#f7941d] text-white rounded-lg hover:bg-[#e88a1a] transition-colors"
+                >
+                  Browse Products
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bulk Order Sidebar */}
       {showBulkOrder && (
