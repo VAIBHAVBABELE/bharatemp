@@ -15,6 +15,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showMobileModal, setShowMobileModal] = useState(false);
+  const [mobileForGoogle, setMobileForGoogle] = useState("");
+  const [mobileError, setMobileError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const comingFromCart = location.state?.from === "cart";
@@ -60,9 +63,9 @@ const Login = () => {
   };
 
   const handleGoogleSignIn = async () => {
+    // For existing users, direct Google login
     try {
       setGoogleLoading(true);
-      // Redirect to backend Google OAuth endpoint
       const redirectUrl = `${backend}/auth/google`;
       window.location.href = redirectUrl;
     } catch (error) {
@@ -70,6 +73,43 @@ const Login = () => {
       toast.error('Failed to initiate Google sign-in');
       setGoogleLoading(false);
     }
+  };
+
+  const handleGoogleSignUp = async () => {
+    // For new users via "Sign up here" link, show mobile modal
+    setShowMobileModal(true);
+    setMobileError("");
+    setMobileForGoogle("");
+  };
+
+  const handleMobileSubmit = async () => {
+    setMobileError("");
+    
+    if (!mobileForGoogle) {
+      setMobileError("Please enter your mobile number");
+      return;
+    }
+    
+    if (!/^\d{10}$/.test(mobileForGoogle)) {
+      setMobileError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+    
+    try {
+      setGoogleLoading(true);
+      window.location.href = `${backend}/auth/google/signup?mobile=${mobileForGoogle}`;
+    } catch (error) {
+      console.error('Google sign-up error:', error);
+      toast.error('Failed to initiate Google sign-up');
+      setGoogleLoading(false);
+    }
+  };
+
+  const closeMobileModal = () => {
+    setShowMobileModal(false);
+    setMobileForGoogle("");
+    setMobileError("");
+    setGoogleLoading(false);
   };
 
   return (
@@ -200,6 +240,91 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Number Modal for Google Signup */}
+      {showMobileModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Continue with Google</h3>
+                <button
+                  onClick={closeMobileModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={googleLoading}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-4">
+                Please enter your mobile number to continue with Google signup
+              </p>
+              
+              {mobileError && (
+                <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg">
+                  <p className="text-sm">{mobileError}</p>
+                </div>
+              )}
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mobile Number
+                </label>
+                <div className="flex">
+                  <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    className="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-[#f7941d] focus:border-transparent transition-all duration-200 outline-none"
+                    placeholder="Enter 10-digit mobile number"
+                    value={mobileForGoogle}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      if (/^\d*$/.test(input) && input.length <= 10) {
+                        setMobileForGoogle(input);
+                        setMobileError("");
+                      }
+                    }}
+                    disabled={googleLoading}
+                    maxLength={10}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={closeMobileModal}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
+                  disabled={googleLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleMobileSubmit}
+                  className="flex-1 bg-[#f7941d] hover:bg-[#e8851a] text-white px-4 py-2.5 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  disabled={googleLoading}
+                >
+                  {googleLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <FaGoogle className="h-4 w-4 mr-2" />
+                      Continue with Google
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
