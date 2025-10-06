@@ -1,37 +1,42 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) => {
   const editorRef = useRef(null);
-  const [isActive, setIsActive] = useState({});
+  const [content, setContent] = useState(value || '');
+
+  // Update content when value prop changes
+  useEffect(() => {
+    if (value !== content) {
+      setContent(value || '');
+      if (editorRef.current) {
+        editorRef.current.innerHTML = value || '';
+      }
+    }
+  }, [value]);
 
   const execCommand = (command, value = null) => {
     document.execCommand(command, false, value);
     editorRef.current.focus();
-    updateActiveStates();
+    handleContentChange();
   };
 
-  const updateActiveStates = () => {
-    const newStates = {
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline'),
-      justifyLeft: document.queryCommandState('justifyLeft'),
-      justifyCenter: document.queryCommandState('justifyCenter'),
-      justifyRight: document.queryCommandState('justifyRight'),
-      insertOrderedList: document.queryCommandState('insertOrderedList'),
-      insertUnorderedList: document.queryCommandState('insertUnorderedList'),
-    };
-    setIsActive(newStates);
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      const newContent = editorRef.current.innerHTML;
+      setContent(newContent);
+      onChange(newContent);
+    }
   };
 
   const handleInput = () => {
-    const content = editorRef.current.innerHTML;
-    onChange(content);
-    updateActiveStates();
+    handleContentChange();
   };
 
-  const handleKeyUp = () => {
-    updateActiveStates();
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+    handleContentChange();
   };
 
   const insertLink = () => {
@@ -51,46 +56,47 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
   const styles = {
     container: {
       border: '1px solid #d1d5db',
-      borderRadius: '6px',
+      borderRadius: '8px',
       backgroundColor: 'white',
       overflow: 'hidden',
+      fontFamily: 'inherit',
     },
     toolbar: {
       display: 'flex',
       alignItems: 'center',
-      padding: '8px 12px',
-      backgroundColor: '#f9fafb',
-      borderBottom: '1px solid #e5e7eb',
-      gap: '4px',
+      padding: '12px',
+      backgroundColor: '#f8fafc',
+      borderBottom: '1px solid #e2e8f0',
+      gap: '8px',
       flexWrap: 'wrap',
     },
     select: {
-      padding: '4px 8px',
+      padding: '6px 8px',
       border: '1px solid #d1d5db',
       borderRadius: '4px',
       fontSize: '14px',
       backgroundColor: 'white',
-      marginRight: '8px',
+      cursor: 'pointer',
     },
     button: {
-      padding: '6px 8px',
+      padding: '8px 12px',
       border: '1px solid #d1d5db',
       backgroundColor: 'white',
       borderRadius: '4px',
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '500',
-      minWidth: '32px',
-      height: '32px',
+      minWidth: '36px',
+      height: '36px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      transition: 'all 0.2s',
+      transition: 'all 0.2s ease',
+      color: '#374151',
     },
-    buttonActive: {
-      backgroundColor: '#3b82f6',
-      color: 'white',
-      borderColor: '#3b82f6',
+    buttonHover: {
+      backgroundColor: '#f3f4f6',
+      borderColor: '#9ca3af',
     },
     separator: {
       width: '1px',
@@ -100,11 +106,14 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
     },
     editor: {
       minHeight: '300px',
-      padding: '12px',
+      maxHeight: '500px',
+      padding: '16px',
       outline: 'none',
       fontSize: '14px',
       lineHeight: '1.6',
       fontFamily: 'inherit',
+      overflow: 'auto',
+      backgroundColor: 'white',
     },
   };
 
@@ -116,143 +125,99 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
           onChange={(e) => {
             if (e.target.value) {
               execCommand('formatBlock', `<${e.target.value}>`);
-            } else {
-              execCommand('formatBlock', '<div>');
             }
+            e.target.value = '';
           }}
+          defaultValue=""
         >
-          <option value="">Normal</option>
+          <option value="">Format</option>
           <option value="h1">Heading 1</option>
           <option value="h2">Heading 2</option>
           <option value="h3">Heading 3</option>
           <option value="h4">Heading 4</option>
-          <option value="h5">Heading 5</option>
-          <option value="h6">Heading 6</option>
-        </select>
-
-        <select
-          style={styles.select}
-          onChange={(e) => execCommand('fontName', e.target.value)}
-        >
-          <option value="">Sans Serif</option>
-          <option value="Arial">Arial</option>
-          <option value="Times New Roman">Times New Roman</option>
-          <option value="Courier New">Courier New</option>
-          <option value="Georgia">Georgia</option>
-          <option value="Verdana">Verdana</option>
+          <option value="p">Paragraph</option>
         </select>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.bold ? styles.buttonActive : {}),
-            fontWeight: 'bold',
-          }}
+          style={styles.button}
           onClick={() => execCommand('bold')}
-          title="Bold"
+          title="Bold (Ctrl+B)"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
-          B
+          <strong>B</strong>
         </button>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.italic ? styles.buttonActive : {}),
-            fontStyle: 'italic',
-          }}
+          style={styles.button}
           onClick={() => execCommand('italic')}
-          title="Italic"
+          title="Italic (Ctrl+I)"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
-          I
+          <em>I</em>
         </button>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.underline ? styles.buttonActive : {}),
-            textDecoration: 'underline',
-          }}
+          style={styles.button}
           onClick={() => execCommand('underline')}
-          title="Underline"
+          title="Underline (Ctrl+U)"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
-          U
-        </button>
-
-        <button
-          style={styles.button}
-          onClick={() => {
-            const color = prompt('Enter color (hex):');
-            if (color) execCommand('foreColor', color);
-          }}
-          title="Text Color"
-        >
-          A
-        </button>
-
-        <button
-          style={styles.button}
-          onClick={() => {
-            const color = prompt('Enter background color (hex):');
-            if (color) execCommand('backColor', color);
-          }}
-          title="Background Color"
-        >
-          🎨
+          <u>U</u>
         </button>
 
         <div style={styles.separator}></div>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.insertOrderedList ? styles.buttonActive : {}),
-          }}
+          style={styles.button}
           onClick={() => execCommand('insertOrderedList')}
           title="Numbered List"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           1.
         </button>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.insertUnorderedList ? styles.buttonActive : {}),
-          }}
+          style={styles.button}
           onClick={() => execCommand('insertUnorderedList')}
           title="Bullet List"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           •
         </button>
 
+        <div style={styles.separator}></div>
+
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.justifyLeft ? styles.buttonActive : {}),
-          }}
+          style={styles.button}
           onClick={() => execCommand('justifyLeft')}
           title="Align Left"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           ⬅
         </button>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.justifyCenter ? styles.buttonActive : {}),
-          }}
+          style={styles.button}
           onClick={() => execCommand('justifyCenter')}
           title="Align Center"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           ↔
         </button>
 
         <button
-          style={{
-            ...styles.button,
-            ...(isActive.justifyRight ? styles.buttonActive : {}),
-          }}
+          style={styles.button}
           onClick={() => execCommand('justifyRight')}
           title="Align Right"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           ➡
         </button>
@@ -263,6 +228,8 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
           style={styles.button}
           onClick={insertLink}
           title="Insert Link"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           🔗
         </button>
@@ -271,22 +238,18 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
           style={styles.button}
           onClick={insertImage}
           title="Insert Image"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           🖼
         </button>
 
         <button
           style={styles.button}
-          onClick={() => execCommand('formatBlock', '<pre>')}
-          title="Code Block"
-        >
-          &lt;/&gt;
-        </button>
-
-        <button
-          style={styles.button}
           onClick={() => execCommand('removeFormat')}
           title="Clear Formatting"
+          onMouseEnter={(e) => Object.assign(e.target.style, styles.buttonHover)}
+          onMouseLeave={(e) => Object.assign(e.target.style, styles.button)}
         >
           🧹
         </button>
@@ -296,10 +259,10 @@ const RichTextEditor = ({ value, onChange, placeholder = "Enter content..." }) =
         ref={editorRef}
         style={styles.editor}
         contentEditable
-        dangerouslySetInnerHTML={{ __html: value }}
+        suppressContentEditableWarning={true}
         onInput={handleInput}
-        onKeyUp={handleKeyUp}
-        onMouseUp={updateActiveStates}
+        onPaste={handlePaste}
+        dangerouslySetInnerHTML={{ __html: content }}
         data-placeholder={placeholder}
       />
     </div>
