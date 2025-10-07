@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import axios from "axios";
+
+// Configure axios to include credentials
+axios.defaults.withCredentials = true;
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginVideo from "../assets/Loginvideo.mp4";
@@ -19,7 +22,10 @@ const Signup = () => {
   const [showMobileModal, setShowMobileModal] = useState(false);
   const [mobileForGoogle, setMobileForGoogle] = useState("");
   const [mobileError, setMobileError] = useState("");
+  const [isGoogleSignup, setIsGoogleSignup] = useState(false);
+  const [googleUserData, setGoogleUserData] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const backend = import.meta.env.VITE_BACKEND;
 
   const handleSubmit = async (e) => {
@@ -89,7 +95,6 @@ const Signup = () => {
   const handleMobileSubmit = async () => {
     setMobileError("");
     
-    // Validate mobile number
     if (!mobileForGoogle) {
       setMobileError("Please enter your mobile number");
       return;
@@ -100,10 +105,14 @@ const Signup = () => {
       return;
     }
     
+    if (isGoogleSignup) {
+      await completeGoogleSignup(mobileForGoogle);
+      return;
+    }
+    
     try {
       setGoogleLoading(true);
       
-      // Encode mobile in state parameter for better reliability
       const stateData = {
         mobile: mobileForGoogle,
         type: 'signup',
@@ -111,7 +120,6 @@ const Signup = () => {
       };
       const encodedState = btoa(JSON.stringify(stateData));
       
-      // Redirect to Google auth with encoded state
       window.location.href = `${backend}/auth/google?state=${encodedState}`;
     } catch (error) {
       console.error('Google sign-up error:', error);
@@ -120,11 +128,60 @@ const Signup = () => {
     }
   };
 
+  // Check if this is a Google signup redirect
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const isGoogle = urlParams.get('google') === 'true';
+    const googleEmail = urlParams.get('email');
+    const googleName = urlParams.get('name');
+    
+    if (isGoogle && googleEmail) {
+      setIsGoogleSignup(true);
+      setGoogleUserData({ email: googleEmail, name: googleName });
+      setEmail(googleEmail);
+      setName(googleName || '');
+      setShowMobileModal(true);
+    }
+  }, [location]);
+
+  const completeGoogleSignup = async (mobileNumber) => {
+    try {
+      setGoogleLoading(true);
+      
+      const response = await axios.post(`${backend}/auth/google/complete-signup`, {
+        mobileNumber: mobileNumber
+      }, {
+        withCredentials: true // Include cookies for session
+      });
+      
+      if (response.data.status === 'Success' && response.data.data.token) {
+        localStorage.setItem('token', response.data.data.token);
+        toast.success('Google signup completed successfully!');
+        
+        setTimeout(() => {
+          navigate('/');
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Google signup completion error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to complete Google signup';
+      setMobileError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   const closeMobileModal = () => {
-    setShowMobileModal(false);
-    setMobileForGoogle("");
-    setMobileError("");
-    setGoogleLoading(false);
+    if (isGoogleSignup) {
+      navigate('/login');
+    } else {
+      setShowMobileModal(false);
+      setMobileForGoogle("");
+      setMobileError("");
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -314,7 +371,9 @@ const Signup = () => {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Continue with Google</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {isGoogleSignup ? 'Complete Google Signup' : 'Continue with Google'}
+                </h3>
                 <button
                   onClick={closeMobileModal}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -327,8 +386,19 @@ const Signup = () => {
               </div>
               
               <p className="text-sm text-gray-600 mb-4">
-                Please enter your mobile number to continue with Google signup
+                {isGoogleSignup 
+                  ? `Hi ${googleUserData?.name || 'there'}! Please enter your mobile number to complete your signup.`
+                  : 'Please enter your mobile number to continue with Google signup'
+                }
               </p>
+              
+              {isGoogleSignup && googleUserData && (
+                <div className="mb-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                  <p className="text-sm text-blue-700">
+                    <strong>Email:</strong> {googleUserData.email}
+                  </p>
+                </div>
+              )}
               
               {mobileError && (
                 <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg">
