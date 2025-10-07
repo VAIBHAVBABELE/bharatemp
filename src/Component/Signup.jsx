@@ -132,15 +132,26 @@ const Signup = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const isGoogle = urlParams.get('google') === 'true';
-    const googleEmail = urlParams.get('email');
-    const googleName = urlParams.get('name');
+    const token = urlParams.get('token');
     
-    if (isGoogle && googleEmail) {
-      setIsGoogleSignup(true);
-      setGoogleUserData({ email: googleEmail, name: googleName });
-      setEmail(googleEmail);
-      setName(googleName || '');
-      setShowMobileModal(true);
+    if (isGoogle && token) {
+      try {
+        // Decode token to get user data (basic decode, verification happens on backend)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setIsGoogleSignup(true);
+        setGoogleUserData({ 
+          email: payload.email, 
+          name: payload.name,
+          token: token
+        });
+        setEmail(payload.email);
+        setName(payload.name || '');
+        setShowMobileModal(true);
+      } catch (error) {
+        console.error('Invalid token:', error);
+        toast.error('Invalid signup link. Please try again.');
+        navigate('/login');
+      }
     }
   }, [location]);
 
@@ -149,9 +160,8 @@ const Signup = () => {
       setGoogleLoading(true);
       
       const response = await axios.post(`${backend}/auth/google/complete-signup`, {
-        mobileNumber: mobileNumber
-      }, {
-        withCredentials: true // Include cookies for session
+        mobileNumber: mobileNumber,
+        token: googleUserData.token
       });
       
       if (response.data.status === 'Success' && response.data.data.token) {
