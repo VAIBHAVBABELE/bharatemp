@@ -197,14 +197,14 @@ const Footer = () => {
               
               {/* Newsletter Signup */}
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
+                <button className="bg-[#e91e63] hover:bg-pink-600 p-2 sm:p-3 rounded-full text-white flex items-center justify-center transition-colors flex-shrink-0 order-1 sm:order-none">
+                  <FaCheck size={14} className="sm:w-4 sm:h-4" />
+                </button>
                 <input
                   type="email"
                   placeholder="Email address"
-                  className="flex-1 rounded-full px-3 sm:px-4 py-2 sm:py-3 text-gray-800 bg-white border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F7941D] text-sm"
+                  className="flex-1 rounded-full px-3 sm:px-4 py-2 sm:py-3 text-gray-800 bg-white border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#F7941D] text-sm order-2 sm:order-none"
                 />
-                <button className="bg-[#e91e63] hover:bg-pink-600 p-2 sm:p-3 rounded-full text-white flex items-center justify-center transition-colors flex-shrink-0">
-                  <FaCheck size={14} className="sm:w-4 sm:h-4" />
-                </button>
               </div>
               
               {/* Payment Methods */}
