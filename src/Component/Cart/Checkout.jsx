@@ -873,14 +873,25 @@ const Checkout = () => {
         return;
       }
       
+      // Handle authentication errors (403 Unauthorized)
+      if (error.response?.status === 403) {
+        console.error('Authentication error:', error);
+        errorMessage = "You need to sign up first. Please create your account to continue.";
+        
+        // Show popup and redirect to signup
+        setTimeout(() => {
+          if (window.confirm("You need to sign up first. Would you like to go to the signup page?")) {
+            navigate('/signup');
+          }
+        }, 1000);
+      }
       // Handle payment gateway errors
-      if (error.response?.status === 500) {
+      else if (error.response?.status === 500) {
         console.error('Payment gateway error:', error);
         errorMessage = "Payment service temporarily unavailable. Please try again later.";
       }
-      
       // Handle other errors
-      if (error.response?.status === 400) {
+      else if (error.response?.status === 400) {
         errorMessage = "Invalid payment request. Please check your order details.";
       } else if (error.message) {
         errorMessage = error.message;
