@@ -69,6 +69,39 @@ const cartReducer = (state, action) => {
       }
     }
 
+    case "BUY_NOW": {
+      const existingItemIndex = state.cartItems.findIndex(
+        (item) => item._id === action.payload._id && !item.isBulkOrder
+      );
+
+      const finalPrice = action.payload.price || action.payload.discounted_single_product_price;
+      const newItem = {
+        ...action.payload,
+        quantity: 1, // Always 1 for Buy Now
+        price: finalPrice,
+        total: finalPrice * 1,
+        isBulkOrder: false,
+        bulkRange: "",
+        originalPrice: action.payload.discounted_single_product_price,
+      };
+
+      if (existingItemIndex >= 0) {
+        // Replace existing item with quantity 1
+        const updatedCartItems = [...state.cartItems];
+        updatedCartItems[existingItemIndex] = newItem;
+        return {
+          ...state,
+          cartItems: updatedCartItems,
+        };
+      } else {
+        // Add new item with quantity 1
+        return {
+          ...state,
+          cartItems: [...state.cartItems, newItem],
+        };
+      }
+    }
+
     case "REMOVE_FROM_CART":
       return {
         ...state,
@@ -235,6 +268,11 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
   };
 
+  // Buy Now - always sets quantity to 1
+  const buyNow = (product) => {
+    dispatch({ type: "BUY_NOW", payload: product });
+  };
+
   // Remove item from cart
   const removeFromCart = (productId) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: productId });
@@ -297,6 +335,7 @@ export const CartProvider = ({ children }) => {
   const value = {
     ...state,
     addToCart,
+    buyNow,
     removeFromCart,
     clearCart,
     increaseQuantity,

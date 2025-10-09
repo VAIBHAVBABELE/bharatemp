@@ -101,7 +101,7 @@ export default function ProductCard() {
   const [showStockModal, setShowStockModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
-  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const { addToCart, buyNow, isInCart, getItemQuantity } = useCart();
   const actionButtonsRef = useRef(null);
   const [selectedMainImage, setSelectedMainImage] = useState(product?.product_image_main);
 
@@ -309,8 +309,8 @@ export default function ProductCard() {
       total: product.discounted_single_product_price * 1,
       isBulkOrder: false,
     };
-    addToCart(regularItem);
-    toast.success("Added 1 item to cart");
+    buyNow(regularItem);
+    toast.success("Ready to checkout with 1 item");
     
     // Navigate to checkout page
     navigate('/checkout');

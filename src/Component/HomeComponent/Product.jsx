@@ -42,7 +42,7 @@ const Product = () => {
   const [brandFilters, setBrandFilters] = useState([]);
 
   // Get cart functions
-  const { addToCart, isInCart, getItemQuantity } = useCart();
+  const { addToCart, buyNow, isInCart, getItemQuantity } = useCart();
   const location = useLocation();
 
   const min = 1;
@@ -563,8 +563,8 @@ const Product = () => {
       isBulkOrder: false,
     };
     
-    addToCart(regularItem);
-    toast.success("Added to cart successfully!");
+    buyNow(regularItem);
+    toast.success("Ready to checkout with 1 item!");
     
     // Navigate to checkout page
     navigate('/checkout');
