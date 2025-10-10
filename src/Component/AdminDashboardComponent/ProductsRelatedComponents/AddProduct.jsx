@@ -347,13 +347,13 @@ const AddProduct = () => {
             },
           });
         } catch (err) {
-          console.error("Failed to add product:", product.SKU, err);
+          // console.error("Failed to add product:", product.SKU, err);
         }
       }
 
       toast.success(`Uploaded ${products.length} products successfully!`);
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       toast.error("Error processing file");
     }
 
@@ -650,7 +650,7 @@ const AddProduct = () => {
         setCurrentStep(1); // Reset to first step
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setLoading(false);
 
       let errorMessage = "❌ Failed to add product to database";
@@ -1277,12 +1277,12 @@ const AddProduct = () => {
           multiple={true}
           maxFiles={10}
           onUploadSuccess={(uploadedData) => {
-            console.log('Frontend received uploadedData:', uploadedData);
+            // console.log('Frontend received uploadedData:', uploadedData);
             if (uploadedData && Array.isArray(uploadedData)) {
               // Handle array of images
               const newImages = uploadedData.map((item) => {
                 const imageUrl = item?.url || item;
-                console.log('Processing array image URL:', imageUrl);
+                // console.log('Processing array image URL:', imageUrl);
                 // Fix URL path separators
                 const fixedUrl = imageUrl.replace(/\\/g, '/');
                 return {
@@ -1301,7 +1301,7 @@ const AddProduct = () => {
             } else if (uploadedData) {
               // Handle single image or fallback
               const imageUrl = uploadedData.url || uploadedData;
-              console.log('Processing single image URL:', imageUrl);
+              // console.log('Processing single image URL:', imageUrl);
               // Fix URL path separators
               const fixedUrl = imageUrl.replace(/\\/g, '/');
               const newImage = {

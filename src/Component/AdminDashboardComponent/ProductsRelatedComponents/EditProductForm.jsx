@@ -153,7 +153,7 @@ const EditProduct = ({
       setPreviewMainImage(selectedProduct.product_image_main);
 
       // console.log("Selected Product:", selectedProduct);
-      console.log("specifications:", selectedProduct.product_specification);
+      // console.log("specifications:", selectedProduct.product_specification);
 
       setNewImages([]);
     }
@@ -460,7 +460,7 @@ const EditProduct = ({
         fetchAllProducts();
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error(error.response?.data?.message || "Error updating product");
     } finally {
       setLoading(false);

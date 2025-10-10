@@ -90,14 +90,14 @@ const Product = () => {
 
       if (result.success && result.products.length > 0) {
         setAllProducts(result.products);
-        console.log(`Fetched ${result.products.length} products from database`);
+        // console.log(`Fetched ${result.products.length} products from database`);
       } else {
-        console.error("No products found in database:", result.error);
+        // console.error("No products found in database:", result.error);
         setAllProducts([]);
         toast.error("No products available. Please check back later.");
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
       setAllProducts([]);
     } finally {
       setLoading(false);
@@ -120,7 +120,7 @@ const Product = () => {
 
     // Listen for real-time product updates
     const handleProductUpdate = (event) => {
-      console.log('Product updated:', event.detail);
+      // console.log('Product updated:', event.detail);
       refreshProducts();
     };
 
@@ -144,7 +144,7 @@ const Product = () => {
         setWholesaleProducts(response.data.data.wholesaleProductsList || []);
       }
     } catch (error) {
-      console.error('Error fetching wholesale products:', error);
+      // console.error('Error fetching wholesale products:', error);
     }
   };
 

@@ -190,7 +190,7 @@ const AllProducts = () => {
         localStorage.setItem('refreshProducts', 'true');
       }
     } catch (error) {
-      console.error("Error updating stock:", error);
+      // console.error("Error updating stock:", error);
       toast.error("Failed to update stock");
     }
   };
@@ -225,7 +225,7 @@ const AllProducts = () => {
         closeModalDelete();
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
       setLoading(false);
     }
   }
@@ -262,7 +262,7 @@ const AllProducts = () => {
           
           setProducts(paginatedResults);
           setTotalProducts(searchResults.length);
-          console.log('🔍 Search results:', searchResults.length, 'total, showing', paginatedResults.length);
+          // console.log('🔍 Search results:', searchResults.length, 'total, showing', paginatedResults.length);
         }
       } else {
         // Normal pagination without search
@@ -276,11 +276,11 @@ const AllProducts = () => {
           const products = response.data.data.products || [];
           setTotalProducts(response.data.data.totalCount || 0);
           setProducts(products);
-          console.log('✅ Products loaded:', products.length, 'of', response.data.data.totalCount);
+          // console.log('✅ Products loaded:', products.length, 'of', response.data.data.totalCount);
         }
       }
     } catch (error) {
-      console.error("❌ Error fetching products:", error);
+      // console.error("❌ Error fetching products:", error);
       toast.error("Failed to fetch products. Please try again.");
     } finally {
       setLoading(false);

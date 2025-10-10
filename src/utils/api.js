@@ -67,7 +67,7 @@ export const fetchProductsDynamic = async (options = {}) => {
       filters: dynamicFilters,
     };
 
-    console.log("Fetching products with params:", requestBody);
+    // console.log("Fetching products with params:", requestBody);
 
     const response = await axios.post(`${backend}/product/list`, requestBody, {
       timeout: 10000, // 10 second timeout
@@ -95,10 +95,10 @@ export const fetchProductsDynamic = async (options = {}) => {
       );
     }
   } catch (error) {
-    console.error("Failed to fetch products dynamically:", error);
+    // console.error("Failed to fetch products dynamically:", error);
 
     // No fallback to mock data - only use database data
-    console.log("Database connection failed. No products available.");
+    // console.log("Database connection failed. No products available.");
 
     return {
       success: false,
