@@ -243,7 +243,7 @@ export const CartProvider = ({ children }) => {
         // Recalculate totals
         dispatch({ type: "CALCULATE_TOTALS" });
       } catch (error) {
-        // console.error("Error loading cart from localStorage:", error);
+        // Error loading cart from localStorage
         localStorage.removeItem("cart");
       }
     }

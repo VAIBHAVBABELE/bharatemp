@@ -6,6 +6,51 @@ body {
   font-family: "Outfit", sans-serif;
 }
 
+/* Mobile Web App Styles */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 70px; /* Space for bottom navigation */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* App-like scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Remove default mobile styles */
+  input, button, textarea {
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  
+  /* App-like button styles */
+  button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Mobile card styles */
+  .mobile-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    margin: 8px;
+  }
+  
+  /* Mobile section spacing */
+  .mobile-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+}
+
 @keyframes moveGradient {
   0% {
     background-position: 0% 0%;
@@ -17,6 +62,8 @@ body {
 
 :root {
   --navbar-height: 140px;
+  --mobile-header-height: 120px;
+  --mobile-bottom-nav-height: 70px;
 }
 
 /* Add this class for reusability */

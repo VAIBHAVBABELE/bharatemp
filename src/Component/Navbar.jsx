@@ -15,6 +15,7 @@ import location1 from "../assets/location.webp";
 import logo from "../assets/Logo.webp";
 
 import { useCart } from "../context/CartContext";
+import { useProducts } from "../context/ProductContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { SlSocialFacebook } from "react-icons/sl";
@@ -52,10 +53,10 @@ const Navbar = () => {
   const [activeCategory, setActiveCategory] = useState("Development Board");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [products, setProducts] = useState([]);
+  // Products now come from context
   const navigate = useNavigate();
   const { uniqueItems } = useCart();
-  const [categories, setCategories] = useState([]);
+  const { products, categories } = useProducts();
   const currentLocation = useLocation();
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [user, setUser] = useState(null);
@@ -110,14 +111,7 @@ const Navbar = () => {
     }
   }, []);
 
-  async function getAllCategories() {
-    try {
-      const response = await axios.post(`${backend}/product/all-categories`);
-      setCategories(response.data.data.product.subcategories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }
+  // Categories now come from context
 
   const getLocationByIP = async () => {
     try {
@@ -141,7 +135,7 @@ const Navbar = () => {
       }
       setUserPincode(data);
     } catch (error) {
-      console.error("Error fetching IP location:", error);
+      // console.error("Error fetching IP location:", error);
     }
   };
 
@@ -192,14 +186,15 @@ const Navbar = () => {
         setShowLocationDropdown(false);
       }
     } catch (error) {
-      console.error("Error searching location:", error);
+      // console.error("Error searching location:", error);
     }
   };
 
   useEffect(() => {
     fetchLocationAndDelivery();
-    getAllCategories();
-  }, [fetchLocationAndDelivery]);
+  }, []);
+
+  // Categories loaded from context
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -208,7 +203,7 @@ const Navbar = () => {
         const decoded = jwtDecode(token);
         setUser(decoded);
       } catch (error) {
-        console.error("Error decoding token:", error);
+        // console.error("Error decoding token:", error);
         localStorage.removeItem("token");
         setUser(null);
       }
@@ -224,24 +219,7 @@ const Navbar = () => {
     }
   }, [currentLocation]);
 
-  // Fetch products when component mounts
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.post(`${backend}/product/list`, {
-          pageNum: 1,
-          pageSize: 50,
-          filters: {},
-        });
-        if (response.data.status === "Success") {
-          setProducts(response.data.data.productList);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
-  }, []);
+  // Products now come from context
 
   const navItems = [
     {
@@ -422,7 +400,7 @@ const Navbar = () => {
     }
   };
 
-  console.log(categories);
+  // console.log(categories);
 
   // const categories = {
   //   "Development Board": {},
@@ -458,7 +436,7 @@ const Navbar = () => {
 
       recognition.onerror = (event) => {
         setIsListening(false);
-        console.error("Speech recognition error:", event.error);
+        // console.error("Speech recognition error:", event.error);
         alert(
           "Sorry, there was an error with voice recognition. Please try again."
         );

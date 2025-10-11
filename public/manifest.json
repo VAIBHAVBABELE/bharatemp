@@ -1,0 +1,14 @@
+{
+  "name": "Bharatronix - Electronics Store",
+  "short_name": "Bharatronix",
+  "description": "Your one-stop shop for electronics and development boards",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1E3473",
+  "theme_color": "#F7941D",
+  "orientation": "portrait-primary",
+  "icons": [],
+  "categories": ["shopping", "electronics"],
+  "lang": "en",
+  "dir": "ltr"
+}

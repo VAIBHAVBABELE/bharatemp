@@ -6,6 +6,10 @@ import {
 } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./Component/Navbar";
+import MobileNavbar from "./Component/MobileNavbar";
+import MobileQuickActions from "./Component/MobileQuickActions";
+import PWAInstallPrompt from "./Component/PWAInstallPrompt";
+import ManualInstallButton from "./Component/ManualInstallButton";
 import Ouronline from "./Component/B2bComponent/Ouronline.jsx";
 import Footer from "./Component/Footer";
 import Product from "./Component/HomeComponent/Product";
@@ -16,6 +20,7 @@ import Thanku from "./Component/HomeComponent/Thankyou.jsx";
 import Profile from "./Component/HomeComponent/Profile";
 import TrackOrder from "./pages/TrackOrder";
 import { CartProvider } from "./context/CartContext.jsx";
+import { ProductProvider } from "./context/ProductContext.jsx";
 import Login from "./Component/Login";
 import Signup from "./Component/Signup";
 import ForgotPassword from "./Component/ForgotPassword";
@@ -71,7 +76,17 @@ const AppContent = () => {
 
   return (
     <div className="overflow-hidden">
-      {!isAdmin && <Navbar />}
+      {!isAdmin && (
+        <>
+          <div className="hidden md:block">
+            <Navbar />
+          </div>
+          <div className="md:hidden">
+            <MobileNavbar />
+            <MobileQuickActions />
+          </div>
+        </>
+      )}
       <Routes>
         {/* Route Definitions */}
         <Route path="/" element={<Home />} />
@@ -174,23 +189,29 @@ const AppContent = () => {
           href="https://wa.link/594khg"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed z-50 bottom-4 right-4 sm:bottom-6 sm:right-6 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-3 sm:p-4 flex items-center justify-center transition-all duration-300 hover:scale-110"
+          className="fixed z-50 bottom-4 right-4 sm:bottom-6 sm:right-6 md:block hidden bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-3 sm:p-4 flex items-center justify-center transition-all duration-300 hover:scale-110"
           aria-label="Chat with us on WhatsApp"
         >
           <FaWhatsapp className="text-2xl sm:text-3xl" />
         </a>
       )}
+      
+      {/* PWA Install Prompt */}
+      {!isAdmin && <PWAInstallPrompt />}
+      {!isAdmin && <ManualInstallButton />}
     </div>
   );
 };
 
 const App = () => {
   return (
-    <CartProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </CartProvider>
+    <ProductProvider>
+      <CartProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </CartProvider>
+    </ProductProvider>
   );
 };
 

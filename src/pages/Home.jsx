@@ -29,35 +29,23 @@ import cargo from "../assets/cargo.gif";
 // import wallet from "../assets/wallet.gif";
 import support from "../assets/support.gif";
 import VideoSection from "../Component/VideoSection";
-import { fetchProducts } from "../utils/api";
+import { useProducts } from "../context/ProductContext";
 import Customers from "../Component/B2bComponent/Customers.jsx";
 import Marquee from "../Component/HomeComponent/Marquee.jsx";
 import ShimmerUI from "../utils/ShimmerUI.jsx";
 import BlogsSection from "../sections/BlogsSection.jsx";
 const ProductSlider = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading } = useProducts();
   const [error, setError] = useState(null);
   const reviewsRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Fetch products from the backend
-    const getProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
-        setLoading(false);
-        console.error("Error fetching products:", err);
-      }
-    };
-
-    getProducts();
+    // Products now come from context
+    if (!loading && products.length === 0) {
+      setError("Failed to fetch products. Please try again later.");
+    }
   }, []);
 
   // Expose scroll function for footer
