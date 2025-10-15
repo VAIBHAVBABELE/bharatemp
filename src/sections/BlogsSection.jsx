@@ -108,11 +108,11 @@ const BlogsSection = () => {
                 >
                   {/* Featured Image */}
                   {blog.featured_image_url && (
-                    <div className="h-40 overflow-hidden">
+                    <div className="h-40 overflow-hidden bg-gray-100">
                       <img
                         src={blog.featured_image_url}
                         alt={blog.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   )}

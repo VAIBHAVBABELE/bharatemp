@@ -245,11 +245,11 @@ const BlogPost = () => {
         <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
           {/* Featured Image */}
           {blog.featured_image_url && (
-            <div className="h-64 md:h-96 overflow-hidden">
+            <div className="aspect-video overflow-hidden bg-gray-100">
               <img
                 src={blog.featured_image_url}
                 alt={blog.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-center"
               />
             </div>
           )}
@@ -605,11 +605,11 @@ const BlogPost = () => {
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                 >
                   {relatedBlog.featured_image_url && (
-                    <div className="h-32 overflow-hidden">
+                    <div className="h-32 overflow-hidden bg-gray-100">
                       <img
                         src={relatedBlog.featured_image_url}
                         alt={relatedBlog.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
                     </div>
                   )}
