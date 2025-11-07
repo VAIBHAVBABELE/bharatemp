@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { FaTimes, FaCopy, FaCheck } from "react-icons/fa";
 import ReturnOrderForm from '../ReturnOrderForm';
+import ZohoInvoiceViewer from '../ZohoInvoice/ZohoInvoiceViewer';
 import "react-toastify/dist/ReactToastify.css";
 const backend = import.meta.env.VITE_BACKEND;
 
@@ -13,6 +14,7 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
   const [cancelling, setCancelling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showInvoiceViewer, setShowInvoiceViewer] = useState(false);
   
   const formatDate = (dateString) => {
     const options = { 
@@ -241,6 +243,19 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
           {/* Action Buttons */}
           <div className="pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row gap-3">
+              {/* Invoice Button - Show for Processing and Delivered orders */}
+              {(order.status === 'Processing' || order.status === 'Delivered') && (
+                <button 
+                  className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-blue-700 transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+                  onClick={() => setShowInvoiceViewer(true)}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View Invoice
+                </button>
+              )}
+              
               {canCancelOrder(order) && (
                 <button 
                   className="flex-1 bg-red-500 text-white py-3 px-6 rounded-xl font-medium hover:bg-red-600 transition-colors duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
@@ -288,6 +303,14 @@ const OrderModal = ({ order, onClose, onOrderUpdate }) => {
           </div>
         </div>
       </div>
+      
+      {/* Invoice Viewer Modal */}
+      {showInvoiceViewer && (
+        <ZohoInvoiceViewer 
+          orderId={order._id} 
+          onClose={() => setShowInvoiceViewer(false)} 
+        />
+      )}
       
       {/* Cancel Confirmation Modal */}
       {showCancelConfirm && (
