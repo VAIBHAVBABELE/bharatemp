@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { FiUpload, FiX, FiPlus, FiMinus, FiSave } from "react-icons/fi";
@@ -16,168 +16,219 @@ const AddProductComplete = () => {
     sub_category_id: "",
     SKU: "",
     product_name: "",
-    
+
     // Optional Category Fields
     sub_category_name: "",
     sub_sub_category_name: "",
-    
+
     // Brand Info
     brand_id: "",
     brand_name: "",
-    
+
     // Images
     product_image_main: "",
     product_image_sub: [],
     product_image_urls: [],
-    
+
     // Product Details
     product_type: "",
     model: "",
-    
+
     // Stock Management
     product_instock: true,
     no_of_product_instock: 0,
-    
+
     // Product Information
     product_feature: "",
     product_overview: "",
-    product_specification: [{ title: "Specifications", data: [{ key: "", value: "" }] }],
+    product_specification: [
+      { title: "Specifications", data: [{ key: "", value: "" }] },
+    ],
     product_description: "",
     product_caution: "",
     product_warranty: "",
-    
+
     // Dimensions
     product_dimension_height: "",
     product_dimension_length_breadth: "",
     product_dimension_weight: "",
-    
+
     // Timing
     product_time: "",
-    
+
     // Pricing
     non_discounted_price: "",
     discounted_single_product_price: "",
     discount: "",
     discounted_price_with_gst: "",
-    
+
+    gst_percent: "",
+
     // Quantity Discounts
     quantity_discounts: [],
-    
-    // Multiple Quantity Pricing
-    multiple_quantity_price_5_10: "",
-    multiple_quantity_price_10_20: "",
-    multiple_quantity_price_20_50: "",
-    multiple_quantity_price_50_100: "",
-    multiple_quantity_price_100_plus: "",
-    
+
+    // Bulk Order Availability
+    is_available_for_bulk_order: false,
+
     // Reviews
     no_of_reviews: 0,
     review_stars: 0,
-    
+
     // Additional Info
     product_colour: "",
     product_video_link: "",
     product_manual_link: "",
     package_include: "",
     product_tags: [],
-    coupon: ""
+    coupon: "",
   });
 
   const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { showPopup, closePopup, isAuthorized } = useAdminRouteProtection(["SuperAdmin"]);
+  const { showPopup, closePopup, isAuthorized } = useAdminRouteProtection([
+    "SuperAdmin",
+  ]);
+
+  // Calculate GST-inclusive price whenever selling price or GST percent changes
+  useEffect(() => {
+    const sellingPrice =
+      parseFloat(formData.discounted_single_product_price) || 0;
+    const gstPercent = parseFloat(formData.gst_percent) || 0;
+
+    if (sellingPrice > 0 && gstPercent > 0) {
+      const gstAmount = (sellingPrice * gstPercent) / 100;
+      const finalPrice = sellingPrice + gstAmount;
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: finalPrice.toFixed(2),
+      }));
+    } else if (sellingPrice > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: sellingPrice.toFixed(2),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: "",
+      }));
+    }
+  }, [formData.discounted_single_product_price, formData.gst_percent]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   // Specification Management
   const handleSpecChange = (specIndex, dataIndex, field, value) => {
     const newSpecs = [...formData.product_specification];
-    if (field === 'title') {
+    if (field === "title") {
       newSpecs[specIndex].title = value;
     } else {
       newSpecs[specIndex].data[dataIndex][field] = value;
     }
-    setFormData(prev => ({ ...prev, product_specification: newSpecs }));
+    setFormData((prev) => ({ ...prev, product_specification: newSpecs }));
   };
 
   const addSpecification = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      product_specification: [...prev.product_specification, { title: "", data: [{ key: "", value: "" }] }]
+      product_specification: [
+        ...prev.product_specification,
+        { title: "", data: [{ key: "", value: "" }] },
+      ],
     }));
   };
 
   const removeSpecification = (index) => {
     if (formData.product_specification.length > 1) {
-      const newSpecs = formData.product_specification.filter((_, i) => i !== index);
-      setFormData(prev => ({ ...prev, product_specification: newSpecs }));
+      const newSpecs = formData.product_specification.filter(
+        (_, i) => i !== index
+      );
+      setFormData((prev) => ({ ...prev, product_specification: newSpecs }));
     }
   };
 
   const addSpecData = (specIndex) => {
     const newSpecs = [...formData.product_specification];
     newSpecs[specIndex].data.push({ key: "", value: "" });
-    setFormData(prev => ({ ...prev, product_specification: newSpecs }));
+    setFormData((prev) => ({ ...prev, product_specification: newSpecs }));
   };
 
   const removeSpecData = (specIndex, dataIndex) => {
     const newSpecs = [...formData.product_specification];
     if (newSpecs[specIndex].data.length > 1) {
-      newSpecs[specIndex].data = newSpecs[specIndex].data.filter((_, i) => i !== dataIndex);
-      setFormData(prev => ({ ...prev, product_specification: newSpecs }));
+      newSpecs[specIndex].data = newSpecs[specIndex].data.filter(
+        (_, i) => i !== dataIndex
+      );
+      setFormData((prev) => ({ ...prev, product_specification: newSpecs }));
     }
   };
 
   // Quantity Discount Management
   const addQuantityDiscount = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      quantity_discounts: [...prev.quantity_discounts, {
-        title: "",
-        min_quantity: "",
-        max_quantity: "",
-        discount_percentage: ""
-      }]
+      quantity_discounts: [
+        ...prev.quantity_discounts,
+        {
+          title: "",
+          min_quantity: "",
+          max_quantity: "",
+          discount_percentage: "",
+        },
+      ],
     }));
   };
 
   const removeQuantityDiscount = (index) => {
-    const newDiscounts = formData.quantity_discounts.filter((_, i) => i !== index);
-    setFormData(prev => ({ ...prev, quantity_discounts: newDiscounts }));
+    const newDiscounts = formData.quantity_discounts.filter(
+      (_, i) => i !== index
+    );
+    setFormData((prev) => ({ ...prev, quantity_discounts: newDiscounts }));
   };
 
   const handleQuantityDiscountChange = (index, field, value) => {
     const newDiscounts = [...formData.quantity_discounts];
     newDiscounts[index][field] = value;
-    setFormData(prev => ({ ...prev, quantity_discounts: newDiscounts }));
+    setFormData((prev) => ({ ...prev, quantity_discounts: newDiscounts }));
   };
 
   // Image Management
   const removeImage = (index) => {
     const updatedImages = previewImages.filter((_, i) => i !== index);
-    const updatedUrls = formData.product_image_urls.filter((_, i) => i !== index);
-    
+    const updatedUrls = formData.product_image_urls.filter(
+      (_, i) => i !== index
+    );
+
     setPreviewImages(updatedImages);
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData((prev) => ({
+      ...prev,
       product_image_urls: updatedUrls,
-      product_image_main: index === 0 ? (updatedUrls[0] || "") : prev.product_image_main,
-      product_image_sub: updatedUrls.slice(1)
+      product_image_main:
+        index === 0 ? updatedUrls[0] || "" : prev.product_image_main,
+      product_image_sub: updatedUrls.slice(1),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
-    if (!formData.SKU || !formData.product_name || !formData.category_id || !formData.category_name || !formData.sub_category_id) {
-      toast.error("Please fill in all required fields (SKU, Product Name, Category ID, Category Name, Sub Category ID)");
+    if (
+      !formData.SKU ||
+      !formData.product_name ||
+      !formData.category_id ||
+      !formData.category_name ||
+      !formData.sub_category_id
+    ) {
+      toast.error(
+        "Please fill in all required fields (SKU, Product Name, Category ID, Category Name, Sub Category ID)"
+      );
       return;
     }
 
@@ -190,47 +241,70 @@ const AddProductComplete = () => {
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Add all form fields
-      Object.keys(formData).forEach(key => {
-        if (key === 'product_specification') {
+      Object.keys(formData).forEach((key) => {
+        if (key === "product_specification") {
           const filteredSpecs = formData.product_specification
-            .filter(spec => spec.title.trim())
-            .map(spec => ({
+            .filter((spec) => spec.title.trim())
+            .map((spec) => ({
               title: spec.title.trim(),
-              data: spec.data.filter(item => item.key.trim() && item.value.trim())
+              data: spec.data.filter(
+                (item) => item.key.trim() && item.value.trim()
+              ),
             }))
-            .filter(spec => spec.data.length > 0);
+            .filter((spec) => spec.data.length > 0);
           formDataToSend.append(key, JSON.stringify(filteredSpecs));
-        } else if (key === 'product_tags') {
+        } else if (key === "product_tags") {
           formDataToSend.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'product_image_urls') {
+        } else if (key === "product_image_urls") {
           formDataToSend.append(key, JSON.stringify(formData[key]));
           // Set main and sub images
           if (formData[key].length > 0) {
-            formDataToSend.append('product_image_main', formData[key][0]);
-            formDataToSend.append('product_image_sub', JSON.stringify(formData[key].slice(1)));
+            formDataToSend.append("product_image_main", formData[key][0]);
+            formDataToSend.append(
+              "product_image_sub",
+              JSON.stringify(formData[key].slice(1))
+            );
           }
-        } else if (key === 'quantity_discounts') {
-          const validDiscounts = formData.quantity_discounts.filter(discount => 
-            discount.title && discount.min_quantity && discount.max_quantity && discount.discount_percentage
+        } else if (key === "quantity_discounts") {
+          const validDiscounts = formData.quantity_discounts.filter(
+            (discount) =>
+              discount.title &&
+              discount.min_quantity &&
+              discount.max_quantity &&
+              discount.discount_percentage
           );
           formDataToSend.append(key, JSON.stringify(validDiscounts));
-        } else if (key !== 'product_image_main' && key !== 'product_image_sub') {
-          formDataToSend.append(key, formData[key]);
+        } else if (
+          key !== "product_image_main" &&
+          key !== "product_image_sub"
+        ) {
+          // Ensure boolean fields are properly handled
+          if (typeof formData[key] === "boolean") {
+            formDataToSend.append(key, formData[key].toString());
+          } else {
+            formDataToSend.append(key, formData[key]);
+          }
         }
       });
 
-      const response = await axios.post(`${backend}/product/add-product`, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
-        },
-      });
+      const response = await axios.post(
+        `${backend}/product/add-product`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("token")
+            )}`,
+          },
+        }
+      );
 
       if (response.data.status === "SUCCESS") {
         toast.success("Product added successfully!");
-        
+
         // Reset form
         setFormData({
           category_id: "",
@@ -251,7 +325,9 @@ const AddProductComplete = () => {
           no_of_product_instock: 0,
           product_feature: "",
           product_overview: "",
-          product_specification: [{ title: "Specifications", data: [{ key: "", value: "" }] }],
+          product_specification: [
+            { title: "Specifications", data: [{ key: "", value: "" }] },
+          ],
           product_description: "",
           product_caution: "",
           product_warranty: "",
@@ -263,7 +339,9 @@ const AddProductComplete = () => {
           discounted_single_product_price: "",
           discount: "",
           discounted_price_with_gst: "",
+          gst_percent: "",
           quantity_discounts: [],
+          is_available_for_bulk_order: false,
           no_of_reviews: 0,
           review_stars: 0,
           product_colour: "",
@@ -272,17 +350,13 @@ const AddProductComplete = () => {
           package_include: "",
           product_tags: [],
           coupon: "",
-          multiple_quantity_price_5_10: "",
-          multiple_quantity_price_10_20: "",
-          multiple_quantity_price_20_50: "",
-          multiple_quantity_price_50_100: "",
-          multiple_quantity_price_100_plus: ""
         });
         setPreviewImages([]);
       }
     } catch (error) {
       console.error(error);
-      const errorMessage = error.response?.data?.data?.message || "Failed to add product";
+      const errorMessage =
+        error.response?.data?.data?.message || "Failed to add product";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -300,22 +374,22 @@ const AddProductComplete = () => {
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700">
             <h1 className="text-2xl font-bold text-white">Add New Product</h1>
-            <p className="text-blue-100 mt-1">Complete product information form</p>
+            <p className="text-blue-100 mt-1">
+              Complete product information form
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
               {/* Left Column */}
               <div className="space-y-8">
-                
                 {/* Basic Information */}
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                     <div className="w-2 h-6 bg-blue-600 rounded mr-3"></div>
                     Basic Information
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -393,7 +467,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Sub Category Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Sub Category Name
+                      </label>
                       <input
                         type="text"
                         name="sub_category_name"
@@ -405,7 +481,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Brand Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Brand Name
+                      </label>
                       <input
                         type="text"
                         name="brand_name"
@@ -417,7 +495,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Product Type</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Type
+                      </label>
                       <input
                         type="text"
                         name="product_type"
@@ -436,10 +516,12 @@ const AddProductComplete = () => {
                     <div className="w-2 h-6 bg-green-600 rounded mr-3"></div>
                     Pricing & Stock
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Original Price</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Original Price
+                      </label>
                       <input
                         type="number"
                         name="non_discounted_price"
@@ -453,7 +535,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Selling Price</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Selling Price
+                      </label>
                       <input
                         type="number"
                         name="discounted_single_product_price"
@@ -467,7 +551,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Discount (%)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Discount (%)
+                      </label>
                       <input
                         type="number"
                         name="discount"
@@ -481,7 +567,40 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        GST (%)
+                      </label>
+                      <input
+                        type="number"
+                        name="gst_percent"
+                        value={formData.gst_percent}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="0"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Final Price (with GST)
+                      </label>
+                      <input
+                        type="number"
+                        name="discounted_price_with_gst"
+                        value={formData.discounted_price_with_gst}
+                        readOnly
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700"
+                        placeholder="Auto-calculated"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Stock Quantity
+                      </label>
                       <input
                         type="number"
                         name="no_of_product_instock"
@@ -501,83 +620,22 @@ const AddProductComplete = () => {
                         onChange={handleInputChange}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <label className="ml-2 text-sm text-gray-700">In Stock</label>
+                      <label className="ml-2 text-sm text-gray-700">
+                        In Stock
+                      </label>
                     </div>
-                  </div>
-                  
-                  {/* Bulk Pricing */}
-                  <div className="mt-6">
-                    <h3 className="text-md font-medium text-gray-800 mb-3">Bulk Pricing</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (5-10 units)</label>
-                        <input
-                          type="number"
-                          name="multiple_quantity_price_5_10"
-                          value={formData.multiple_quantity_price_5_10}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (10-20 units)</label>
-                        <input
-                          type="number"
-                          name="multiple_quantity_price_10_20"
-                          value={formData.multiple_quantity_price_10_20}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (20-50 units)</label>
-                        <input
-                          type="number"
-                          name="multiple_quantity_price_20_50"
-                          value={formData.multiple_quantity_price_20_50}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (50-100 units)</label>
-                        <input
-                          type="number"
-                          name="multiple_quantity_price_50_100"
-                          value={formData.multiple_quantity_price_50_100}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
-                      
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (100+ units)</label>
-                        <input
-                          type="number"
-                          name="multiple_quantity_price_100_plus"
-                          value={formData.multiple_quantity_price_100_plus}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                        />
-                      </div>
+
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="is_available_for_bulk_order"
+                        checked={formData.is_available_for_bulk_order}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label className="ml-2 text-sm text-gray-700">
+                        Available for Bulk Order
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -588,10 +646,12 @@ const AddProductComplete = () => {
                     <div className="w-2 h-6 bg-purple-600 rounded mr-3"></div>
                     Product Details
                   </h2>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Description
+                      </label>
                       <textarea
                         name="product_description"
                         value={formData.product_description}
@@ -603,7 +663,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Key Features</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Key Features
+                      </label>
                       <textarea
                         name="product_feature"
                         value={formData.product_feature}
@@ -615,7 +677,9 @@ const AddProductComplete = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Product Overview</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Product Overview
+                      </label>
                       <textarea
                         name="product_overview"
                         value={formData.product_overview}
@@ -628,7 +692,9 @@ const AddProductComplete = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Warranty</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Warranty
+                        </label>
                         <input
                           type="text"
                           name="product_warranty"
@@ -640,7 +706,9 @@ const AddProductComplete = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Package Includes</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Package Includes
+                        </label>
                         <input
                           type="text"
                           name="package_include"
@@ -657,14 +725,13 @@ const AddProductComplete = () => {
 
               {/* Right Column */}
               <div className="space-y-8">
-                
                 {/* Images */}
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                     <div className="w-2 h-6 bg-orange-600 rounded mr-3"></div>
                     Product Images <span className="text-red-500">*</span>
                   </h2>
-                  
+
                   <ImageUpload
                     uploadType="product"
                     multiple={true}
@@ -744,15 +811,25 @@ const AddProductComplete = () => {
                       Add Group
                     </button>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {formData.product_specification.map((spec, specIndex) => (
-                      <div key={specIndex} className="border border-gray-200 p-4 rounded-lg bg-white">
+                      <div
+                        key={specIndex}
+                        className="border border-gray-200 p-4 rounded-lg bg-white"
+                      >
                         <div className="flex items-center justify-between mb-3">
                           <input
                             type="text"
                             value={spec.title}
-                            onChange={(e) => handleSpecChange(specIndex, 0, 'title', e.target.value)}
+                            onChange={(e) =>
+                              handleSpecChange(
+                                specIndex,
+                                0,
+                                "title",
+                                e.target.value
+                              )
+                            }
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Specification group title"
                           />
@@ -766,21 +843,38 @@ const AddProductComplete = () => {
                             </button>
                           )}
                         </div>
-                        
+
                         <div className="space-y-2">
                           {spec.data.map((item, dataIndex) => (
-                            <div key={dataIndex} className="flex gap-2 items-center">
+                            <div
+                              key={dataIndex}
+                              className="flex gap-2 items-center"
+                            >
                               <input
                                 type="text"
                                 value={item.key}
-                                onChange={(e) => handleSpecChange(specIndex, dataIndex, 'key', e.target.value)}
+                                onChange={(e) =>
+                                  handleSpecChange(
+                                    specIndex,
+                                    dataIndex,
+                                    "key",
+                                    e.target.value
+                                  )
+                                }
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Specification name"
                               />
                               <input
                                 type="text"
                                 value={item.value}
-                                onChange={(e) => handleSpecChange(specIndex, dataIndex, 'value', e.target.value)}
+                                onChange={(e) =>
+                                  handleSpecChange(
+                                    specIndex,
+                                    dataIndex,
+                                    "value",
+                                    e.target.value
+                                  )
+                                }
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 placeholder="Specification value"
                               />
@@ -794,7 +888,9 @@ const AddProductComplete = () => {
                               {spec.data.length > 1 && (
                                 <button
                                   type="button"
-                                  onClick={() => removeSpecData(specIndex, dataIndex)}
+                                  onClick={() =>
+                                    removeSpecData(specIndex, dataIndex)
+                                  }
                                   className="p-2 text-red-500 hover:text-red-700"
                                 >
                                   <FiMinus className="w-4 h-4" />
@@ -814,17 +910,23 @@ const AddProductComplete = () => {
                     <div className="w-2 h-6 bg-teal-600 rounded mr-3"></div>
                     Additional Information
                   </h2>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Tags
+                      </label>
                       <input
                         type="text"
                         value={formData.product_tags.join(", ")}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          product_tags: e.target.value.split(",").map(tag => tag.trim())
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            product_tags: e.target.value
+                              .split(",")
+                              .map((tag) => tag.trim()),
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="electronics, arduino, sensor (separated by commas)"
                       />
@@ -832,7 +934,9 @@ const AddProductComplete = () => {
 
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Color</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Product Color
+                        </label>
                         <input
                           type="text"
                           name="product_colour"
@@ -844,7 +948,9 @@ const AddProductComplete = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Video Link</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Video Link
+                        </label>
                         <input
                           type="url"
                           name="product_video_link"
@@ -856,7 +962,9 @@ const AddProductComplete = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Manual/Datasheet Link</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Manual/Datasheet Link
+                        </label>
                         <input
                           type="url"
                           name="product_manual_link"

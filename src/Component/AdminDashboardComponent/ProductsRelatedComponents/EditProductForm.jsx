@@ -52,6 +52,8 @@ const EditProduct = ({
     discounted_single_product_price: "",
     discount: "",
     discounted_price_with_gst: "",
+    gst_percent: "",
+    is_available_for_bulk_order: false,
     multiple_quantity_price_5_10: "",
     multiple_quantity_price_10_20: "",
     multiple_quantity_price_20_50: "",
@@ -146,6 +148,9 @@ const EditProduct = ({
         package_include: selectedProduct.package_include || "",
         product_tags: selectedProduct.product_tags || [],
         coupon: selectedProduct.coupon || "",
+        gst_percent: selectedProduct.gst_percent || 0,
+        is_available_for_bulk_order:
+          selectedProduct.is_available_for_bulk_order || false,
       });
 
       setExistingImages(selectedProduct.product_image_sub || []);
@@ -169,9 +174,38 @@ const EditProduct = ({
     };
   }, [existingImages, newImages]);
 
+  // Calculate GST-inclusive price whenever selling price or GST percent changes
+  useEffect(() => {
+    const sellingPrice =
+      parseFloat(formData.discounted_single_product_price) || 0;
+    const gstPercent = parseFloat(formData.gst_percent) || 0;
+
+    if (sellingPrice > 0 && gstPercent > 0) {
+      const gstAmount = (sellingPrice * gstPercent) / 100;
+      const finalPrice = sellingPrice + gstAmount;
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: finalPrice.toFixed(2),
+      }));
+    } else if (sellingPrice > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: sellingPrice.toFixed(2),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        discounted_price_with_gst: "",
+      }));
+    }
+  }, [formData.discounted_single_product_price, formData.gst_percent]);
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleImageChange = (e) => {
@@ -387,6 +421,11 @@ const EditProduct = ({
         "discounted_price_with_gst",
         formData.discounted_price_with_gst
       );
+      formDataToSend.append("gst_percent", formData.gst_percent);
+      formDataToSend.append(
+        "is_available_for_bulk_order",
+        formData.is_available_for_bulk_order.toString()
+      );
 
       // Multiple Quantity Pricing
       formDataToSend.append(
@@ -444,18 +483,28 @@ const EditProduct = ({
 
       if (response.data.status === "Success") {
         toast.success("Product updated successfully!");
-        
+
         // Show success popup
-        alert("✅ Product images uploaded successfully!\n\nProduct: " + formData.product_name + "\nImages updated successfully.");
-        
+        alert(
+          "✅ Product images uploaded successfully!\n\nProduct: " +
+            formData.product_name +
+            "\nImages updated successfully."
+        );
+
         // Trigger refresh in products page
-        localStorage.setItem('refreshProducts', 'true');
-        
+        localStorage.setItem("refreshProducts", "true");
+
         // Dispatch custom event to notify other components
-        window.dispatchEvent(new CustomEvent('productUpdated', {
-          detail: { action: 'updated', productId: selectedProduct._id, product: response.data.data }
-        }));
-        
+        window.dispatchEvent(
+          new CustomEvent("productUpdated", {
+            detail: {
+              action: "updated",
+              productId: selectedProduct._id,
+              product: response.data.data,
+            },
+          })
+        );
+
         onClose();
         fetchAllProducts();
       }
@@ -659,7 +708,10 @@ const EditProduct = ({
                   value={formData.no_of_product_instock}
                   onChange={(e) => {
                     const value = Math.max(0, parseInt(e.target.value) || 0);
-                    setFormData(prev => ({ ...prev, no_of_product_instock: value }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      no_of_product_instock: value,
+                    }));
                   }}
                   className="w-full p-2 border rounded-md"
                   min="0"
@@ -909,6 +961,21 @@ const EditProduct = ({
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">
+                  GST Percent (%)
+                </label>
+                <input
+                  type="number"
+                  name="gst_percent"
+                  value={formData.gst_percent}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded-md"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
                   Discount
                 </label>
                 <input
@@ -1113,9 +1180,32 @@ const EditProduct = ({
               </div>
             </div>
 
+            {/* Bulk Order Availability */}
+            <div className="mb-6">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="is_available_for_bulk_order"
+                  checked={formData.is_available_for_bulk_order}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_available_for_bulk_order: e.target.checked,
+                    }))
+                  }
+                  className="mr-2"
+                />
+                <span className="text-sm font-medium">
+                  Available for Bulk Order
+                </span>
+              </label>
+            </div>
+
             {/* Main Image Upload */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Main Product Image</label>
+              <label className="block text-sm font-medium mb-2">
+                Main Product Image
+              </label>
               <div className="flex flex-col gap-4">
                 <label className="flex flex-col items-center justify-center w-full px-4 py-6 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition">
                   <svg
@@ -1142,7 +1232,7 @@ const EditProduct = ({
                     className="hidden"
                   />
                 </label>
-                
+
                 {previewMainImage && (
                   <div className="relative w-40 h-40">
                     <img
@@ -1170,7 +1260,9 @@ const EditProduct = ({
 
             {/* Sub Images Upload */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Additional Product Images</label>
+              <label className="block text-sm font-medium mb-2">
+                Additional Product Images
+              </label>
               <div className="flex flex-col gap-4">
                 <label className="flex flex-col items-center justify-center w-full px-4 py-6 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 transition">
                   <svg
@@ -1204,7 +1296,9 @@ const EditProduct = ({
                     <div key={index} className="relative">
                       <img
                         src={
-                          typeof img === "string" ? img : URL.createObjectURL(img)
+                          typeof img === "string"
+                            ? img
+                            : URL.createObjectURL(img)
                         }
                         alt="Preview"
                         className="w-32 h-32 object-cover rounded-md"
