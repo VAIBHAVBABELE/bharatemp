@@ -10,1629 +10,233 @@
   scrollbar-width: none;
 }
 
-/* Mobile Product Cards - Zepto Style */
 @media (max-width: 768px) {
   .mobile-product-container {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 8px;
-    padding: 0 12px;
+    gap: 12px;
+    padding: 0 14px;
     scroll-behavior: smooth;
+    animation: auto-scroll 25s linear infinite alternate;
   }
 
   .mobile-product-card {
-    min-width: calc(33.333% - 6px);
-    max-width: calc(33.333% - 6px);
-    min-height: calc(33.333vw - 6px);
+    min-width: calc(55% - 10px);
+    max-width: calc(55% - 10px);
     height: auto;
     flex-shrink: 0;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     background: white;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
     border: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease-in-out;
   }
 
-  /* For very small screens (320px) */
-  @media (max-width: 375px) {
-    .mobile-product-container {
-      gap: 6px;
-      padding: 0 8px;
-    }
-    
-    .mobile-product-card {
-      min-width: calc(33.333% - 4px);
-      max-width: calc(33.333% - 4px);
-      min-height: calc(33.333vw - 4px);
-      height: auto;
-      padding: 6px;
-      border-radius: 8px;
-    }
+  .mobile-product-card:hover {
+    transform: scale(1.03);
   }
 
+  /* Product image - make larger */
   .mobile-product-image {
     width: 100%;
-    height: 60px;
+    height: 160px;
     object-fit: contain;
-    border-radius: 6px;
-    margin-bottom: 4px;
-    flex-shrink: 0;
+    margin-bottom: 10px;
   }
 
-  @media (max-width: 375px) {
-    .mobile-product-image {
-      height: 50px;
-      margin-bottom: 3px;
-    }
-  }
-
+  /* Product text adjustments */
   .mobile-product-title {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     color: #1e3473;
-    line-height: 1.1;
-    min-height: 22px;
-    height: auto;
-    overflow: visible;
-    word-wrap: break-word;
-    hyphens: auto;
-    margin-bottom: 2px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-product-title {
-      font-size: 9px;
-      min-height: 20px;
-    }
+    text-align: center;
+    line-height: 1.3;
+    min-height: 28px;
+    margin-bottom: 4px;
   }
 
   .mobile-product-category {
-    font-size: 8px;
+    font-size: 10px;
     color: #6b7280;
-    margin-bottom: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-product-category {
-      font-size: 7px;
-      margin-bottom: 1px;
-    }
+    text-align: center;
+    margin-bottom: 4px;
   }
 
   .mobile-product-price {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #111827;
-    margin-bottom: 4px;
-    flex-shrink: 0;
-    height: 16px;
+    margin-bottom: 6px;
+    text-align: center;
   }
 
-  @media (max-width: 375px) {
-    .mobile-product-price {
-      font-size: 10px;
-      margin-bottom: 3px;
-      height: 14px;
-    }
-  }
-
+  /* Buttons styling */
   .mobile-product-buttons {
     display: flex;
-    gap: 4px;
+    gap: 6px;
+    justify-content: center;
     margin-top: auto;
-    flex-shrink: 0;
+  }
+
+  .mobile-btn-buy,
+  .mobile-btn-cart {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
   }
 
   .mobile-btn-buy {
-    flex: 1;
     background: #f7941d;
     color: white;
     border: none;
-    padding: 4px 2px;
-    border-radius: 6px;
-    font-size: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .mobile-btn-cart {
-    flex: 1;
     background: #f3f4f6;
     color: #f7941d;
-    border: 1px solid #e5e7eb;
-    padding: 4px 2px;
-    border-radius: 6px;
-    font-size: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-btn-buy,
-    .mobile-btn-cart {
-      padding: 3px 1px;
-      font-size: 7px;
-      min-height: 20px;
-      border-radius: 4px;
-    }
+    border: 1px solid #f7941d;
   }
 
   .mobile-btn-buy:active,
   .mobile-btn-cart:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
   }
 
-  /* Mobile Blog Cards */
+  /* Auto-scroll animation */
+  @keyframes auto-scroll {
+    0% {
+      scroll-behavior: smooth;
+      transform: translateX(0);
+    }
+    100% {
+      scroll-behavior: smooth;
+      transform: translateX(-20%);
+    }
+  }
+}
+
+/* For very small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .mobile-product-container {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .mobile-product-card {
+    min-width: calc(65% - 8px);
+    max-width: calc(65% - 8px);
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .mobile-product-image {
+    height: 130px;
+  }
+
+  .mobile-product-title {
+    font-size: 11px;
+    min-height: 24px;
+  }
+
+  .mobile-btn-buy,
+  .mobile-btn-cart {
+    font-size: 9px;
+    min-height: 24px;
+  }
+}
+
+/* ===========================
+   📰 MOBILE BLOG CARDS
+=========================== */
+@media (max-width: 768px) {
   .mobile-blog-container {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 8px;
-    padding: 0 12px;
+    gap: 10px;
+    padding: 0 14px;
     scroll-behavior: smooth;
   }
 
   .mobile-blog-card {
-    min-width: calc(50% - 6px);
-    max-width: calc(50% - 6px);
+    min-width: calc(55% - 8px);
+    max-width: calc(55% - 8px);
     aspect-ratio: 0.8;
     flex-shrink: 0;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     background: white;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease-in-out;
   }
 
-  @media (max-width: 375px) {
-    .mobile-blog-container {
-      gap: 6px;
-      padding: 0 8px;
-    }
-    
-    .mobile-blog-card {
-      min-width: calc(50% - 4px);
-      max-width: calc(50% - 4px);
-      aspect-ratio: 0.8;
-    }
+  .mobile-blog-card:hover {
+    transform: scale(1.03);
   }
 
   .mobile-blog-image {
     width: 100%;
-    height: 80px;
+    height: 120px;
     object-fit: cover;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-image {
-      height: 70px;
-    }
   }
 
   .mobile-blog-content {
     padding: 12px;
     flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-content {
-      padding: 10px;
-    }
   }
 
   .mobile-blog-title {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: #111827;
-    line-height: 1.3;
-    height: 32px;
+    line-height: 1.4;
+    height: 38px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    margin-bottom: 6px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-title {
-      font-size: 11px;
-      height: 28px;
-      margin-bottom: 5px;
-    }
+    margin-bottom: 8px;
   }
 
   .mobile-blog-excerpt {
-    font-size: 9px;
+    font-size: 10px;
     color: #6b7280;
-    line-height: 1.4;
-    height: 36px;
+    line-height: 1.5;
+    height: 40px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     margin-bottom: 6px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-excerpt {
-      font-size: 8px;
-      height: 32px;
-      margin-bottom: 5px;
-    }
   }
 
   .mobile-blog-meta {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     font-size: 10px;
     color: #9ca3af;
-    margin-bottom: 8px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-meta {
-      font-size: 9px;
-      margin-bottom: 6px;
-    }
-  }
-
-  .mobile-blog-link {
-    color: #3b82f6;
-    font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-blog-link {
-      font-size: 10px;
-    }
-  }
-
-  /* Mobile Checkout Optimizations */
-  .mobile-checkout-form input,
-  .mobile-checkout-form select {
-    padding: 12px;
-    font-size: 16px; /* Prevents zoom on iOS */
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-  }
-
-  .mobile-checkout-button {
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 12px;
-    width: 100%;
-    margin-top: 16px;
-  }
-
-  /* Mobile Payment Success */
-  .mobile-success-container {
-    padding: 20px;
-    max-width: 100%;
-  }
-
-  .mobile-success-card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  .mobile-success-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 16px;
-  }
-
-  .mobile-success-title {
-    font-size: 24px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  .mobile-success-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-  .mobile-success-btn {
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .mobile-success-btn:active {
-    transform: scale(0.98);
-  }
-
-  /* Touch feedback */
-  .mobile-touch-feedback:active {
-    transform: scale(0.98);
-    opacity: 0.8;
-  }
-
-  /* Scroll indicators */
-  .mobile-scroll-indicator {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 16px;
-  }
-
-  .mobile-scroll-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #d1d5db;
-    transition: background 0.2s;
-  }
-
-  .mobile-scroll-dot.active {
-    background: #f7941d;
   }
 }
 
-/* Utility classes for mobile */
-@media (max-width: 768px) {
-  .mobile-only {
-    display: block !important;
-  }
-
-  .desktop-only {
-    display: none !important;
-  }
-
-  .mobile-padding {
-    padding: 0 12px;
-  }
-
-  .mobile-margin {
-    margin: 12px 0;
-  }
-
-  .mobile-text-sm {
-    font-size: 12px;
-  }
-
-  .mobile-text-xs {
-    font-size: 10px;
-  }
-
-  /* Zepto-style enhancements */
-  .zepto-card-shadow {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  .zepto-rounded {
-    border-radius: 8px;
-  }
-
-  .zepto-compact {
-    padding: 8px;
-    margin: 4px;
-  }
-
-  /* 3 cards per row guarantee */
-  .three-card-row {
-    width: calc(100vw - 24px);
-    display: flex;
-    gap: 6px;
-  }
-
-  .three-card-item {
-    width: calc(33.333% - 4px);
-    min-width: calc(33.333% - 4px);
-    max-width: calc(33.333% - 4px);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-padding {
-      padding: 0 8px;
-    }
-    
-    .three-card-row {
-      width: calc(100vw - 16px);
-      gap: 4px;
-    }
-    
-    .three-card-item {
-      width: calc(33.333% - 3px);
-      min-width: calc(33.333% - 3px);
-      max-width: calc(33.333% - 3px);
-    }
-  }
-}
-
-/* Desktop styles remain unchanged */
-@media (min-width: 769px) {
-  .mobile-only {
-    display: none !important;
-  }
-
-  .desktop-only {
-    display: block !important;
-  }
-}
-
-/* Additional Zepto-style improvements */
-@media (max-width: 768px) {
-  /* Ensure cards never exceed 3 per row */
-  .mobile-product-container,
-  .mobile-blog-container {
-    width: 100%;
-    max-width: 100vw;
-  }
-
-  /* Smooth scrolling like Zepto */
-  .mobile-scroll {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Card hover effects like Zepto */
-  .mobile-product-card:active,
-  .mobile-blog-card:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
-  }
-
-  /* Price highlighting like Zepto */
-  .mobile-product-price {
-    background: linear-gradient(135deg, #f7941d 0%, #ff6b35 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* ShopByBrand Mobile Responsive Styles */
-  .mobile-brand-filter {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 0 12px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-filter {
-      padding: 0 8px;
-      gap: 6px;
-    }
-  }
-
-  .mobile-brand-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: 1px solid #e5e7eb;
-    background: white;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-item {
-      padding: 6px 8px;
-      font-size: 11px;
-      gap: 6px;
-    }
-  }
-
-  .mobile-brand-item.selected {
-    background: #1e3473;
-    color: white;
-    border-color: #1e3473;
-  }
-
-  .mobile-brand-item:active {
-    transform: scale(0.98);
-  }
-
-  .mobile-brand-section {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 0 12px 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-section {
-      margin: 0 8px 12px;
-      padding: 12px;
-    }
-  }
-
-  .mobile-brand-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1e3473;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-title {
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-  }
-
-  .mobile-clear-btn {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 12px auto 0;
-    display: block;
-    transition: all 0.2s;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-clear-btn {
-      padding: 6px 12px;
-      font-size: 11px;
-      margin: 8px auto 0;
-    }
-  }
-
-  .mobile-clear-btn:active {
-    transform: scale(0.98);
-    background: #dc2626;
-  }
-
-  .mobile-brand-products {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 0 12px 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-products {
-      margin: 0 8px 12px;
-      padding: 12px;
-    }
-  }
-
-  .mobile-brand-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .mobile-brand-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1e3473;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-name {
-      font-size: 16px;
-    }
-  }
-
-  .mobile-brand-count {
-    background: #1e3473;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-count {
-      font-size: 9px;
-      padding: 3px 6px;
-    }
-  }
-
-  /* Ensure ShopByBrand cards maintain square aspect ratio */
-  .mobile-brand-product-card {
-    min-width: calc(33.333% - 6px);
-    max-width: calc(33.333% - 6px);
-    aspect-ratio: 1;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    background: #f9fafb;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.2s;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-brand-product-card {
-      min-width: calc(33.333% - 4px);
-      max-width: calc(33.333% - 4px);
-      padding: 6px;
-      border-radius: 8px;
-    }
-  }
-
-  .mobile-brand-product-card:active {
-    transform: scale(0.98);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Mobile Multi-Row Product Grid for View All Products */
-  .mobile-multi-row-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 0 12px;
-    width: 100%;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-multi-row-container {
-      gap: 6px;
-      padding: 0 8px;
-    }
-  }
-
-  .mobile-multi-row-card {
-    aspect-ratio: 1;
-    background: white;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.2s;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-multi-row-card {
-      padding: 6px;
-      border-radius: 8px;
-    }
-  }
-
-  .mobile-multi-row-card:active {
-    transform: scale(0.98);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Load More Button */
-  .mobile-load-more {
-    background: #1e3473;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 16px auto;
-    display: block;
-    width: calc(100% - 24px);
-    max-width: 300px;
-    transition: all 0.2s;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-load-more {
-      padding: 10px 20px;
-      font-size: 13px;
-      margin: 12px auto;
-      width: calc(100% - 16px);
-    }
-  }
-
-  .mobile-load-more:active {
-    transform: scale(0.98);
-    background: #1a2d5f;
-  }
-
-  /* Mobile Section Headers - Zepto Style */
-  .mobile-section-header {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1e3473;
-    text-align: left;
-    margin: 16px 0 8px;
-    padding: 0 12px;
-    position: relative;
-  }
-
-  .mobile-section-header::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 12px;
-    width: 40px;
-    height: 3px;
-    background: linear-gradient(90deg, #f7941d 0%, #ff6b35 100%);
-    border-radius: 2px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-section-header {
-      font-size: 14px;
-      margin: 12px 0 6px;
-      padding: 0 8px;
-    }
-    
-    .mobile-section-header::after {
-      left: 8px;
-      width: 30px;
-      height: 2px;
-    }
-  }
-
-  /* Mobile Row Separator - Zepto Style */
-  .mobile-row-separator {
-    height: 20px;
-    width: 100%;
-    background: linear-gradient(90deg, transparent 0%, #f3f4f6 20%, #f3f4f6 80%, transparent 100%);
-    margin: 8px 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-row-separator {
-      height: 16px;
-      margin: 6px 0;
-    }
-  }
-
-  /* Enhanced Zepto-style features */
-  .mobile-product-card {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .mobile-product-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #f7941d 0%, #ff6b35 100%);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .mobile-product-card:active::before {
-    opacity: 1;
-  }
-
-  /* Enhanced mobile buttons */
-  .mobile-btn-buy,
-  .mobile-btn-cart {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .mobile-btn-buy::before,
-  .mobile-btn-cart::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s;
-  }
-
-  .mobile-btn-buy:active::before,
-  .mobile-btn-cart:active::before {
-    width: 100px;
-    height: 100px;
-  }
-
-  /* Mobile Categories Section */
-  .mobile-categories-container {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 8px;
-    padding: 0 12px 8px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-categories-container {
-      gap: 6px;
-      padding: 0 8px 6px;
-    }
-  }
-
-  .mobile-category-item {
-    flex-shrink: 0;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: all 0.2s;
-    cursor: pointer;
-    scroll-snap-align: start;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-category-item {
-      padding: 6px 12px;
-      font-size: 11px;
-      border-radius: 16px;
-    }
-  }
-
-  .mobile-category-active {
-    background: #f7941d;
-    color: white;
-    box-shadow: 0 2px 8px rgba(247, 148, 29, 0.3);
-  }
-
-  .mobile-category-inactive {
-    background: #f3f4f6;
-    color: #1e3473;
-    border: 1px solid #e5e7eb;
-  }
-
-  .mobile-category-item:active {
-    transform: scale(0.98);
-  }
-
-  /* Mobile Subcategories Grid */
-  .mobile-subcategories-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 0 12px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategories-grid {
-      gap: 8px;
-      padding: 0 8px;
-    }
-  }
-
-  .mobile-subcategory-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
-    transition: all 0.2s;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategory-card {
-      border-radius: 8px;
-    }
-  }
-
-  .mobile-subcategory-card:active {
-    transform: scale(0.98);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .mobile-subcategory-image-container {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    overflow: hidden;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategory-image-container {
-      height: 100px;
-    }
-  }
-
-  .mobile-subcategory-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-  }
-
-  .mobile-subcategory-card:active .mobile-subcategory-image {
-    transform: scale(1.05);
-  }
-
-  .mobile-subcategory-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 8px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategory-overlay {
-      padding: 6px;
-    }
-  }
-
-  .mobile-subcategory-title {
-    color: white;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 2px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategory-title {
-      font-size: 11px;
-      margin-bottom: 1px;
-    }
-  }
-
-  .mobile-subcategory-desc {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 10px;
-    line-height: 1.2;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-subcategory-desc {
-      font-size: 9px;
-      -webkit-line-clamp: 1;
-    }
-  }
-
-  /* B2B Section Mobile Responsive Styles */
-  .mobile-b2b-marquee {
-    padding: 16px 0;
-  }
-
-  .mobile-b2b-marquee img {
-    height: 60px !important;
-    width: auto;
-    object-fit: contain;
-    margin-right: 24px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-marquee img {
-      height: 45px !important;
-      margin-right: 16px;
-    }
-  }
-
-  /* B2B Feature Cards Mobile */
-  .mobile-b2b-features {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 0 12px;
-  }
-
-  .mobile-b2b-feature-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: #1b2c6b;
-    border-radius: 16px;
-    width: 100%;
-    box-shadow: 0 4px 12px rgba(27, 44, 107, 0.2);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-features {
-      padding: 0 8px;
-      gap: 8px;
-    }
-    
-    .mobile-b2b-feature-card {
-      padding: 12px;
-      gap: 8px;
-      border-radius: 12px;
-    }
-  }
-
-  .mobile-b2b-feature-icon {
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    padding: 8px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-feature-icon {
-      width: 40px;
-      height: 40px;
-      padding: 6px;
-    }
-  }
-
-  .mobile-b2b-feature-content h3 {
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    line-height: 1.2;
-  }
-
-  .mobile-b2b-feature-content p {
-    color: #fdb714;
-    font-size: 11px;
-    line-height: 1.3;
-    margin: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-feature-content h3 {
-      font-size: 12px;
-      margin-bottom: 2px;
-    }
-    
-    .mobile-b2b-feature-content p {
-      font-size: 10px;
-    }
-  }
-
-  /* B2B Bulk Order Form Mobile */
-  .mobile-b2b-form {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 0 12px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form {
-      padding: 16px;
-      margin: 0 8px;
-      border-radius: 12px;
-    }
-  }
-
-  .mobile-b2b-form-header {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-
-  .mobile-b2b-form-header h2 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e3473;
-    margin-bottom: 8px;
-    line-height: 1.2;
-  }
-
-  .mobile-b2b-form-header p {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.4;
-    margin: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-header {
-      margin-bottom: 16px;
-    }
-    
-    .mobile-b2b-form-header h2 {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-    
-    .mobile-b2b-form-header p {
-      font-size: 11px;
-    }
-  }
-
-  .mobile-b2b-form-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-grid {
-      gap: 12px;
-    }
-  }
-
-  .mobile-b2b-form-field {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mobile-b2b-form-field label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-field label {
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-  }
-
-  .mobile-b2b-form-field input,
-  .mobile-b2b-form-field select,
-  .mobile-b2b-form-field textarea {
-    padding: 12px 16px;
-    border: 1.5px solid #d1d5db;
-    border-radius: 12px;
-    font-size: 14px;
-    color: #111827;
-    background: white;
-    transition: all 0.2s;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-field input,
-    .mobile-b2b-form-field select,
-    .mobile-b2b-form-field textarea {
-      padding: 10px 12px;
-      font-size: 13px;
-      border-radius: 8px;
-    }
-  }
-
-  .mobile-b2b-form-field input:focus,
-  .mobile-b2b-form-field select:focus,
-  .mobile-b2b-form-field textarea:focus {
-    outline: none;
-    border-color: #f7941d;
-    box-shadow: 0 0 0 3px rgba(247, 148, 29, 0.1);
-  }
-
-  .mobile-b2b-form-field input::placeholder,
-  .mobile-b2b-form-field textarea::placeholder {
-    color: #9ca3af;
-    font-size: 13px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-field input::placeholder,
-    .mobile-b2b-form-field textarea::placeholder {
-      font-size: 12px;
-    }
-  }
-
-  .mobile-b2b-form-textarea {
-    resize: vertical;
-    min-height: 80px;
-    max-height: 120px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-textarea {
-      min-height: 70px;
-      max-height: 100px;
-    }
-  }
-
-  .mobile-b2b-form-info {
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 16px 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-info {
-      padding: 12px;
-      margin: 12px 0;
-      border-radius: 8px;
-    }
-  }
-
-  .mobile-b2b-form-info h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e3473;
-    margin-bottom: 8px;
-  }
-
-  .mobile-b2b-form-info ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .mobile-b2b-form-info li {
-    font-size: 11px;
-    color: #6b7280;
-    margin-bottom: 4px;
-    padding-left: 16px;
-    position: relative;
-  }
-
-  .mobile-b2b-form-info li::before {
-    content: '•';
-    color: #f7941d;
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-info h3 {
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-    
-    .mobile-b2b-form-info li {
-      font-size: 10px;
-      margin-bottom: 3px;
-      padding-left: 12px;
-    }
-  }
-
-  .mobile-b2b-form-submit {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .mobile-b2b-form-button {
-    background: linear-gradient(135deg, #f7941d 0%, #ff6b35 100%);
-    color: white;
-    border: none;
-    padding: 14px 32px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(247, 148, 29, 0.3);
-    width: 100%;
-    max-width: 280px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-form-submit {
-      margin-top: 16px;
-    }
-    
-    .mobile-b2b-form-button {
-      padding: 12px 24px;
-      font-size: 13px;
-      border-radius: 8px;
-      max-width: 240px;
-    }
-  }
-
-  .mobile-b2b-form-button:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(247, 148, 29, 0.4);
-  }
-
-  .mobile-b2b-form-button:disabled {
-    background: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-
-  .mobile-b2b-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .mobile-b2b-spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* B2B Sectors Section Mobile */
-  .mobile-b2b-sectors {
-    padding: 20px 12px;
-    background: linear-gradient(to bottom, white 0%, #f8fafc 100%);
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sectors {
-      padding: 16px 8px;
-    }
-  }
-
-  .mobile-b2b-sectors-header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .mobile-b2b-sectors-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1e3473;
-    margin-bottom: 8px;
-    line-height: 1.2;
-  }
-
-  .mobile-b2b-sectors-subtitle {
-    font-size: 13px;
-    color: #6b7280;
-    line-height: 1.4;
-    margin: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sectors-header {
-      margin-bottom: 16px;
-    }
-    
-    .mobile-b2b-sectors-title {
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-    
-    .mobile-b2b-sectors-subtitle {
-      font-size: 12px;
-    }
-  }
-
-  .mobile-b2b-sectors-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sectors-grid {
-      gap: 8px;
-    }
-  }
-
-  .mobile-b2b-sector-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    transition: all 0.3s;
-    cursor: pointer;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sector-card {
-      padding: 16px;
-      border-radius: 12px;
-    }
-  }
-
-  .mobile-b2b-sector-card:active {
-    transform: translateY(-4px) scale(0.98);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  }
-
-  .mobile-b2b-sector-icon {
-    width: 48px;
-    height: 48px;
-    background: #eff6ff;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 12px;
-    color: #3b82f6;
-    font-size: 20px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sector-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-  }
-
-  .mobile-b2b-sector-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #1f2937;
-    line-height: 1.3;
-    margin: 0;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-sector-name {
-      font-size: 12px;
-    }
-  }
-
-  /* B2B Online Presence Section Mobile */
-  .mobile-b2b-presence {
-    background: #1e3473;
-    border-radius: 16px;
-    padding: 20px;
-    margin: 0 12px;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-presence {
-      padding: 16px;
-      margin: 0 8px;
-      border-radius: 12px;
-      gap: 12px;
-    }
-  }
-
-  .mobile-b2b-presence-image {
-    width: 100%;
-    max-width: 280px;
-    height: auto;
-    object-fit: contain;
-    margin: 0 auto;
-    border-radius: 8px;
-  }
-
-  .mobile-b2b-presence-content {
-    text-align: center;
-  }
-
-  .mobile-b2b-presence-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.2;
-  }
-
-  .mobile-b2b-presence-text {
-    font-size: 12px;
-    color: #e1e3eb;
-    line-height: 1.4;
-    margin-bottom: 16px;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-presence-title {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    
-    .mobile-b2b-presence-text {
-      font-size: 11px;
-      margin-bottom: 12px;
-    }
-  }
-
-  .mobile-b2b-presence-button {
-    background: #f7941d;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 24px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-block;
-    text-decoration: none;
-  }
-
-  @media (max-width: 375px) {
-    .mobile-b2b-presence-button {
-      padding: 10px 20px;
-      font-size: 12px;
-      border-radius: 20px;
-    }
-  }
-
-  .mobile-b2b-presence-button:active {
-    transform: scale(0.98);
-    background: #e88a1a;
-  }
-}
-
-@media (max-width: 768px) {
-  .category-grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    max-height: none; /* remove clipping */
-    gap: 10px;
-  }
-}
-
-@media (max-width: 768px) {
-  .category-grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    row-gap: 14px;
-    justify-items: center;
-  }
-
-  .category-grid-container a {
-    width: 100%;
-    max-width: 100px;
-  }
-
-  .category-grid-container img {
-    width: 50px;
-    height: 50px;
-  }
-}
-
+/* ===========================
+   🧱 OTHER MOBILE FIXES
+=========================== */
 @media (max-width: 768px) {
   .category-grid-container {
     display: grid;
@@ -1641,10 +245,18 @@
     justify-items: center;
     row-gap: 12px;
   }
-}
 
-/* 2x2 grid for ProductSlider on mobile  */
-@media (max-width: 768px) {
+  .category-grid-container a {
+    width: 100%;
+    max-width: 110px;
+  }
+
+  .category-grid-container img {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Force 2x2 grid for ProductSlider on mobile */
   .mobile-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1659,7 +271,7 @@
   }
 }
 
-/* ====== Mobile Popup Hover (only for screens ≤768px) ====== */
+/* Keep popup and banner responsive fixes */
 @media (max-width: 768px) {
   .usp-card {
     position: relative;
@@ -1667,7 +279,6 @@
     transition: all 0.3s ease;
   }
 
-  /* Show popup when the card is hovered or tapped */
   .usp-card:hover .mobile-popup {
     opacity: 1;
     transform: scale(1);
@@ -1676,21 +287,20 @@
 
   .mobile-popup {
     transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
   }
 
-  /* Disable desktop hover effects */
   .usp-card:hover {
     box-shadow: none !important;
   }
 
-  /* Optional - make popup slightly larger */
   .mobile-popup {
     width: 100%;
     height: 100%;
   }
 }
 
-/* For desktop, make sure the popup stays hidden */
 @media (min-width: 769px) {
   .mobile-popup {
     display: none !important;
@@ -1700,6 +310,56 @@
 @media (max-width: 640px) {
   .banner-height-mobile {
     height: 250px !important;
+  }
+}
+
+/* Desktop styles remain unchanged */
+@media (min-width: 769px) {
+  .desktop-only {
+    display: block !important;
+  }
+
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* 📱 Promo Banner - Adjust Raspberry Pi image size for mobile */
+@media (max-width: 768px) {
+  /* Target the promo section image */
+  .promo-section img {
+    width: 140px !important;   /* smaller for mobile */
+    height: auto !important;
+    object-fit: contain;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+
+  /* Reduce padding and spacing for banner container */
+  .promo-section {
+    padding: 12px !important;
+    height: 250px !important;  /* smaller height for mobile */
+  }
+
+  /* Adjust text sizes for smaller screens */
+  .promo-section p {
+    font-size: 12px !important;
+  }
+
+  .promo-section h2 {
+    font-size: 20px !important;
+  }
+
+  .promo-section .btn {
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Keep desktop unchanged */
+@media (min-width: 769px) {
+  .promo-section img {
+    width: 400px !important;
   }
 }
 
