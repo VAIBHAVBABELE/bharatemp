@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const PromoSection = () => {
   return (
-    <div className="w-full py-10 flex flex-col lg:flex-row gap-6">
+    <div className="w-full py-2 flex flex-col lg:flex-row gap-2">
       {/* Left Main Banner */}
       <div className="lg:w-1/2 w-full relative">
         <div className="bg-[#1e293b] rounded-2xl text-white flex justify-between p-6 h-auto md:h-[390px] overflow-hidden">
@@ -92,42 +92,42 @@ const PromoSection = () => {
               </div>
 
               {/* --- Mobile layout (equal height, image center, button below) --- */}
-              <div className="flex flex-col justify-between items-start w-full h-full md:hidden">
-                {/* Text */}
-                <div>
-                  <p className="text-sm text-[#f7941d] mb-1">Parts</p>
-                  <p
-                    className={`font-bold text-2xl ${
-                      card.dark ? "text-[#1E3473]" : "text-blue-900"
-                    }`}
-                  >
-                    {card.title}
-                  </p>
-                </div>
-
-                {/* Image */}
-                <div className="flex-1 flex flex-col justify-center items-center w-full mt-2">
-                  <img
-                    src={card.image}
-                    alt={card.title}
-                    className="w-28 h-auto object-contain"
-                  />
-                </div>
-
-                {/* Button below image */}
-                <div className="mt-4 w-full flex justify-start">
-                  <Link
-                    to="/product"
-                    className={`${
-                      card.dark
-                        ? "bg-[#1E3473] text-white"
-                        : "bg-[#f7941d] text-white"
-                    } px-3 py-2 text-sm rounded-full inline-block`}
-                  >
-                    Discover Now
-                  </Link>
-                </div>
+            <div className="flex flex-col justify-between items-start w-full h-full md:hidden p-1">
+              {/* Text Section - Compact */}
+              <div className="mb-1">
+                <p className="text-xs text-[#f7941d] mb-0.5">Parts</p>
+                <p
+                  className={`font-bold text-lg leading-tight ${
+                    card.dark ? "text-[#1E3473]" : "text-blue-900"
+                  }`}
+                >
+                  {card.title}
+                </p>
               </div>
+
+              {/* Image - Centered with proper height */}
+              <div className="flex-1 flex flex-col justify-center items-center w-full my-0">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+
+              {/* Button - Compact */}
+              <div className="mt-2 w-full flex justify-start">
+                <Link
+                  to="/product"
+                  className={`${
+                    card.dark
+                      ? "bg-[#1E3473] text-white"
+                      : "bg-[#f7941d] text-white"
+                  } px-3 py-1.5 text-xs rounded-full inline-block hover:opacity-90 transition-opacity`}
+                >
+                  Discover Now
+                </Link>
+              </div>
+            </div>
             </div>
           ))}
         </div>

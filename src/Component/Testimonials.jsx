@@ -116,7 +116,7 @@ function Testimonials() {
     };
  
     return (
-        <div className="w-full py-10 relative">
+        <div className="w-full py-6 relative">
             <h1 className="text-2xl font-bold text-[#3e3e3e] text-center md:text-3xl lg:text-4xl">
                 Our Customer Says
             </h1>

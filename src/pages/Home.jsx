@@ -131,7 +131,7 @@ const ProductSlider = () => {
         </div>
 
         {/* ====================== HERO SECTION ====================== */}
-<div className="bg-[#000127] w-full rounded-xl sm:rounded-2xl py-4 sm:py-6 lg:py-10 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col lg:flex-row gap-4 lg:gap-8 relative overflow-hidden min-h-[320px] sm:min-h-[450px] lg:min-h-[500px]">
+<div className="bg-[#000127] w-full rounded-xl sm:rounded-2xl py-4 sm:py-6 lg:py-2 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col lg:flex-row gap-4 lg:gap-2 relative overflow-hidden min-h-[320px] sm:min-h-[450px] lg:min-h-[500px]">
   {/* Left: Text Section */}
   <div className="lg:w-1/2 w-full flex flex-col justify-center z-20 relative">
     {/* Raspberry Pi Title + Image (for mobile inline) */}
@@ -184,7 +184,7 @@ const ProductSlider = () => {
     </div>
 
     {/* Features Grid */}
-    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pt-4">
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-2 pt-4">
       <div className="flex items-center gap-2 sm:gap-3 font-[outfit]">
         <img
           src={vector1}
@@ -254,44 +254,42 @@ const ProductSlider = () => {
 
 
         {/* ====================== FEATURES SECTION ====================== */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 py-6 sm:py-8 relative">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="usp-card relative flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300 bg-white"
-            >
-              <div className="flex items-center gap-3 w-full">
-                <div className="flex-shrink-0">
-                  <img
-                    src={feature.img}
-                    className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 p-1 sm:p-2 rounded-lg"
-                    alt={feature.title}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xs sm:text-sm lg:text-base font-bold text-blue-900 leading-tight mb-1">
-                    {feature.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-orange-500 leading-tight">
-                    {feature.subtitle}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 py-2 sm:py-8 relative">
+  {features.map((feature, index) => (
+    <div
+      key={index}
+      className="usp-card relative flex flex-col items-center text-center gap-2 sm:gap-3 px-2 sm:px-3 py-3 sm:py-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300 bg-white"
+    >
+      <div className="flex-shrink-0">
+        <img
+          src={feature.img}
+          className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 p-1 sm:p-2 rounded-lg"
+          alt={feature.title}
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-xs sm:text-sm lg:text-base font-bold text-blue-900 leading-tight mb-1">
+          {feature.title}
+        </h3>
+        <p className="text-xs sm:text-sm text-orange-500 leading-tight">
+          {feature.subtitle}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
 
         {/* ====================== REMAINING CONTENT ====================== */}
         {loading ? (
-          <div className="py-10">
+          <div className="py-2">
             <ShimmerUI />
           </div>
         ) : error ? (
-          <div className="text-center py-10 text-red-500">{error}</div>
+          <div className="text-center py-2 text-red-500">{error}</div>
         ) : (
           <>
             <Section3 />
-            <div className="pt-10">
+            <div className="pt-2">
               <Section1 products={products} />
             </div>
             <VideoSection />

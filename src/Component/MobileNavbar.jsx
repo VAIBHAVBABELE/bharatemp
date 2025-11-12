@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaSearch, FaBars, FaTimes, FaHome, FaShoppingBag, FaUser, FaMicrophone } from "react-icons/fa";
+import { FaSearch, FaBars, FaTimes, FaHome, FaShoppingBag, FaUser, FaMicrophone, FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useProducts } from "../context/ProductContext";
 import { useDebounce } from "../hooks/useDebounce";
@@ -18,8 +18,11 @@ const MobileNavbar = () => {
   const [isListening, setIsListening] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Development Board");
+  
   const { uniqueItems } = useCart();
-  const { products } = useProducts();
+  const { products, categories } = useProducts();
   const navigate = useNavigate();
   const currentLocation = useLocation();
 
@@ -30,14 +33,11 @@ const MobileNavbar = () => {
         const decoded = jwtDecode(token);
         setUser(decoded);
       } catch (error) {
-        // console.error("Error decoding token:", error);
         localStorage.removeItem("token");
         setUser(null);
       }
     }
   }, []);
-
-  // Products now come from context
 
   // Handle search
   const handleSearch = (e) => {
@@ -45,6 +45,7 @@ const MobileNavbar = () => {
     if (searchQuery.trim()) {
       navigate(`/product?search=${encodeURIComponent(searchQuery.trim())}`);
       setShowSuggestions(false);
+      setMobileMenuOpen(false); // Close menu after search
     }
   };
 
@@ -82,6 +83,7 @@ const MobileNavbar = () => {
     }
     setSearchQuery(suggestion.name);
     setShowSuggestions(false);
+    setMobileMenuOpen(false); // Close menu after suggestion click
   };
 
   // Voice search
@@ -104,12 +106,12 @@ const MobileNavbar = () => {
         setSearchQuery(transcript);
         setTimeout(() => {
           navigate(`/product?search=${encodeURIComponent(transcript.trim())}`);
+          setMobileMenuOpen(false); // Close menu after voice search
         }, 500);
       };
 
       recognition.onerror = (event) => {
         setIsListening(false);
-        // console.error("Speech recognition error:", event.error);
       };
 
       recognition.start();
@@ -117,6 +119,37 @@ const MobileNavbar = () => {
       alert("Voice search is not supported in this browser");
     }
   };
+
+  // Categories handlers
+  const handleSubcategoryClick = (category, subcategory) => {
+    navigate(
+      `/allproducts?category=${category}&subcategory=${subcategory.toLowerCase()}`
+    );
+    setShowCategoriesDropdown(false);
+    setMobileMenuOpen(false); // Close menu after subcategory click
+    // Scroll to top after navigation
+    window.scrollTo(0, 0);
+  };
+
+  const handleCategoryClick = (category) => {
+    navigate(`/product?category=${encodeURIComponent(category)}`);
+    setShowCategoriesDropdown(false);
+    setMobileMenuOpen(false); // Close menu after category click
+    // Scroll to top after navigation
+    window.scrollTo(0, 0);
+  };
+
+  // Close categories when mobile menu closes
+  useEffect(() => {
+    if (!mobileMenuOpen) {
+      setShowCategoriesDropdown(false);
+    }
+  }, [mobileMenuOpen]);
+
+  // Close menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [currentLocation]);
 
   return (
     <>
@@ -133,12 +166,22 @@ const MobileNavbar = () => {
           </button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link 
+            to="/" 
+            className="flex items-center"
+            onClick={() => setMobileMenuOpen(false)} // Close menu on logo click
+          >
             <img src={logo} alt="Bharatronix" className="h-10 w-auto" />
           </Link>
 
           {/* Cart Icon */}
-          <div className="relative" onClick={() => navigate("/cart")}>
+          <div 
+            className="relative" 
+            onClick={() => {
+              navigate("/cart");
+              setMobileMenuOpen(false); // Close menu on cart click
+            }}
+          >
             <FaShoppingBag size={20} className="text-gray-700" />
             {uniqueItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-[#F7941D] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
@@ -205,9 +248,9 @@ const MobileNavbar = () => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setMobileMenuOpen(false)}>
-          <div className="bg-white w-full max-w-sm h-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white w-full h-full flex flex-col" onClick={(e) => e.stopPropagation()}>
             {/* Menu Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
               <div className="flex items-center gap-3">
                 <img src={logo} alt="Bharatronix" className="h-8 w-auto" />
                 <span className="text-lg font-bold text-[#1E3473]">BharatroniX</span>
@@ -220,20 +263,128 @@ const MobileNavbar = () => {
               </button>
             </div>
 
-            {/* Menu Items */}
-            <div className="flex-1 overflow-y-auto py-4">
-              <div className="px-4 space-y-1 mt-12">
-                <Link
-                  to="/product"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-orange-50 transition-colors group"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                    <span className="text-xl">🛍️</span>
+            {/* Menu Items with Scroll */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-10 space-y-1">
+                
+                {/* All Categories Dropdown */}
+                <div className="border-b border-gray-100 pb-4 mb-4">
+                  <div
+                    onClick={() => setShowCategoriesDropdown(!showCategoriesDropdown)}
+                    className="flex items-center justify-between p-4 rounded-xl hover:bg-blue-50 transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <span className="text-xl">📂</span>
+                      </div>
+                      <span className="text-gray-800 font-medium">All Categories</span>
+                    </div>
+                    <FaChevronDown 
+                      className={`text-gray-400 transition-transform duration-300 ${
+                        showCategoriesDropdown ? 'rotate-180' : ''
+                      }`} 
+                    />
                   </div>
-                  <span className="text-gray-800 font-medium">All Products</span>
-                </Link>
 
+                  {/* Categories Dropdown Content */}
+                  {showCategoriesDropdown && (
+                    <div className="mt-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                      {/* Category List */}
+                      <div className="p-3 border-b border-gray-200 bg-gray-50 max-h-40 overflow-y-auto">
+                        {Object.keys(categories).map((category, index) => (
+                          <div
+                            key={index}
+                            onClick={() => setActiveCategory(category)}
+                            className={`flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-all ${
+                              activeCategory === category
+                                ? "bg-blue-50 text-blue-800 font-semibold border-l-4 border-blue-800"
+                                : "hover:bg-blue-100 text-gray-700 hover:text-blue-800"
+                            }`}
+                          >
+                            <span className="text-sm">{category}</span>
+                            <FaChevronRight className="text-xs text-gray-400" />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Subcategories Grid */}
+                      <div className="p-4 max-h-60 overflow-y-auto">
+                        {activeCategory &&
+                        categories[activeCategory] &&
+                        categories[activeCategory].length > 0 ? (
+                          <>
+                            <h3 className="mb-3 text-lg font-bold text-gray-800 border-b border-gray-200 pb-2">
+                              {activeCategory}
+                            </h3>
+                            <div className="grid grid-cols-2 gap-3">
+                              {categories[activeCategory]
+                                .slice(0, 6)
+                                .map((subcat, index) => (
+                                  <div
+                                    key={index}
+                                    onClick={() =>
+                                      handleSubcategoryClick(
+                                        activeCategory,
+                                        subcat.name
+                                      )
+                                    }
+                                    className="cursor-pointer group transition-all duration-200"
+                                  >
+                                    <div className="relative overflow-hidden border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                                      {subcat.image ? (
+                                        <img
+                                          src={subcat.image}
+                                          alt={subcat.name}
+                                          className="object-cover w-full h-20 transition-transform duration-300 group-hover:scale-105"
+                                          onError={(e) => {
+                                            e.target.src =
+                                              "https://via.placeholder.com/300x200?text=No+Image";
+                                          }}
+                                        />
+                                      ) : (
+                                        <div className="flex items-center justify-center w-full h-20 bg-gray-100">
+                                          <span className="text-xs text-gray-400">
+                                            No Image
+                                          </span>
+                                        </div>
+                                      )}
+                                      <div className="p-2 bg-white">
+                                        <h3 className="font-semibold text-gray-900 group-hover:text-[#F7941D] transition-colors text-xs">
+                                          {subcat.name}
+                                        </h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                            <div
+                              onClick={() => {
+                                handleCategoryClick(activeCategory);
+                              }}
+                              className="mt-4 flex items-center justify-center py-2 px-4 bg-blue-50 hover:bg-blue-100 rounded-md text-blue-800 font-semibold transition-colors cursor-pointer border border-blue-200 hover:border-blue-300 text-sm"
+                            >
+                              View All {activeCategory} Products
+                              <FaChevronRight className="ml-2 text-xs" />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-32">
+                            <div className="text-2xl text-gray-300 mb-2">
+                              🔍
+                            </div>
+                            <p className="text-gray-600 text-sm mb-1 font-medium">
+                              {activeCategory
+                                ? "No subcategories available"
+                                : "Select a category"}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Other Menu Items */}
                 <Link
                   to="/shopbybrand"
                   className="flex items-center gap-4 p-4 rounded-xl hover:bg-orange-50 transition-colors group"
@@ -328,17 +479,28 @@ const MobileNavbar = () => {
       {/* Bottom Navigation Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-40">
         <div className="flex items-center justify-around py-2">
-          <Link to="/" className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors">
+          <Link 
+            to="/" 
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             <FaHome size={20} />
             <span className="text-xs mt-1">Home</span>
           </Link>
 
-          <Link to="/product" className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors">
+          <div 
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors cursor-pointer"
+          >
             <FaShoppingBag size={20} />
-            <span className="text-xs mt-1">Shop</span>
-          </Link>
+            <span className="text-xs mt-1">Categories</span>
+          </div>
 
-          <Link to="/cart" className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors relative">
+          <Link 
+            to="/cart" 
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors relative"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             <div className="relative">
               <FaShoppingBag size={20} />
               {uniqueItems > 0 && (
@@ -350,7 +512,11 @@ const MobileNavbar = () => {
             <span className="text-xs mt-1">Cart</span>
           </Link>
 
-          <Link to="/profile" className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors">
+          <Link 
+            to="/profile" 
+            className="flex flex-col items-center p-2 text-gray-600 hover:text-[#F7941D] transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             <FaUser size={20} />
             <span className="text-xs mt-1">Profile</span>
           </Link>

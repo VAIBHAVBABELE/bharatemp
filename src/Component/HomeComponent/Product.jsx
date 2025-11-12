@@ -1166,7 +1166,7 @@ const Product = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-full py-16">
+                  <div className="col-span-full py-2">
                     <div className="max-w-md mx-auto bg-white rounded-xl overflow-hidden shadow-lg p-8 text-center">
                       <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
                         <svg
@@ -1532,7 +1532,7 @@ const Product = () => {
                     )}
                   </>
                 ) : (
-                  <div className="w-full py-16 text-center">
+                  <div className="w-full py-2 text-center">
                     <div className="bg-white rounded-xl p-8 mx-4">
                       <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                         <svg

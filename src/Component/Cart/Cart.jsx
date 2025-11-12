@@ -133,7 +133,7 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto my-10">
-        <div className="text-center py-10">
+        <div className="text-center py-2">
           <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"

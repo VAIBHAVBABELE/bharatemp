@@ -164,7 +164,7 @@ const VideoSection = () => {
     }, [currentPage]);
 
     return (
-        <div className='w-full h-auto py-10 lg:pb-20'>
+        <div className='w-full h-auto py-2 lg:pb-20'>
             <h1 className='text-2xl font-bold text-[#3e3e3e] text-center md:text-3xl lg:text-4xl'>
                 Our Instagram Reels
             </h1>

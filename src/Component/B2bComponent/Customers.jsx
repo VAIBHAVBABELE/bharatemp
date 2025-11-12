@@ -103,7 +103,7 @@ const Section4 = () => {
   }, [totalSlides]);
 
   return (
-    <div className="w-full py-10 bg-white">
+    <div className="w-full py-6 bg-white">
       <h2 className="text-2xl text-[#133240] font-bold mb-2 lg:text-[41px] md:text-[30px] text-[25px]">
         Our Customer Feedback
       </h2>

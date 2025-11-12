@@ -44,10 +44,10 @@ const BlogsSection = () => {
 
   if (loading) {
     return (
-      <div className="py-16 px-4 md:px-10">
+      <div className="py-6 px-4 md:px-10">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
               Latest Blogs
             </h2>
             <p className="text-gray-600 text-lg">
@@ -77,7 +77,7 @@ const BlogsSection = () => {
 
   if (error) {
     return (
-      <div className="py-16 px-4 md:px-10">
+      <div className="py-6 px-4 md:px-10">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-red-500 text-lg">{error}</p>
         </div>
@@ -86,11 +86,11 @@ const BlogsSection = () => {
   }
 
   return (
-    <div className="py-16 px-4 md:px-10 bg-gray-50">
+    <div className="py-6 px-4 md:px-10 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
             Latest Blogs
           </h2>
           <p className="text-gray-600 text-lg">
@@ -101,7 +101,7 @@ const BlogsSection = () => {
         {/* Desktop Blogs Grid */}
         {blogs.length > 0 ? (
           <>
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {blogs.map((blog) => (
                 <div
                   key={blog._id}
@@ -252,7 +252,7 @@ const BlogsSection = () => {
           </>
         ) : (
           <div className="text-center py-12">
-            <div className="text-gray-500 text-lg mb-4">
+            <div className="text-gray-500 text-lg mb-2">
               No blogs available yet
             </div>
             <Link

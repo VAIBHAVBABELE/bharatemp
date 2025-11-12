@@ -150,10 +150,10 @@ const ProductSlider = ({ products = [] }) => {
   };
 
   return (
-    // ✅ Added mt-8 here to create space between "More Details" and "You may also like"
-    <div className="h-auto xl:h-[500px] mt-8">
+    // ✅ margin 2 - mt-2
+    <div className="h-auto xl:h-[500px] mt-2">
       {/* Tabs */}
-      <div className="border-b border-[#797979] flex items-center justify-between mb-4">
+      <div className="border-b border-[#797979] flex items-center justify-between mb-2">
         <div className="flex space-x-6">
           {tabs.map((tab) => (
             <button
@@ -173,7 +173,8 @@ const ProductSlider = ({ products = [] }) => {
       </div>
 
       {/* Desktop Product Grid */}
-      <div className="hidden md:grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 pb-4 scrollbar-hide">
+      {/* ✅ gap 2 - gap-2 */}
+      <div className="hidden md:grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 pb-2 scrollbar-hide">
         {filteredProducts.slice(0, 5).map((product, index) => (
           <div
             key={product._id || index}

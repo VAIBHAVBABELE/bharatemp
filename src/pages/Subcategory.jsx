@@ -38,7 +38,7 @@ const ProductSlider = () => {
   }, []);
 
   return (
-    <div className="px-4 md:px-10 py-10">
+    <div className="px-4 md:px-10 py-2">
       <div className="bg-[#32333B] w-full lg:h-[455px] h-auto lg:px-20 md:px-12 px-6 rounded-2xl p-6 flex flex-col lg:flex-row  gap-10 relative overflow-hidden ">
         {/* Left: Text Section */}
         <div className="flex-1 md:w-1/2 w-full lg:text-left">
@@ -103,7 +103,7 @@ const ProductSlider = () => {
      
 
       {loading ? (
-        <div className="flex justify-center items-center py-10">
+        <div className="flex justify-center items-center py-2">
           <img 
             src={logo2} 
             alt="Loading..." 
@@ -112,7 +112,7 @@ const ProductSlider = () => {
           />
         </div>
       ) : error ? (
-        <div className="text-center py-10 text-red-500">{error}</div>
+        <div className="text-center py-2 text-red-500">{error}</div>
       ) : (
         <>
         <Product/>
